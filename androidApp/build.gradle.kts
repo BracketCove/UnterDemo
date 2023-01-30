@@ -35,6 +35,7 @@ android {
 
 dependencies {
     implementation(project(":shared"))
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
     val lifecycle_version = "2.5.1"
     val simplestack_version = "2.2.5"
