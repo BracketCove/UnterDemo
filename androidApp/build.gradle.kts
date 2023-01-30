@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     kotlin("android")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -33,10 +35,34 @@ android {
 
 dependencies {
     implementation(project(":shared"))
-    implementation("androidx.compose.ui:ui:1.2.1")
-    implementation("androidx.compose.ui:ui-tooling:1.2.1")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.2.1")
-    implementation("androidx.compose.foundation:foundation:1.2.1")
-    implementation("androidx.compose.material:material:1.2.1")
-    implementation("androidx.activity:activity-compose:1.5.1")
+
+    val lifecycle_version = "2.5.1"
+    val simplestack_version = "2.2.5"
+
+    implementation("com.github.Zhuinden.simple-stack-extensions:core-ktx:$simplestack_version")
+    implementation("com.github.Zhuinden.simple-stack-extensions:fragments:$simplestack_version")
+    implementation("com.github.Zhuinden.simple-stack-extensions:fragments-ktx:$simplestack_version")
+    implementation("com.github.Zhuinden.simple-stack-extensions:navigator-ktx:$simplestack_version")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
+
+    // Saved state module for ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version")
+
+    implementation("androidx.compose.ui:ui:1.3.3")
+    implementation("androidx.compose.ui:ui-tooling:1.3.3")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.3.3")
+    implementation("androidx.compose.foundation:foundation:1.3.1")
+    implementation("androidx.compose.material:material:1.3.1")
+    implementation("androidx.activity:activity-compose:1.6.1")
+
+    val stream_version = "5.11.10"
+    implementation("io.getstream:stream-chat-android-client:$stream_version")
+
+    implementation(platform("com.google.firebase:firebase-bom:31.2.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-database-ktx")
 }
