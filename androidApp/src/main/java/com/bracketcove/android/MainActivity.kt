@@ -11,11 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.bracketcove.Greeting
 import com.bracketcove.android.databinding.ActivityMainBinding
+import com.bracketcove.android.navigation.SignUpKey
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.SimpleStateChanger
 import com.zhuinden.simplestack.StateChange
 import com.zhuinden.simplestack.navigator.Navigator
 import com.zhuinden.simplestackextensions.fragments.DefaultFragmentStateChanger
+import com.zhuinden.simplestackextensions.navigatorktx.backstack
 
 class MainActivity : AppCompatActivity(), SimpleStateChanger.NavigationHandler {
     private lateinit var fragmentStateChanger: DefaultFragmentStateChanger
@@ -30,7 +32,7 @@ class MainActivity : AppCompatActivity(), SimpleStateChanger.NavigationHandler {
 
         Navigator.configure()
             .setStateChanger(SimpleStateChanger(this))
-            .install(this, binding.container, History.single(HomeKey))
+            .install(this, binding.container, History.single(SignUpKey()))
     }
 
     override fun onBackPressed() {

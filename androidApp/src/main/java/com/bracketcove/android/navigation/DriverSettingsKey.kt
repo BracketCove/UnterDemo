@@ -7,6 +7,6 @@ import com.zhuinden.simplestackextensions.fragments.DefaultFragmentKey
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data object DriverSettingsKey: DefaultFragmentKey() {
+data class DriverSettingsKey(private val noArgsPlaceholder: String = ""): DefaultFragmentKey() {
     override fun instantiateFragment(): Fragment = DriverSettingsFragment()
 }

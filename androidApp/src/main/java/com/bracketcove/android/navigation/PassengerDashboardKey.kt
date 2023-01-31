@@ -6,6 +6,6 @@ import com.zhuinden.simplestackextensions.fragments.DefaultFragmentKey
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data object PassengerDashboardKey: DefaultFragmentKey() {
+data class PassengerDashboardKey(private val noArgsPlaceholder: String = ""): DefaultFragmentKey() {
     override fun instantiateFragment(): Fragment = PassengerDashboardFragment()
 }

@@ -7,6 +7,6 @@ import com.zhuinden.simplestackextensions.fragments.DefaultFragmentKey
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data object ProfileSettingsKey: DefaultFragmentKey() {
+data class ProfileSettingsKey(private val noArgsPlaceholder: String = ""): DefaultFragmentKey() {
     override fun instantiateFragment(): Fragment = ProfileSettingsFragment()
 }

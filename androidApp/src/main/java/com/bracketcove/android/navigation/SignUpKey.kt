@@ -6,6 +6,6 @@ import com.zhuinden.simplestackextensions.fragments.DefaultFragmentKey
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data object SignUpKey: DefaultFragmentKey() {
+data class SignUpKey(private val noArgsPlaceholder: String = ""): DefaultFragmentKey() {
     override fun instantiateFragment(): Fragment = SignUpFragment()
 }
