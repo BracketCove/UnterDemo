@@ -3,6 +3,7 @@ plugins {
     kotlin("android")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("com.google.gms.google-services")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -16,6 +17,7 @@ android {
         versionName = "1.0"
     }
     buildFeatures {
+        viewBinding = true
         compose = true
     }
     composeOptions {
@@ -31,6 +33,12 @@ android {
             isMinifyEnabled = false
         }
     }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+        languageVersion = "1.8" // data objects
+    }
+
 }
 
 dependencies {
@@ -59,6 +67,11 @@ dependencies {
     implementation("androidx.compose.foundation:foundation:1.3.1")
     implementation("androidx.compose.material:material:1.3.1")
     implementation("androidx.activity:activity-compose:1.6.1")
+
+    implementation("androidx.appcompat:appcompat:1.6.0")
+    implementation("androidx.core:core:1.9.0")
+    implementation("androidx.activity:activity:1.6.1")
+    implementation("androidx.fragment:fragment-ktx:1.5.5")
 
     val stream_version = "5.11.10"
     implementation("io.getstream:stream-chat-android-client:$stream_version")

@@ -8,13 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import com.bracketcove.android.R
 
-class DriverFragment : Fragment() {
+class DriverSettingsFragment : Fragment() {
 
     companion object {
-        fun newInstance() = DriverFragment()
+        fun newInstance() = DriverSettingsFragment()
     }
 
-    private lateinit var viewModel: DriverViewModel
+    private lateinit var viewModel: DriverSettingsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,7 +25,7 @@ class DriverFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(DriverViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(DriverSettingsViewModel::class.java)
         // TODO: Use the ViewModel
     }
 
