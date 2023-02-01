@@ -30,9 +30,6 @@ class MainActivity : AppCompatActivity(), SimpleStateChanger.NavigationHandler {
             .setScopedServices(DefaultServiceProvider())
             .setGlobalServices((application as UnterApp).globalServices)
             .install(this, binding.container, History.single(SplashKey()))
-
-
-
     }
 
     private val backPressedCallback = object: OnBackPressedCallback(true) {
