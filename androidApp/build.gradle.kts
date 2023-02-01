@@ -28,6 +28,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
@@ -45,22 +46,18 @@ dependencies {
     implementation(project(":shared"))
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
-    val lifecycle_version = "2.5.1"
     val simplestack_version = "2.2.5"
 
     implementation("com.github.Zhuinden.simple-stack-extensions:core-ktx:$simplestack_version")
     implementation("com.github.Zhuinden.simple-stack-extensions:fragments:$simplestack_version")
     implementation("com.github.Zhuinden.simple-stack-extensions:fragments-ktx:$simplestack_version")
     implementation("com.github.Zhuinden.simple-stack-extensions:navigator-ktx:$simplestack_version")
-
     implementation("com.github.Zhuinden.simple-stack-extensions:services:$simplestack_version")
     implementation("com.github.Zhuinden.simple-stack-extensions:services-ktx:$simplestack_version")
 
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
 
-    // Saved state module for ViewModel
-    implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version")
-
+    implementation("androidx.compose.material3:material3:1.0.1")
     implementation("androidx.compose.ui:ui:1.3.3")
     implementation("androidx.compose.ui:ui-tooling:1.3.3")
     implementation("androidx.compose.ui:ui-tooling-preview:1.3.3")

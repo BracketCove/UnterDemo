@@ -23,7 +23,7 @@ class LoginFragment : Fragment() {
             // is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-
+                LoginScreen(viewModel)
             }
         }
     }
