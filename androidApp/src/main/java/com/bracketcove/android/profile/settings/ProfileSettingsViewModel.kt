@@ -1,7 +1,14 @@
 package com.bracketcove.android.profile.settings
 
-import androidx.lifecycle.ViewModel
+import com.zhuinden.simplestack.ScopedServices
 
-class ProfileSettingsViewModel : ViewModel() {
+class ProfileSettingsViewModel : ScopedServices.Activated {
     // TODO: Implement the ViewModel
+    override fun onServiceActive() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onServiceInactive() {
+        TODO("Not yet implemented")
+    }
 }

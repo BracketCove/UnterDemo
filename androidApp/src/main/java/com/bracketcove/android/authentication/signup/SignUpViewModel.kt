@@ -1,7 +1,14 @@
 package com.bracketcove.android.authentication.signup
 
-import androidx.lifecycle.ViewModel
+import com.zhuinden.simplestack.ScopedServices
 
-class SignUpViewModel : ViewModel() {
+class SignUpViewModel : ScopedServices.Activated {
     // TODO: Implement the ViewModel
+    override fun onServiceActive() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onServiceInactive() {
+        TODO("Not yet implemented")
+    }
 }

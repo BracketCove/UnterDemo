@@ -1,7 +1,13 @@
 package com.bracketcove.android.dashboards.driver
 
-import androidx.lifecycle.ViewModel
+import com.zhuinden.simplestack.ScopedServices
 
-class DriverDashboardViewModel : ViewModel() {
-    // TODO: Implement the ViewModel
+class DriverDashboardViewModel : ScopedServices.Activated {
+    override fun onServiceActive() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onServiceInactive() {
+        TODO("Not yet implemented")
+    }
 }

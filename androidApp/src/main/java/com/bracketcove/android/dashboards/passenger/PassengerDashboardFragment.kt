@@ -7,26 +7,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bracketcove.android.R
+import com.bracketcove.android.databinding.FragmentPassengerDashboardBinding
+import com.zhuinden.simplestackextensions.fragments.KeyedFragment
+import com.zhuinden.simplestackextensions.fragmentsktx.backstack
 
-class PassengerDashboardFragment : Fragment() {
-
-    companion object {
-        fun newInstance() = PassengerDashboardFragment()
-    }
+class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboard) {
 
     private lateinit var viewModel: PassengerDashboardViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_passenger_dashboard, container, false)
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(PassengerDashboardViewModel::class.java)
-        // TODO: Use the ViewModel
+        val binding = FragmentPassengerDashboardBinding.bind(view)
     }
-
 }

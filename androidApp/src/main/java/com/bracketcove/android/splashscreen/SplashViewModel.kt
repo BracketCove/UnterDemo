@@ -49,10 +49,12 @@ class SplashViewModel(
 
     }
 
+    //Lifecycle method to Fetch things if necessary
     override fun onServiceActive() {
         checkAuthState()
     }
 
+    //Tear down
     override fun onServiceInactive() {
         Unit
     }
