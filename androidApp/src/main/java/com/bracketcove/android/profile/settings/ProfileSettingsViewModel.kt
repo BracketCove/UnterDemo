@@ -19,4 +19,8 @@ class ProfileSettingsViewModel : ScopedServices.Activated {
     fun handleDriverDetailEdit() {
         TODO("Not yet implemented")
     }
+
+    fun isUserRegistered(): Boolean {
+        return false
+    }
 }

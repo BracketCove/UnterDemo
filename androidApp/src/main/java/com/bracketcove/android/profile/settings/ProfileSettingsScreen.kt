@@ -40,7 +40,10 @@ import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
 
 @Composable
-fun ProfileSettingsScreen(viewModel: ProfileSettingsViewModel) {
+fun ProfileSettingsScreen(
+    viewModel: ProfileSettingsViewModel,
+    unregisteredUserView: Boolean
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -58,6 +61,7 @@ fun ProfileSettingsScreen(viewModel: ProfileSettingsViewModel) {
             mutableStateOf(false)
         }
 
+
         ProfileHeader(
             modifier = Modifier
                 .wrapContentHeight()
@@ -68,14 +72,15 @@ fun ProfileSettingsScreen(viewModel: ProfileSettingsViewModel) {
             checkedChanged = { driverSwitchState = it }
         )
 
-        DriverInfo(
+        if (unregisteredUserView) DriverRegistryPrompt(viewModel = viewModel)
+        else DriverInfo(
             modifier = Modifier
                 .wrapContentHeight()
                 .fillMaxWidth(),
             viewModel = viewModel
         )
 
-        DriverRegistryPrompt(viewModel = viewModel)
+
     }
 }
 
@@ -343,5 +348,11 @@ fun DriverRegistryPrompt(
 @Preview(showBackground = true, device = Devices.PIXEL_4_XL)
 @Composable
 fun PreviewProfileSettingsScreen() {
-    ProfileSettingsScreen(viewModel = ProfileSettingsViewModel())
+    ProfileSettingsScreen(viewModel = ProfileSettingsViewModel(), unregisteredUserView = true)
+}
+
+@Preview(showBackground = true, device = Devices.PIXEL_4_XL)
+@Composable
+fun PreviewProfileSettingsScreenRegistered() {
+    ProfileSettingsScreen(viewModel = ProfileSettingsViewModel(), unregisteredUserView = false)
 }
