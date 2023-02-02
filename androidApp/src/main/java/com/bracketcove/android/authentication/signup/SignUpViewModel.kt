@@ -11,4 +11,8 @@ class SignUpViewModel : ScopedServices.Activated {
     override fun onServiceInactive() {
         TODO("Not yet implemented")
     }
+
+    fun handleSignUp(textFieldValue: String) {
+        TODO("Not yet implemented")
+    }
 }

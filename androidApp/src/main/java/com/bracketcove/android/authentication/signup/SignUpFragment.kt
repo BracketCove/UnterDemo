@@ -21,7 +21,7 @@ class SignUpFragment : Fragment() {
             // is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                //FragmentComposable(backstack)
+                SignUpScreen(viewModel)
             }
         }
     }

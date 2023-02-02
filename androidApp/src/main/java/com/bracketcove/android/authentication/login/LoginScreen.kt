@@ -24,6 +24,7 @@ import com.bracketcove.android.R
 import com.bracketcove.android.style.color_primary
 import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
+import com.bracketcove.android.uicommon.MobileInputField
 import com.bracketcove.android.uicommon.UnterHeader
 import com.bracketcove.isValidPhoneNumber
 
@@ -36,11 +37,11 @@ fun LoginScreen(
             .fillMaxSize()
             .background(color = color_white),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
 
         UnterHeader(
-            modifier = Modifier.padding(),
+            modifier = Modifier.padding(top = 64.dp),
             subtitleText = stringResource(id = R.string.need_a_ride)
         )
 
@@ -53,13 +54,13 @@ fun LoginScreen(
         }
 
         MobileInputField(
-            modifier = Modifier.padding(top = 8.dp),
+            modifier = Modifier.padding(top = 16.dp),
             textFieldValue = textFieldValue,
             validationError = validationError,
             updateIsError = { validationError = it }
         )
 
-        ContinueButton(
+        LoginContinueButton(
             modifier = Modifier.padding(top = 32.dp),
             viewModel = viewModel,
             textFieldValue = textFieldValue
@@ -72,29 +73,8 @@ fun LoginScreen(
     }
 }
 
-
 @Composable
-fun MobileInputField(
-    modifier: Modifier = Modifier,
-    textFieldValue: String,
-    validationError: Boolean,
-    updateIsError: (Boolean) -> Unit
-) {
-    OutlinedTextField(
-        modifier = modifier,
-        value = textFieldValue,
-        onValueChange = { newNumber ->
-            if (isValidPhoneNumber(newNumber) || newNumber == "") updateIsError(false)
-            else updateIsError(true)
-        },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-        isError = validationError,
-        label = { Text(text = stringResource(id = R.string.mobile_number)) }
-    )
-}
-
-@Composable
-fun ContinueButton(
+fun LoginContinueButton(
     modifier: Modifier,
     viewModel: LoginViewModel,
     textFieldValue: String

@@ -8,4 +8,7 @@
     <string name="no_account">No account?</string>
     <string name="sign_up">Sign up</string>
     <string name="here"> here.</string>
+    <string name="close_icon">Close icon.</string>
+    <string name="user_name">Name</string>
+    <string name="sign_up_for_free">Sign up for free.</string>
 </resources>
