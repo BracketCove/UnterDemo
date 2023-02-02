@@ -1,6 +1,5 @@
 package com.bracketcove.android.splashscreen
 
-import com.bracketcove.IFakeRepository
 import com.bracketcove.android.navigation.DriverDashboardKey
 import com.bracketcove.android.navigation.LoginKey
 import com.bracketcove.android.navigation.PassengerDashboardKey

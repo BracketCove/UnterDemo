@@ -21,7 +21,7 @@ class SplashFragment : Fragment() {
             // is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-
+                SplashScreen()
             }
         }
     }
