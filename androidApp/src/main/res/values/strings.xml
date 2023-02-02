@@ -11,4 +11,14 @@
     <string name="close_icon">Close icon.</string>
     <string name="user_name">Name</string>
     <string name="sign_up_for_free">Sign up for free.</string>
+    <string name="log_out">Log out</string>
+    <string name="edit_avatar">Edit avatar.</string>
+    <string name="user_avatar">User avatar.</string>
+    <string name="passenger">Passenger</string>
+    <string name="vehicle_avatar">Vehicle avatar.</string>
+    <string name="edit">Edit</string>
+    <string name="vehicle_description">Vehicle Description</string>
+    <string name="lorem_ipsum">John Wick is a great movie series. I am listening to the soundtrack while I write this filler text.</string>
+    <string name="register_to_become_driver">Register now to become a driver!</string>
+    <string name="register">Register</string>
 </resources>

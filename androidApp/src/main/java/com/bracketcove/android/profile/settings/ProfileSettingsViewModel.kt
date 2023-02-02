@@ -11,4 +11,12 @@ class ProfileSettingsViewModel : ScopedServices.Activated {
     override fun onServiceInactive() {
         TODO("Not yet implemented")
     }
+
+    fun handleLogOut() {
+        TODO("Not yet implemented")
+    }
+
+    fun handleDriverDetailEdit() {
+        TODO("Not yet implemented")
+    }
 }

@@ -11,7 +11,6 @@ import androidx.compose.ui.unit.sp
 import com.bracketcove.android.R
 
 
-
 val color_primary = Color(0xFF00BCD4)
 val color_black = Color(0xFF000000)
 val color_white = Color(0xFFFFFFFF)
@@ -42,6 +41,11 @@ val typography = Typography(
     h2 = defaultTextStyle.copy(
         fontSize = 36.sp,
         fontWeight = FontWeight.Normal,
+        color = color_black
+    ),
+    h3 = defaultTextStyle.copy(
+        fontSize = 28.sp,
+        fontWeight = FontWeight.SemiBold,
         color = color_black
     ),
     subtitle1 = defaultTextStyle.copy(
