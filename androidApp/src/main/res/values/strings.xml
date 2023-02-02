@@ -4,4 +4,8 @@
     <string name="string_continue">Continue</string>
     <string name="mobile_number">Mobile Number</string>
     <string name="unter">Unter</string>
+    <string name="need_a_ride">Need a ride?</string>
+    <string name="no_account">No account?</string>
+    <string name="sign_up">Sign up</string>
+    <string name="here"> here.</string>
 </resources>

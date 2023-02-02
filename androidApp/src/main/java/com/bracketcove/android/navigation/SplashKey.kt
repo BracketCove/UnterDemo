@@ -22,7 +22,8 @@ data class SplashKey(private val noArgsPlaceholder: String = "") : DefaultFragme
     //How to create a scoped service
     override fun bindServices(serviceBinder: ServiceBinder) {
         with(serviceBinder) {
-            add(SplashViewModel(lookup(), backstack))
+            //add(SplashViewModel(lookup(), backstack))
+            add(SplashViewModel(backstack))
         }
     }
 }

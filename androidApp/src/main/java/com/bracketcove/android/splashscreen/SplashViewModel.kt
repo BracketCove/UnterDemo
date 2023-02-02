@@ -10,8 +10,8 @@ import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices
 import com.zhuinden.simplestack.StateChange
 
+
 class SplashViewModel(
-    val fakeRepo: IFakeRepository,
     val backstack: Backstack
 ) : ScopedServices.Activated {
 
@@ -25,11 +25,6 @@ class SplashViewModel(
     }
 
     fun checkAuthState() {
-        val user: User? = fakeRepo.getUser()
-        when (user) {
-            null -> sendToLogin()
-            else -> sendToDashboard(user)
-        }
 
     }
 
@@ -46,7 +41,6 @@ class SplashViewModel(
                 StateChange.FORWARD
             )
         }
-
     }
 
     //Lifecycle method to Fetch things if necessary

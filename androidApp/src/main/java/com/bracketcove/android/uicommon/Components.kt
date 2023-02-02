@@ -14,8 +14,14 @@ import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
 
 @Composable
-fun UnterHeader(subtitleText: String = "Sign up for free") {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+fun UnterHeader(
+    modifier: Modifier = Modifier,
+    subtitleText: String = "Sign up for free"
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             text = stringResource(id = R.string.unter),
             style = typography.h1
@@ -32,8 +38,8 @@ fun UnterHeader(subtitleText: String = "Sign up for free") {
 fun previewHeader() {
     Box(Modifier.background(color = color_white)) {
         UnterHeader(
+            Modifier,
             "Sign up for free"
         )
     }
-
 }
