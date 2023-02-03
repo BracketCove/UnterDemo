@@ -46,6 +46,8 @@ dependencies {
     implementation(project(":shared"))
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+
     val simplestack_version = "2.2.5"
 
     implementation("com.github.Zhuinden.simple-stack-extensions:core-ktx:$simplestack_version")

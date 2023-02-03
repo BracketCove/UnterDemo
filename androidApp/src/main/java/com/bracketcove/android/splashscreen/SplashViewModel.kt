@@ -1,18 +1,26 @@
 package com.bracketcove.android.splashscreen
 
+import com.bracketcove.ServiceResult
 import com.bracketcove.android.navigation.DriverDashboardKey
 import com.bracketcove.android.navigation.LoginKey
 import com.bracketcove.android.navigation.PassengerDashboardKey
+import com.bracketcove.authorization.AuthService
 import com.bracketcove.domain.User
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices
 import com.zhuinden.simplestack.StateChange
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlin.coroutines.CoroutineContext
 
 
 class SplashViewModel(
-    val backstack: Backstack
-) : ScopedServices.Activated {
+    val backstack: Backstack,
+    val authService: AuthService
+) : ScopedServices.Activated, CoroutineScope {
 
     private fun sendToLogin() {
         //clear backstack and replace with what we enter
@@ -23,8 +31,17 @@ class SplashViewModel(
         )
     }
 
-    fun checkAuthState() {
+    fun checkAuthState() = launch {
+        val getUser = authService.getUser()
 
+        when (getUser) {
+            //there's nothing else to do but send to the login page
+            is ServiceResult.Failure -> sendToLogin()
+            is ServiceResult.Success -> {
+                if (getUser.value == null) sendToLogin()
+                else sendToDashboard(getUser.value!!)
+            }
+        }
     }
 
     private fun sendToDashboard(user: User) {
@@ -49,6 +66,11 @@ class SplashViewModel(
 
     //Tear down
     override fun onServiceInactive() {
-        Unit
+        canceller.cancel()
     }
+
+    private val canceller = Job()
+
+    override val coroutineContext: CoroutineContext
+        get() = canceller + Dispatchers.Main
 }

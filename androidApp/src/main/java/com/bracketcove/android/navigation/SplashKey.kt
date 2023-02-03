@@ -23,7 +23,7 @@ data class SplashKey(private val noArgsPlaceholder: String = "") : DefaultFragme
     override fun bindServices(serviceBinder: ServiceBinder) {
         with(serviceBinder) {
             //add(SplashViewModel(lookup(), backstack))
-            add(SplashViewModel(backstack))
+            add(SplashViewModel(backstack, lookup()))
         }
     }
 }
