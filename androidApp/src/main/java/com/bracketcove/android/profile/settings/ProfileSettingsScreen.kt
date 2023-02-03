@@ -242,7 +242,6 @@ fun DriverInfo(
                     shape = RoundedCornerShape(4.dp)
                 )
                 .padding(16.dp)
-
         ) {
             val (avatar, title, editButton, description) = createRefs()
 

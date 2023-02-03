@@ -26,4 +26,12 @@
     <string name="please_provide_a_description">Please provide a description of your transportation method.</string>
     <string name="description">Description</string>
     <string name="apply">Apply</string>
+    <string name="passenger_requests">Passenger Requests</string>
+    <string name="no_passengers_available">No Passengers Available Currently</string>
+    <string name="passenger_location">Passenger Location</string>
+    <string name="cancel">Cancel</string>
+    <string name="arrived_at_destination">Arrived At Destination\n(Hold Icon Down)</string>
+    <string name="pick_up_passenger">Pick Up Passenger\n(Hold Icon Down)</string>
+    <string name="return_to_dashboard">Return to dashboard</string>
+    <string name="ride_completed">Ride\nCompleted</string>
 </resources>

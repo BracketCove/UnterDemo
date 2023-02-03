@@ -69,6 +69,9 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.3.1")
     implementation("androidx.activity:activity-compose:1.6.1")
 
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha06")
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
+    implementation("com.google.android.material:material:1.8.0")
     implementation("androidx.appcompat:appcompat:1.6.0")
     implementation("androidx.core:core:1.9.0")
     implementation("androidx.activity:activity:1.6.1")
@@ -76,6 +79,9 @@ dependencies {
 
     val stream_version = "5.11.10"
     implementation("io.getstream:stream-chat-android-client:$stream_version")
+
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
+
 
     implementation(platform("com.google.firebase:firebase-bom:31.2.0"))
     implementation("com.google.firebase:firebase-auth-ktx")

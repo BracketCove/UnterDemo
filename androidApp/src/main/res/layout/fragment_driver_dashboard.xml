@@ -1,13 +1,190 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     tools:context=".dashboards.driver.DriverDashboardFragment">
 
-    <TextView
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello" />
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</FrameLayout>
+    <!-- Searching for Passengers    -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/searchingLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <TextView
+            android:id="@+id/requestsTitle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="16dp"
+            android:fontFamily="@font/poppins_regular"
+            android:includeFontPadding="false"
+            android:text="@string/passenger_requests"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/passengerList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/requestsTitle"
+            tools:itemCount="3"
+            tools:listitem="@layout/passenger_list_item" />
+
+        <LinearLayout
+            android:id="@+id/passengersLoadingLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/requestsTitle">
+
+            <TextView
+                android:id="@+id/noPassengersAvailable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="64dp"
+                android:fontFamily="@font/poppins_regular"
+                android:includeFontPadding="false"
+                android:text="@string/no_passengers_available"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="36sp" />
+
+            <!--            TODO Uncomment this -->
+            <!--            <com.google.android.material.progressindicator.CircularProgressIndicator-->
+            <!--                android:id="@+id/passengersLoadingProgressBar"-->
+            <!--                android:layout_width="98dp"-->
+            <!--                android:layout_height="98dp"-->
+            <!--                app:indicatorColor="@color/color_primary"-->
+            <!--                />-->
+
+            <TextView
+                android:id="@+id/searchingSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="64dp"
+                android:fontFamily="@font/poppins_light"
+                android:includeFontPadding="false"
+                android:text="@string/no_passengers_available"
+                android:textAlignment="center"
+                android:textColor="@color/color_light_grey"
+                android:textSize="24sp" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--    -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rideLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <!--    Passenger info        -->
+        <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/listItemLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:background="@android:color/white">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/avatar"
+                android:layout_width="88dp"
+                android:layout_height="88dp"
+                android:layout_margin="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/circleImageView"
+                tools:src="@drawable/donkey" />
+
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:includeFontPadding="false"
+                android:textColor="@android:color/black"
+                android:textSize="28sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/avatar"
+                app:layout_constraintTop_toTopOf="@+id/avatar"
+                tools:text="Saitama" />
+
+            <TextView
+                android:id="@+id/passengerDistance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:fontFamily="@font/poppins_light"
+                android:includeFontPadding="false"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/avatar"
+                app:layout_constraintTop_toBottomOf="@+id/username"
+                tools:text="Passenger is 2.5km away" />
+
+            <TextView
+                android:id="@+id/tripDistance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:fontFamily="@font/poppins_light"
+                android:includeFontPadding="false"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/avatar"
+                app:layout_constraintTop_toBottomOf="@+id/passengerDistance"
+                tools:text="Ride is 2.5km" />
+
+            <View
+                android:id="@+id/bottomDiv"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="16dp"
+                android:alpha="0.12"
+                android:background="@android:color/black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
