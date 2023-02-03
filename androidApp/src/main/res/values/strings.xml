@@ -21,4 +21,9 @@
     <string name="lorem_ipsum">John Wick is a great movie series. I am listening to the soundtrack while I write this filler text.</string>
     <string name="register_to_become_driver">Register now to become a driver!</string>
     <string name="register">Register</string>
+    <string name="driver_registration">Driver Registration</string>
+    <string name="please_upload_an_image">Please upload an image of your vehicle.</string>
+    <string name="please_provide_a_description">Please provide a description of your transportation method.</string>
+    <string name="description">Description</string>
+    <string name="apply">Apply</string>
 </resources>

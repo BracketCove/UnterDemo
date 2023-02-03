@@ -253,7 +253,8 @@ fun DriverInfo(
                         start.linkTo(parent.start)
                         bottom.linkTo(parent.bottom)
                     }
-                    .size(88.dp),
+                    .size(88.dp)
+                    .clip(RoundedCornerShape(4.dp)),
                 painter = painterResource(id = R.drawable.donkey),
                 contentDescription = stringResource(id = R.string.vehicle_avatar)
             )

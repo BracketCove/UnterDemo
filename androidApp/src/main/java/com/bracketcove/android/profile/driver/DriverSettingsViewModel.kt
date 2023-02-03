@@ -11,4 +11,8 @@ class DriverSettingsViewModel : ScopedServices.Activated {
     override fun onServiceInactive() {
         TODO("Not yet implemented")
     }
+
+    fun handleSubmitButton() {
+        TODO("Not yet implemented")
+    }
 }

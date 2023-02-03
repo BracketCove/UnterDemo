@@ -55,8 +55,9 @@ dependencies {
     implementation("com.github.Zhuinden.simple-stack-extensions:services:$simplestack_version")
     implementation("com.github.Zhuinden.simple-stack-extensions:services-ktx:$simplestack_version")
 
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("com.github.skydoves:landscapist-glide:2.1.2")
 
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
     implementation("androidx.compose.material3:material3:1.0.1")
     implementation("androidx.compose.ui:ui:1.3.3")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
