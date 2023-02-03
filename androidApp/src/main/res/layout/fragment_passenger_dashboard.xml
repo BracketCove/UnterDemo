@@ -22,13 +22,13 @@
         android:id="@+id/searchingLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <TextView
-
             android:id="@+id/destinationTitle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -42,20 +42,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-<!--        <com.google.android.material.textfield.MaterialAutoCompleteTextView-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:id="@+id/searchEditText"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/destinationTitle"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            />-->
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/searchEditText"
+            app:layout_constraintTop_toBottomOf="@id/destinationTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
 
         <androidx.cardview.widget.CardView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/searchEditText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             >
@@ -70,8 +70,6 @@
                 tools:listitem="@layout/list_item_search_location"
                 />
         </androidx.cardview.widget.CardView>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Driver matched   -->
@@ -79,11 +77,12 @@
         android:id="@+id/rideLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
 
 
         <!--    Driver info        -->
