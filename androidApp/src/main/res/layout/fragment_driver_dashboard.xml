@@ -51,7 +51,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/requestsTitle"
             tools:itemCount="3"
-            tools:listitem="@layout/passenger_list_item" />
+            tools:listitem="@layout/list_item_passenger" />
 
         <LinearLayout
             android:id="@+id/passengersLoadingLayout"
@@ -75,13 +75,11 @@
                 android:textColor="@android:color/black"
                 android:textSize="36sp" />
 
-            <!--            TODO Uncomment this -->
-            <!--            <com.google.android.material.progressindicator.CircularProgressIndicator-->
-            <!--                android:id="@+id/passengersLoadingProgressBar"-->
-            <!--                android:layout_width="98dp"-->
-            <!--                android:layout_height="98dp"-->
-            <!--                app:indicatorColor="@color/color_primary"-->
-            <!--                />-->
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/passengersLoadingProgressBar"
+                android:layout_width="98dp"
+                android:layout_height="98dp"
+                app:indicatorColor="@color/color_primary" />
 
             <TextView
                 android:id="@+id/searchingSubtitle"
@@ -115,7 +113,12 @@
             android:id="@+id/listItemLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:background="@android:color/white">
+            tools:background="@android:color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            >
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/avatar"
@@ -181,7 +184,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
