@@ -1,14 +1,23 @@
 package com.bracketcove.android.dashboards.passenger
 
 import com.zhuinden.simplestack.ScopedServices
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlin.coroutines.CoroutineContext
 
-class PassengerDashboardViewModel : ScopedServices.Activated {
+class PassengerDashboardViewModel : ScopedServices.Activated, CoroutineScope {
     // TODO: Implement the ViewModel
     override fun onServiceActive() {
         TODO("Not yet implemented")
     }
 
     override fun onServiceInactive() {
-        TODO("Not yet implemented")
+        canceller.cancel()
     }
+
+    private val canceller = Job()
+
+    override val coroutineContext: CoroutineContext
+        get() = canceller + Dispatchers.Main
 }
