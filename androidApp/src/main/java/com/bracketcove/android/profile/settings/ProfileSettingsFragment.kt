@@ -7,12 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import com.bracketcove.android.authentication.login.LoginViewModel
 import com.zhuinden.simplestackextensions.fragmentsktx.backstack
+import com.zhuinden.simplestackextensions.fragmentsktx.lookup
 
 class ProfileSettingsFragment : Fragment() {
 
-    private lateinit var viewModel: ProfileSettingsViewModel
-
+    private val viewModel by lazy { lookup<ProfileSettingsViewModel>()}
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val backstack = backstack
 

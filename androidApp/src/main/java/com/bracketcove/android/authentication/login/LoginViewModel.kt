@@ -60,7 +60,7 @@ class LoginViewModel(
                         StateChange.FORWARD
                     )
                     "DRIVER" -> backstack.setHistory(
-                        History.of((DriverDashboardKey())),
+                        History.of(DriverDashboardKey()),
                         //Direction of navigation which is used for animation
                         StateChange.FORWARD
                     )

@@ -28,8 +28,10 @@ import com.bracketcove.android.style.color_black
 import com.bracketcove.android.style.color_primary
 import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
+import com.bracketcove.fakes.FakeAuthService
 import com.bracketcove.isValidPhoneNumber
 import com.skydoves.landscapist.glide.GlideImage
+import com.zhuinden.simplestack.Backstack
 
 @Composable
 fun DriverSettingsScreen(
@@ -201,5 +203,5 @@ fun ApplyButton(
 @Preview(showBackground = true, device = Devices.PIXEL_4_XL)
 @Composable
 fun PreviewDriverSettingsScreen() {
-    DriverSettingsScreen(viewModel = DriverSettingsViewModel())
+    DriverSettingsScreen(viewModel = DriverSettingsViewModel(Backstack(), FakeAuthService()))
 }

@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
+import com.bracketcove.android.splashscreen.SplashViewModel
 import com.zhuinden.simplestackextensions.fragmentsktx.backstack
+import com.zhuinden.simplestackextensions.fragmentsktx.lookup
 
 class DriverSettingsFragment : Fragment() {
 
-    private lateinit var viewModel: DriverSettingsViewModel
+    private val viewModel by lazy { lookup<DriverSettingsViewModel>()}
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val backstack = backstack
@@ -21,7 +23,7 @@ class DriverSettingsFragment : Fragment() {
             // is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                //FragmentComposable(backstack)
+                DriverSettingsScreen(viewModel)
             }
         }
     }

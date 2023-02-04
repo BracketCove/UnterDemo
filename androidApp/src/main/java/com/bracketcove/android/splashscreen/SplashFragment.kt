@@ -8,10 +8,11 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import com.zhuinden.simplestackextensions.fragmentsktx.backstack
+import com.zhuinden.simplestackextensions.fragmentsktx.lookup
 
 class SplashFragment : Fragment() {
 
-    private lateinit var viewModel: SplashViewModel
+    private val viewModel by lazy { lookup<SplashViewModel>()}
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val backstack = backstack

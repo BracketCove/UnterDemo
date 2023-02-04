@@ -1,7 +1,7 @@
 package com.bracketcove.domain
 
-enum class UserStatus {
-    INACTIVE,
-    SEARCHING,
-    IN_RIDE
+enum class UserStatus(val value: String) {
+    INACTIVE("INACTIVE"),
+    SEARCHING("SEARCHING"),
+    IN_RIDE("IN_RIDE")
 }

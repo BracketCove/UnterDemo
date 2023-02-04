@@ -39,4 +39,5 @@
     <string name="permissions_required_to_use_this_app">Location permission is required.</string>
     <string name="invalid_credentails">Invalid credentials.</string>
     <string name="an_account_already_exists">An account already exists with this number.</string>
+    <string name="driver">Driver</string>
 </resources>

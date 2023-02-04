@@ -20,7 +20,6 @@ data class SignUpKey(private val noArgsPlaceholder: String = ""): DefaultFragmen
     //How to create a scoped service
     override fun bindServices(serviceBinder: ServiceBinder) {
         with(serviceBinder) {
-            //add(SplashViewModel(lookup(), backstack))
             add(SignUpViewModel(backstack, lookup()))
         }
     }
