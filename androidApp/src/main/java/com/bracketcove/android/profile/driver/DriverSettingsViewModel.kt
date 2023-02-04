@@ -1,10 +1,9 @@
 package com.bracketcove.android.profile.driver
 
 import com.bracketcove.ServiceResult
-import com.bracketcove.android.navigation.LoginKey
 import com.bracketcove.android.navigation.ProfileSettingsKey
 import com.bracketcove.android.uicommon.ToastMessages
-import com.bracketcove.authorization.AuthService
+import com.bracketcove.authorization.UserService
 import com.bracketcove.domain.User
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
@@ -20,14 +19,14 @@ import kotlin.coroutines.CoroutineContext
 
 class DriverSettingsViewModel(
     private val backstack: Backstack,
-    private val authService: AuthService
+    private val userService: UserService
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
     private val _userModel = MutableStateFlow<User?>(null)
     val userModel: StateFlow<User?> get() = _userModel
     fun getUser() = launch(Dispatchers.Main) {
-        val getUser = authService.getUser()
+        val getUser = userService.getUser()
         when (getUser) {
             is ServiceResult.Failure -> {
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
@@ -44,7 +43,7 @@ class DriverSettingsViewModel(
     }
 
     fun handleSubmitButton() = launch(Dispatchers.Main) {
-        
+
     }
 
     private fun sendBack() {

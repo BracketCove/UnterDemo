@@ -1,6 +1,5 @@
 package com.bracketcove.android.authentication.login
 
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,9 +8,8 @@ import com.bracketcove.android.navigation.DriverDashboardKey
 import com.bracketcove.android.navigation.PassengerDashboardKey
 import com.bracketcove.android.navigation.SignUpKey
 import com.bracketcove.android.uicommon.ToastMessages
-import com.bracketcove.authorization.AuthService
+import com.bracketcove.authorization.UserService
 import com.bracketcove.authorization.LogInResult
-import com.bracketcove.isValidPhoneNumber
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices
@@ -25,7 +23,7 @@ import kotlin.coroutines.CoroutineContext
 
 class LoginViewModel(
     private val backstack: Backstack,
-    private val authService: AuthService
+    private val userService: UserService
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
@@ -36,7 +34,7 @@ class LoginViewModel(
     }
 
     fun handleLogin() = launch(Dispatchers.Main) {
-        val loginAttempt = authService.attemptLogin(mobileNumber)
+        val loginAttempt = userService.attemptLogin(mobileNumber)
         when (loginAttempt) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
             is ServiceResult.Success -> {
@@ -49,7 +47,7 @@ class LoginViewModel(
     }
 
     private suspend fun sendToDashboard() {
-        val getUser = authService.getUser()
+        val getUser = userService.getUser()
 
         when {
             getUser is ServiceResult.Success && getUser.value != null -> {

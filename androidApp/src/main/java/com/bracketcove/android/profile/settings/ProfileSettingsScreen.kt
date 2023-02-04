@@ -40,7 +40,7 @@ import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
 import com.bracketcove.domain.User
 import com.bracketcove.domain.UserType
-import com.bracketcove.fakes.FakeAuthService
+import com.bracketcove.fakes.FakeUserService
 import com.skydoves.landscapist.glide.GlideImage
 import com.zhuinden.simplestack.Backstack
 
@@ -378,7 +378,7 @@ fun DriverRegistryPrompt(
 @Composable
 fun PreviewProfileSettingsScreen() {
     ProfileSettingsScreen(
-        viewModel = ProfileSettingsViewModel(Backstack(), FakeAuthService()),
+        viewModel = ProfileSettingsViewModel(Backstack(), FakeUserService()),
         unregisteredUserView = true
     )
 }
@@ -387,7 +387,7 @@ fun PreviewProfileSettingsScreen() {
 @Composable
 fun PreviewProfileSettingsScreenRegistered() {
     ProfileSettingsScreen(
-        viewModel = ProfileSettingsViewModel(Backstack(), FakeAuthService()),
+        viewModel = ProfileSettingsViewModel(Backstack(), FakeUserService()),
         unregisteredUserView = false
     )
 }

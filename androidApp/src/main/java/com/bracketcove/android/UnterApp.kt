@@ -1,8 +1,8 @@
 package com.bracketcove.android
 
 import android.app.Application
-import com.bracketcove.authorization.AuthService
-import com.bracketcove.fakes.FakeAuthService
+import com.bracketcove.authorization.UserService
+import com.bracketcove.fakes.FakeUserService
 import com.bracketcove.fakes.FakeRideService
 import com.bracketcove.rides.RideService
 import com.zhuinden.simplestack.GlobalServices
@@ -15,12 +15,12 @@ class UnterApp: Application() {
     override fun onCreate() {
         super.onCreate()
 
-        val fakeAuth = FakeAuthService()
+        val fakeAuth = FakeUserService()
         val fakeRideService = FakeRideService()
 
         globalServices = GlobalServices.builder()
             .add(fakeAuth)
-            .rebind<AuthService>(fakeAuth)
+            .rebind<UserService>(fakeAuth)
             .add(fakeRideService)
             .rebind<RideService>(fakeRideService)
             .build()

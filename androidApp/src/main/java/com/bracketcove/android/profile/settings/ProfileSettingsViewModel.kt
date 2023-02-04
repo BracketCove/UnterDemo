@@ -1,11 +1,10 @@
 package com.bracketcove.android.profile.settings
 
 import android.net.Uri
-import androidx.activity.result.ActivityResult
 import com.bracketcove.ServiceResult
 import com.bracketcove.android.navigation.LoginKey
 import com.bracketcove.android.uicommon.ToastMessages
-import com.bracketcove.authorization.AuthService
+import com.bracketcove.authorization.UserService
 import com.bracketcove.domain.User
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
@@ -21,14 +20,14 @@ import kotlin.coroutines.CoroutineContext
 
 class ProfileSettingsViewModel(
     private val backstack: Backstack,
-    private val authService: AuthService
+    private val userService: UserService
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
     private val _userModel = MutableStateFlow<User?>(null)
     val userModel: StateFlow<User?> get() = _userModel
     fun handleLogOut() = launch(Dispatchers.Main) {
-        val logout = authService.attemptLogout()
+        val logout = userService.attemptLogout()
 
         when (logout) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
@@ -45,7 +44,7 @@ class ProfileSettingsViewModel(
     }
 
     fun getUser() = launch(Dispatchers.Main) {
-        val getUser = authService.getUser()
+        val getUser = userService.getUser()
         when (getUser) {
             is ServiceResult.Failure -> {
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
@@ -76,7 +75,7 @@ class ProfileSettingsViewModel(
 
     fun handleThumbnailUpdate(imageUri: Uri?) {
         if (imageUri != null) {
-            val updateAttempt = authService.attemptUserAvatarUpdate(_userModel.value!!, imageUri.toString())
+            val updateAttempt = userService.attemptUserAvatarUpdate(_userModel.value!!, imageUri.toString())
 
         } else {
             toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
@@ -84,7 +83,7 @@ class ProfileSettingsViewModel(
     }
 
     private fun updateUser(user: User) {
-       val updateAttempt = authService.updateUser(user)
+       val updateAttempt = userService.updateUser(user)
 
        when (updateAttempt) {
            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)

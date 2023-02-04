@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,10 +23,8 @@ import com.bracketcove.android.R
 import com.bracketcove.android.style.color_primary
 import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
-import com.bracketcove.android.uicommon.MobileInputField
 import com.bracketcove.android.uicommon.UnterHeader
-import com.bracketcove.fakes.FakeAuthService
-import com.bracketcove.isValidPhoneNumber
+import com.bracketcove.fakes.FakeUserService
 import com.zhuinden.simplestack.Backstack
 
 @Composable
@@ -132,5 +129,5 @@ fun SignupText(
 @Preview(showBackground = true, device = Devices.PIXEL_4_XL)
 @Composable
 fun PreviewLoginScreen() {
-    LoginScreen(viewModel = LoginViewModel(Backstack(), FakeAuthService()))
+    LoginScreen(viewModel = LoginViewModel(Backstack(), FakeUserService()))
 }

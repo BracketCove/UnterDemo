@@ -3,7 +3,7 @@ package com.bracketcove.authorization
 import com.bracketcove.ServiceResult
 import com.bracketcove.domain.User
 
-interface AuthService {
+interface UserService {
     suspend fun attemptSignUp(phoneNumber: String, userName: String): ServiceResult<SignUpResult>
     suspend fun attemptLogin(phoneNumber: String): ServiceResult<LogInResult>
 

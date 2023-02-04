@@ -4,12 +4,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.bracketcove.ServiceResult
-import com.bracketcove.android.navigation.DriverDashboardKey
 import com.bracketcove.android.navigation.LoginKey
 import com.bracketcove.android.navigation.PassengerDashboardKey
 import com.bracketcove.android.uicommon.ToastMessages
-import com.bracketcove.authorization.AuthService
-import com.bracketcove.authorization.LogInResult
+import com.bracketcove.authorization.UserService
 import com.bracketcove.authorization.SignUpResult
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
@@ -23,7 +21,7 @@ import kotlin.coroutines.CoroutineContext
 
 class SignUpViewModel(
     private val backstack: Backstack,
-    private val authService: AuthService
+    private val userService: UserService
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
@@ -42,7 +40,7 @@ class SignUpViewModel(
     }
 
     fun handleSignUp() = launch(Dispatchers.Main) {
-        val signupAttempt = authService.attemptSignUp(mobileNumber, name)
+        val signupAttempt = userService.attemptSignUp(mobileNumber, name)
         when (signupAttempt) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
             is ServiceResult.Success -> {

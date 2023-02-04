@@ -1,11 +1,9 @@
 package com.bracketcove.android.splashscreen
 
 import com.bracketcove.ServiceResult
-import com.bracketcove.android.navigation.DriverDashboardKey
 import com.bracketcove.android.navigation.LoginKey
-import com.bracketcove.android.navigation.PassengerDashboardKey
 import com.bracketcove.android.navigation.ProfileSettingsKey
-import com.bracketcove.authorization.AuthService
+import com.bracketcove.authorization.UserService
 import com.bracketcove.domain.User
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
@@ -20,7 +18,7 @@ import kotlin.coroutines.CoroutineContext
 
 class SplashViewModel(
     val backstack: Backstack,
-    val authService: AuthService
+    val userService: UserService
 ) : ScopedServices.Activated, CoroutineScope {
 
     private fun sendToLogin() {
@@ -34,7 +32,7 @@ class SplashViewModel(
     }
 
     fun checkAuthState() = launch {
-        val getUser = authService.getUser()
+        val getUser = userService.getUser()
 
         when (getUser) {
             //there's nothing else to do but send to the login page

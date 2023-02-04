@@ -1,14 +1,14 @@
 package com.bracketcove.fakes
 
 import com.bracketcove.ServiceResult
-import com.bracketcove.authorization.AuthService
+import com.bracketcove.authorization.UserService
 import com.bracketcove.authorization.LogInResult
 import com.bracketcove.authorization.SignUpResult
 import com.bracketcove.domain.User
 import com.bracketcove.domain.UserStatus
 import com.bracketcove.domain.UserType
 
-class FakeAuthService : AuthService{
+class FakeUserService : UserService{
     override suspend fun attemptSignUp(phoneNumber: String, userName: String): ServiceResult<SignUpResult> {
         return ServiceResult.Success(SignUpResult.SUCCESS)
     }

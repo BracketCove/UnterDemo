@@ -8,10 +8,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -23,10 +19,8 @@ import com.bracketcove.android.R
 import com.bracketcove.android.style.color_primary
 import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
-import com.bracketcove.android.uicommon.MobileInputField
 import com.bracketcove.android.uicommon.UnterHeader
-import com.bracketcove.fakes.FakeAuthService
-import com.bracketcove.isValidPhoneNumber
+import com.bracketcove.fakes.FakeUserService
 import com.zhuinden.simplestack.Backstack
 
 @Composable
@@ -132,5 +126,5 @@ fun PhoneInputField(
 @Preview(showBackground = true, device = Devices.PIXEL_4_XL)
 @Composable
 fun PreviewSignUpScreen() {
-    SignUpScreen(viewModel = SignUpViewModel(Backstack(), FakeAuthService()))
+    SignUpScreen(viewModel = SignUpViewModel(Backstack(), FakeUserService()))
 }
