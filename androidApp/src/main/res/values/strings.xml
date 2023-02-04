@@ -34,4 +34,9 @@
     <string name="pick_up_passenger">Pick Up Passenger\n(Hold Icon Down)</string>
     <string name="return_to_dashboard">Return to dashboard</string>
     <string name="ride_completed">Ride\nCompleted</string>
+    <string name="generic_error">An error has occurred.</string>
+    <string name="service_error">Unable to connect to service.</string>
+    <string name="permissions_required_to_use_this_app">Location permission is required.</string>
+    <string name="invalid_credentails">Invalid credentials.</string>
+    <string name="an_account_already_exists">An account already exists with this number.</string>
 </resources>

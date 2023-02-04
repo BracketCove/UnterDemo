@@ -1,11 +1,17 @@
 package com.bracketcove.android.authentication.login
 
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.bracketcove.ServiceResult
 import com.bracketcove.android.navigation.DriverDashboardKey
 import com.bracketcove.android.navigation.PassengerDashboardKey
 import com.bracketcove.android.navigation.SignUpKey
 import com.bracketcove.android.uicommon.ToastMessages
 import com.bracketcove.authorization.AuthService
+import com.bracketcove.authorization.LogInResult
+import com.bracketcove.isValidPhoneNumber
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices
@@ -23,12 +29,21 @@ class LoginViewModel(
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
-    fun handleLogin(mobileNumber: String) = launch(Dispatchers.Main) {
+    var mobileNumber by mutableStateOf("")
+        private set
+    fun updateMobileNumber(input: String) {
+        mobileNumber = input
+    }
+
+    fun handleLogin() = launch(Dispatchers.Main) {
         val loginAttempt = authService.attemptLogin(mobileNumber)
         when (loginAttempt) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
             is ServiceResult.Success -> {
-                sendToDashboard()
+                when (loginAttempt.value) {
+                    LogInResult.SUCCESS -> sendToDashboard()
+                    LogInResult.INVALID_CREDENTIALS -> toastHandler?.invoke(ToastMessages.INVALID_CREDENTIALS)
+                }
             }
         }
     }
@@ -67,6 +82,7 @@ class LoginViewModel(
 
     override fun onServiceInactive() {
         canceller.cancel()
+        toastHandler = null
     }
 
     private val canceller = Job()

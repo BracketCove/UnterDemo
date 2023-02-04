@@ -1,13 +1,13 @@
 package com.bracketcove.android.authentication.login
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +26,9 @@ import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
 import com.bracketcove.android.uicommon.MobileInputField
 import com.bracketcove.android.uicommon.UnterHeader
+import com.bracketcove.fakes.FakeAuthService
 import com.bracketcove.isValidPhoneNumber
+import com.zhuinden.simplestack.Backstack
 
 @Composable
 fun LoginScreen(
@@ -45,25 +47,14 @@ fun LoginScreen(
             subtitleText = stringResource(id = R.string.need_a_ride)
         )
 
-        val textFieldValue by rememberSaveable {
-            mutableStateOf("")
-        }
-
-        var validationError by rememberSaveable {
-            mutableStateOf(false)
-        }
-
-        MobileInputField(
+        LoginInputField(
             modifier = Modifier.padding(top = 16.dp),
-            textFieldValue = textFieldValue,
-            validationError = validationError,
-            updateIsError = { validationError = it }
+            viewModel = viewModel
         )
 
         LoginContinueButton(
             modifier = Modifier.padding(top = 32.dp),
-            viewModel = viewModel,
-            textFieldValue = textFieldValue
+            handleLogin = { viewModel.handleLogin() }
         )
 
         SignupText(
@@ -74,10 +65,26 @@ fun LoginScreen(
 }
 
 @Composable
+fun LoginInputField(
+    modifier: Modifier = Modifier,
+    viewModel: LoginViewModel
+) {
+
+    OutlinedTextField(
+        modifier = modifier,
+        value = viewModel.mobileNumber,
+        onValueChange = {
+            viewModel.updateMobileNumber(it)
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+        label = { Text(text = stringResource(id = R.string.mobile_number)) }
+    )
+}
+
+@Composable
 fun LoginContinueButton(
     modifier: Modifier,
-    viewModel: LoginViewModel,
-    textFieldValue: String
+    handleLogin: () -> Unit
 ) {
     Button(
         modifier = modifier,
@@ -85,7 +92,7 @@ fun LoginContinueButton(
             backgroundColor = color_primary,
             contentColor = color_white
         ),
-        onClick = { viewModel.handleLogin(textFieldValue) },
+        onClick = { handleLogin() },
     ) {
         Text(
             text = stringResource(id = R.string.string_continue),
@@ -125,5 +132,5 @@ fun SignupText(
 @Preview(showBackground = true, device = Devices.PIXEL_4_XL)
 @Composable
 fun PreviewLoginScreen() {
-    LoginScreen(viewModel = LoginViewModel())
+    LoginScreen(viewModel = LoginViewModel(Backstack(), FakeAuthService()))
 }

@@ -4,7 +4,7 @@ import com.bracketcove.ServiceResult
 import com.bracketcove.domain.User
 
 interface AuthService {
-    suspend fun attemptSignUp(phoneNumber: String): ServiceResult<SignUpResult>
+    suspend fun attemptSignUp(phoneNumber: String, userName: String): ServiceResult<SignUpResult>
     suspend fun attemptLogin(phoneNumber: String): ServiceResult<LogInResult>
 
     /**
@@ -19,7 +19,8 @@ interface AuthService {
 
 enum class SignUpResult {
     SUCCESS,
-    ALREADY_SIGN_UP
+    ALREADY_SIGNED_UP,
+    INVALID_CREDENTIALS
 }
 
 enum class LogInResult {

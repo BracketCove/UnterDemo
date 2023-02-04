@@ -1,6 +1,7 @@
 package com.bracketcove.android.authentication.signup
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -24,7 +25,9 @@ import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
 import com.bracketcove.android.uicommon.MobileInputField
 import com.bracketcove.android.uicommon.UnterHeader
+import com.bracketcove.fakes.FakeAuthService
 import com.bracketcove.isValidPhoneNumber
+import com.zhuinden.simplestack.Backstack
 
 @Composable
 fun SignUpScreen(
@@ -46,8 +49,9 @@ fun SignUpScreen(
             contentAlignment = Alignment.TopStart
         ) {
             Icon(
+                modifier = Modifier.clickable { viewModel.handleBackPress() },
                 imageVector = Icons.Filled.Close,
-                contentDescription = stringResource(id = R.string.close_icon)
+                contentDescription = stringResource(id = R.string.close_icon),
             )
         }
 
@@ -56,40 +60,19 @@ fun SignUpScreen(
             subtitleText = stringResource(id = R.string.sign_up_for_free)
         )
 
-        val nameTextFieldValue by rememberSaveable {
-            mutableStateOf("")
-        }
-
-        var nameValidationError by rememberSaveable {
-            mutableStateOf(false)
-        }
-
         UsernameInputField(
             modifier = Modifier.padding(top = 16.dp),
-            textFieldValue = nameTextFieldValue,
-            validationError = nameValidationError,
-            updateIsError = { nameValidationError = it }
+            viewModel = viewModel
         )
 
-        val mobileTextFieldValue by rememberSaveable {
-            mutableStateOf("")
-        }
-
-        var mobileValidationError by rememberSaveable {
-            mutableStateOf(false)
-        }
-
-        MobileInputField(
+        PhoneInputField(
             modifier = Modifier.padding(top = 16.dp),
-            textFieldValue = mobileTextFieldValue,
-            validationError = mobileValidationError,
-            updateIsError = { mobileValidationError = it }
+            viewModel = viewModel
         )
 
         SignUpContinueButton(
             modifier = Modifier.padding(top = 32.dp),
-            viewModel = viewModel,
-            textFieldValue = mobileTextFieldValue
+            viewModel = viewModel
         )
     }
 }
@@ -97,8 +80,7 @@ fun SignUpScreen(
 @Composable
 fun SignUpContinueButton(
     modifier: Modifier,
-    viewModel: SignUpViewModel,
-    textFieldValue: String
+    viewModel: SignUpViewModel
 ) {
     Button(
         modifier = modifier,
@@ -106,7 +88,7 @@ fun SignUpContinueButton(
             backgroundColor = color_primary,
             contentColor = color_white
         ),
-        onClick = { viewModel.handleSignUp(textFieldValue) },
+        onClick = { viewModel.handleSignUp() },
     ) {
         Text(
             text = stringResource(id = R.string.string_continue),
@@ -118,25 +100,37 @@ fun SignUpContinueButton(
 @Composable
 fun UsernameInputField(
     modifier: Modifier = Modifier,
-    textFieldValue: String,
-    validationError: Boolean,
-    updateIsError: (Boolean) -> Unit
+    viewModel: SignUpViewModel
 ) {
     OutlinedTextField(
         modifier = modifier,
-        value = textFieldValue,
-        onValueChange = { newNumber ->
-            if (isValidPhoneNumber(newNumber) || newNumber == "") updateIsError(false)
-            else updateIsError(true)
+        value = viewModel.name,
+        onValueChange = {
+            viewModel.updateName(it)
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-        isError = validationError,
         label = { Text(text = stringResource(id = R.string.user_name)) }
+    )
+}
+
+@Composable
+fun PhoneInputField(
+    modifier: Modifier = Modifier,
+    viewModel: SignUpViewModel
+) {
+    OutlinedTextField(
+        modifier = modifier,
+        value = viewModel.mobileNumber,
+        onValueChange = {
+            viewModel.updateMobileNumber(it)
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+        label = { Text(text = stringResource(id = R.string.mobile_number)) }
     )
 }
 
 @Preview(showBackground = true, device = Devices.PIXEL_4_XL)
 @Composable
 fun PreviewSignUpScreen() {
-    SignUpScreen(viewModel = SignUpViewModel())
+    SignUpScreen(viewModel = SignUpViewModel(Backstack(), FakeAuthService()))
 }

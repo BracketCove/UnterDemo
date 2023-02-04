@@ -7,12 +7,12 @@ import com.bracketcove.authorization.SignUpResult
 import com.bracketcove.domain.User
 
 class FakeAuthService : AuthService{
-    override suspend fun attemptSignUp(phoneNumber: String): ServiceResult<SignUpResult> {
+    override suspend fun attemptSignUp(phoneNumber: String, userName: String): ServiceResult<SignUpResult> {
         return ServiceResult.Success(SignUpResult.SUCCESS)
     }
 
     override suspend fun attemptLogin(phoneNumber: String): ServiceResult<LogInResult> {
-        return ServiceResult.Success(LogInResult.SUCCESS)
+        return ServiceResult.Success(LogInResult.INVALID_CREDENTIALS)
     }
 
     override suspend fun getUser(): ServiceResult<User?> {
