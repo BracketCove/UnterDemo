@@ -27,6 +27,10 @@ https://github.com/Zhuinden/flow-combinetuple-kt/blob/master/src/main/java/com/z
  */
 fun <T1, T2, T3> combineTuple(f1: Flow<T1>, f2: Flow<T2>, f3: Flow<T3>): Flow<Triple<T1, T2, T3>> = combine(f1, f2, f3) { t1, t2, t3 -> Triple<T1, T2, T3>(t1, t2, t3) }
 
+//This value is picked somewhat arbitrarily; it's just a unique identifier
+internal const val LOCATION_PERMISSION = 1000
+//How frequently do we want to request the location in milliseconds (10s here)
+internal const val LOCATION_REQUEST_INTERVAL = 10000L
 
 fun Fragment.handleToast(code: ToastMessages) {
     val message = when (code) {

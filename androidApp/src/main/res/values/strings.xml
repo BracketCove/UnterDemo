@@ -41,4 +41,6 @@
     <string name="an_account_already_exists">An account already exists with this number.</string>
     <string name="driver">Driver</string>
     <string name="update_successful">Update successful.</string>
+    <string name="system_settings_are_preventing_location_updates">System settings are preventing location updates</string>
+    <string name="location_must_be_enabled">This app requires device location to be accessible during rides.</string>
 </resources>

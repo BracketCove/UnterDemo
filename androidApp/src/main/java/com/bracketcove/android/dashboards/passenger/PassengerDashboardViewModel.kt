@@ -2,6 +2,7 @@ package com.bracketcove.android.dashboards.passenger
 
 import com.bracketcove.ServiceResult
 import com.bracketcove.android.navigation.LoginKey
+import com.bracketcove.android.navigation.SplashKey
 import com.bracketcove.android.uicommon.ToastMessages
 import com.bracketcove.android.uicommon.combineTuple
 import com.bracketcove.authorization.UserService
@@ -170,12 +171,32 @@ class PassengerDashboardViewModel(
         }
     }
 
+    fun cancelRide() = launch(Dispatchers.Main) {
+        val cancelRide = rideService.cancelRide(_rideModel.value!!)
+        when (cancelRide) {
+            is ServiceResult.Failure -> {
+                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
+                sendToSplash()
+            }
+            is ServiceResult.Success -> {
+                sendToSplash()
+            }
+        }
+    }
+
     private fun sendToLogin() {
         backstack.setHistory(
             History.of(LoginKey()),
             StateChange.BACKWARD
         )
     }
+    private fun sendToSplash() {
+        backstack.setHistory(
+            History.of(SplashKey()),
+            StateChange.REPLACE
+        )
+    }
+
 
     override fun onServiceActive() {
         getPassenger()
@@ -183,6 +204,10 @@ class PassengerDashboardViewModel(
 
     override fun onServiceInactive() {
         canceller.cancel()
+    }
+
+    fun handleError() {
+        sendToLogin()
     }
 
     private val canceller = Job()
