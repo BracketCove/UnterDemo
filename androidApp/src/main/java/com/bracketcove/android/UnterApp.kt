@@ -15,12 +15,12 @@ class UnterApp: Application() {
     override fun onCreate() {
         super.onCreate()
 
-        val fakeAuth = FakeUserService()
+        val fakeUser = FakeUserService()
         val fakeRideService = FakeRideService()
 
         globalServices = GlobalServices.builder()
-            .add(fakeAuth)
-            .rebind<UserService>(fakeAuth)
+            .add(fakeUser)
+            .rebind<UserService>(fakeUser)
             .add(fakeRideService)
             .rebind<RideService>(fakeRideService)
             .build()

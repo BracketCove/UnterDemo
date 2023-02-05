@@ -4,6 +4,6 @@ import com.bracketcove.ServiceResult
 import com.bracketcove.domain.Ride
 
 interface RideService {
-    fun getRideIfInProgress(): ServiceResult<Ride?>
-    fun updateRide(ride: Ride): ServiceResult<Unit>
+    suspend fun getRideIfInProgress(): ServiceResult<Ride?>
+    suspend fun updateRide(ride: Ride): ServiceResult<Unit>
 }

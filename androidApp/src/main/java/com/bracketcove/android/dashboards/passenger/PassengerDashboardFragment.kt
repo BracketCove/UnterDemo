@@ -10,14 +10,17 @@ import com.bracketcove.android.R
 import com.bracketcove.android.databinding.FragmentPassengerDashboardBinding
 import com.zhuinden.simplestackextensions.fragments.KeyedFragment
 import com.zhuinden.simplestackextensions.fragmentsktx.backstack
+import com.zhuinden.simplestackextensions.fragmentsktx.lookup
 
 class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboard) {
 
-    private lateinit var viewModel: PassengerDashboardViewModel
+    private val viewModel by lazy { lookup<PassengerDashboardViewModel>() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentPassengerDashboardBinding.bind(view)
+
+
     }
 }

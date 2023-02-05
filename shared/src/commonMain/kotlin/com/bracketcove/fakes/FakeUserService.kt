@@ -21,6 +21,10 @@ class FakeUserService : UserService{
         return ServiceResult.Success(testUser)
     }
 
+    override suspend fun getUserById(userId: String): ServiceResult<User?> {
+        return ServiceResult.Success(testUser.copy(type = UserType.DRIVER.value))
+    }
+
     override suspend fun attemptLogout(): ServiceResult<Unit> {
         return ServiceResult.Success(Unit)
     }

@@ -18,6 +18,14 @@ import com.bracketcove.android.R
 import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
 import com.bracketcove.isValidPhoneNumber
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+
+/*
+This function is from:
+https://github.com/Zhuinden/flow-combinetuple-kt/blob/master/src/main/java/com/zhuinden/flowcombinetuplekt/FlowCombineTuple.kt
+ */
+fun <T1, T2, T3> combineTuple(f1: Flow<T1>, f2: Flow<T2>, f3: Flow<T3>): Flow<Triple<T1, T2, T3>> = combine(f1, f2, f3) { t1, t2, t3 -> Triple<T1, T2, T3>(t1, t2, t3) }
 
 
 fun Fragment.handleToast(code: ToastMessages) {
@@ -51,6 +59,7 @@ fun MobileInputField(
         label = { Text(text = stringResource(id = R.string.mobile_number)) }
     )
 }
+
 @Composable
 fun UnterHeader(
     modifier: Modifier = Modifier,
