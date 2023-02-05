@@ -1,17 +1,19 @@
 package com.bracketcove.android.profile.driver
 
+import android.content.Intent
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,6 +55,7 @@ fun DriverSettingsScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
+                modifier = Modifier.clickable { viewModel.handleCancelPress() },
                 imageVector = Icons.Filled.Close,
                 contentDescription = stringResource(id = R.string.close_icon)
             )
@@ -67,28 +70,12 @@ fun DriverSettingsScreen(
             textAlign = TextAlign.Center
         )
 
-        val vehicleAvatarUrl by rememberSaveable {
-            mutableStateOf<String?>(null)
-        }
-
         AvatarAndSubtitle(
-            viewModel = viewModel,
-            vehicleAvatarUrl = vehicleAvatarUrl
+            viewModel = viewModel
         )
 
-        var descriptionValidationError by rememberSaveable {
-            mutableStateOf(false)
-        }
-
-        val textFieldValue by rememberSaveable {
-            mutableStateOf("")
-        }
-
         VehicleDescription(
-            viewModel = viewModel,
-            textFieldInitialValue = textFieldValue,
-            validationError = descriptionValidationError,
-            updateIsError = { descriptionValidationError = it }
+            viewModel = viewModel
         )
 
         ApplyButton(
@@ -102,9 +89,11 @@ fun DriverSettingsScreen(
 
 @Composable
 fun AvatarAndSubtitle(
-    viewModel: DriverSettingsViewModel,
-    vehicleAvatarUrl: String?
+    viewModel: DriverSettingsViewModel
 ) {
+
+    val vehicleAvatarUrl by viewModel.vehiclePhotoUrl.collectAsState()
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -112,7 +101,7 @@ fun AvatarAndSubtitle(
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        VehicleAvatar(avatarUrl = vehicleAvatarUrl, viewModel = viewModel)
+        VehicleAvatar(vehicleAvatarUrl = vehicleAvatarUrl, viewModel = viewModel)
         Text(
             modifier = Modifier.padding(16.dp),
             text = stringResource(id = R.string.please_upload_an_image),
@@ -123,7 +112,7 @@ fun AvatarAndSubtitle(
 
 @Composable
 fun VehicleAvatar(
-    avatarUrl: String?,
+    vehicleAvatarUrl: String?,
     viewModel: DriverSettingsViewModel
 ) {
     Box(
@@ -132,28 +121,43 @@ fun VehicleAvatar(
             .size(88.dp),
         contentAlignment = Alignment.BottomEnd
     ) {
-        if (avatarUrl != null) GlideImage(
-            modifier = Modifier
-                .matchParentSize(),
-            imageModel = { avatarUrl }
-        )
+        if (vehicleAvatarUrl != null) {
+            GlideImage(
+                modifier = Modifier
+                    .matchParentSize(),
+                imageModel = { vehicleAvatarUrl }
+            )
 
-        Icon(
-            imageVector = ImageVector.vectorResource(id = R.drawable.check_circle_24px),
-            contentDescription = stringResource(id = R.string.edit_avatar),
-            tint = Color.Unspecified
-        )
+            val launcher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartActivityForResult(),
+                onResult = {
+
+                    viewModel.handleThumbnailUpdate(it.data?.data)
+                }
+            )
+
+            Icon(
+                modifier = Modifier.clickable {
+                    launcher.launch(
+                        Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                    )
+                },
+                imageVector = ImageVector.vectorResource(id = R.drawable.check_circle_24px),
+                contentDescription = stringResource(id = R.string.edit_avatar),
+                tint = Color.Unspecified
+            )
+        }
     }
 }
 
 @Composable
 fun VehicleDescription(
-    viewModel: DriverSettingsViewModel,
-    textFieldInitialValue: String?,
-    validationError: Boolean,
-    updateIsError: (Boolean) -> Unit
+    viewModel: DriverSettingsViewModel
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+    val user by viewModel.userModel.collectAsState()
+
+    if (user != null) Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -167,17 +171,14 @@ fun VehicleDescription(
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp)
                 .defaultMinSize(minHeight = 144.dp),
-            value = textFieldInitialValue ?: "",
-            onValueChange = { newNumber ->
-                if (isValidPhoneNumber(newNumber) || newNumber == "") updateIsError(false)
-                else updateIsError(true)
+            value = user!!.vehicleDescription ?: "",
+            onValueChange = {
+                            viewModel.updateVehicleDescription(it)
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-            isError = validationError,
             label = { Text(text = stringResource(id = R.string.description)) }
         )
     }
-
 }
 
 @Composable

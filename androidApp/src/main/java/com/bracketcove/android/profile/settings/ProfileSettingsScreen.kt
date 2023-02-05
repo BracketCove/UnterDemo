@@ -101,6 +101,7 @@ fun ProfileToolbar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
+            modifier = Modifier.clickable { viewModel.handleBackPress() },
             imageVector = Icons.Filled.KeyboardArrowLeft,
             contentDescription = stringResource(id = R.string.close_icon)
         )
@@ -245,8 +246,6 @@ fun DriverInfo(
     viewModel: ProfileSettingsViewModel
 ) {
     val user by viewModel.userModel.collectAsState()
-
-
 
     if (user != null) BoxWithConstraints(
         Modifier

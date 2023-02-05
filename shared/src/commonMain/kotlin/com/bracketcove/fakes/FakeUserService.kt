@@ -30,7 +30,7 @@ class FakeUserService : UserService{
     }
 
     override fun attemptUserAvatarUpdate(user: User, uri: String): ServiceResult<String?> {
-        return ServiceResult.Success("")
+        return ServiceResult.Success(uri)
     }
 
     override fun attemptVehicleAvatarUpdate(user: User, url: String): ServiceResult<String?> {
