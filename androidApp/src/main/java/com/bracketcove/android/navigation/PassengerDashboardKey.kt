@@ -21,7 +21,7 @@ data class PassengerDashboardKey(private val noArgsPlaceholder: String = ""): De
     //How to create a scoped service
     override fun bindServices(serviceBinder: ServiceBinder) {
         with(serviceBinder) {
-            add(PassengerDashboardViewModel(backstack, lookup(), lookup()))
+            add(PassengerDashboardViewModel(backstack, lookup(), lookup(), lookup()))
         }
     }
 }

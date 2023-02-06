@@ -3,6 +3,7 @@ package com.bracketcove.fakes
 import com.bracketcove.ServiceResult
 import com.bracketcove.domain.Ride
 import com.bracketcove.domain.RideStatus
+import com.bracketcove.domain.User
 import com.bracketcove.rides.RideService
 
 class FakeRideService : RideService {
@@ -13,6 +14,20 @@ class FakeRideService : RideService {
 
     override suspend fun updateRide(ride: Ride): ServiceResult<Ride?> {
         return ServiceResult.Success(testRide())
+    }
+
+    override suspend fun createRide(
+        passengerId: String,
+        latitude: Double,
+        longitude: Double,
+        address: String
+    ): ServiceResult<Ride> {
+        return ServiceResult.Success(testRide().copy(
+            passengerId = passengerId,
+            destinationLatitude = latitude,
+            destinationLongitude = longitude,
+            destinationAddress = address
+        ))
     }
 
     override suspend fun cancelRide(ride: Ride): ServiceResult<Unit> {

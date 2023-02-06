@@ -13,18 +13,22 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.location.LocationManagerCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.bracketcove.android.BuildConfig
 import com.bracketcove.android.R
 import com.bracketcove.android.databinding.FragmentPassengerDashboardBinding
 import com.bracketcove.android.uicommon.LOCATION_PERMISSION
 import com.bracketcove.android.uicommon.LOCATION_REQUEST_INTERVAL
+import com.bracketcove.android.uicommon.handleToast
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.libraries.places.api.Places
 import com.zhuinden.simplestackextensions.fragmentsktx.lookup
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -48,7 +52,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
         mapView = binding.mapLayout.mapView
         mapView?.onCreate(savedInstanceState)
-
+        Places.initialize(requireActivity().application, BuildConfig.MAPS_API_KEY)
         locationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         requestPermission()
@@ -63,6 +67,9 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                 }
         }
 
+        viewModel.toastHandler = {
+            handleToast(it)
+        }
     }
 
     private fun updateUi(uiState: PassengerDashboardUiState) {
@@ -109,6 +116,13 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                         (autocompleteResults.adapter as AutocompleteResultsAdapter)
                             .submitList(models)
                     }
+            }
+
+            searchEditText.doOnTextChanged { text, start, before, count ->
+                if (text.isNullOrBlank()) Unit
+                else {
+                    viewModel.requestAutocompleteResults(text.toString())
+                }
             }
         }
     }

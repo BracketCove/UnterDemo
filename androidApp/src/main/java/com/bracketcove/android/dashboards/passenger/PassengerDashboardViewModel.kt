@@ -2,6 +2,7 @@ package com.bracketcove.android.dashboards.passenger
 
 import android.util.Log
 import com.bracketcove.ServiceResult
+import com.bracketcove.android.google.GoogleService
 import com.bracketcove.android.navigation.LoginKey
 import com.bracketcove.android.navigation.SplashKey
 import com.bracketcove.android.uicommon.ToastMessages
@@ -11,6 +12,7 @@ import com.bracketcove.domain.Ride
 import com.bracketcove.domain.RideStatus
 import com.bracketcove.domain.User
 import com.bracketcove.rides.RideService
+import com.google.android.libraries.places.api.net.FetchPlaceResponse
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices
@@ -28,7 +30,8 @@ import kotlin.coroutines.CoroutineContext
 class PassengerDashboardViewModel(
     val backstack: Backstack,
     val userService: UserService,
-    val rideService: RideService
+    val rideService: RideService,
+    val googleService: GoogleService
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
@@ -57,7 +60,10 @@ class PassengerDashboardViewModel(
 
             when {
                 passenger == null -> {
-                    Log.d("PASSENGER", "${passenger.toString()}, ${driver.toString()}, ${ride.toString()}")
+                    Log.d(
+                        "PASSENGER",
+                        "${passenger.toString()}, ${driver.toString()}, ${ride.toString()}"
+                    )
                     PassengerDashboardUiState.Error
                 }
 
@@ -182,6 +188,57 @@ class PassengerDashboardViewModel(
         }
     }
 
+    fun handleSearchItemClick(selectedPlace: AutoCompleteModel) = launch(Dispatchers.Main) {
+        val getCoordinates = googleService.getPlaceCoordinates(selectedPlace.prediction.placeId)
+
+        when (getCoordinates) {
+            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+            is ServiceResult.Success -> {
+                if (getCoordinates.value != null &&
+                    getCoordinates.value!!.place.latLng != null &&
+                    getCoordinates.value!!.place.address != null
+                ) {
+                    attemptToCreateNewRide(getCoordinates.value!!)
+                }
+                else toastHandler?.invoke(ToastMessages.UNABLE_TO_RETRIEVE_COORDINATES)
+            }
+        }
+    }
+
+    private suspend fun attemptToCreateNewRide(response: FetchPlaceResponse) {
+        val createRide = rideService.createRide(
+            passengerId = _passengerModel.value!!.userId,
+            latitude = response.place.latLng!!.latitude,
+            longitude = response.place.latLng!!.longitude,
+            address = response.place.address!!
+        )
+
+        when (createRide) {
+            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+            is ServiceResult.Success -> {
+                _rideModel.value = createRide.value
+                //Note: what to do about user state?
+            }
+        }
+    }
+
+    fun requestAutocompleteResults(query: String) = launch(Dispatchers.Main) {
+        val autocompleteRequest = googleService.getAutocompleteResults(query)
+        when (autocompleteRequest) {
+            is ServiceResult.Failure -> {
+                toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+            }
+            is ServiceResult.Success -> {
+                _autoCompleteList.value = autocompleteRequest.value.map { prediction ->
+                    AutoCompleteModel(
+                        address = prediction.getFullText(null).toString(),
+                        prediction = prediction
+                    )
+                }
+            }
+        }
+    }
+
     fun cancelRide() = launch(Dispatchers.Main) {
         val cancelRide = rideService.cancelRide(_rideModel.value!!)
         when (cancelRide) {
@@ -222,9 +279,6 @@ class PassengerDashboardViewModel(
         sendToLogin()
     }
 
-    fun handleSearchItemClick(selectedPlace: AutoCompleteModel) {
-        TODO("Not yet implemented")
-    }
 
     private val canceller = Job()
 

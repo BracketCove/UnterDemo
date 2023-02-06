@@ -7,6 +7,7 @@ data class Ride(
     val status: String = "",
     val destinationLatitude: Double = 0.0,
     val destinationLongitude: Double = 0.0,
+    val destinationAddress: String = "",
     val createdAt: String = "",
     val updatedAT: String = ""
 )

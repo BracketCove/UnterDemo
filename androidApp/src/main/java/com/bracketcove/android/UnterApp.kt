@@ -1,6 +1,7 @@
 package com.bracketcove.android
 
 import android.app.Application
+import com.bracketcove.android.google.GoogleService
 import com.bracketcove.authorization.UserService
 import com.bracketcove.fakes.FakeUserService
 import com.bracketcove.fakes.FakeRideService
@@ -18,11 +19,13 @@ class UnterApp: Application() {
         val fakeUser = FakeUserService()
         val fakeRideService = FakeRideService()
 
+        val googleService = GoogleService(this)
         globalServices = GlobalServices.builder()
             .add(fakeUser)
             .rebind<UserService>(fakeUser)
             .add(fakeRideService)
             .rebind<RideService>(fakeRideService)
+            .add(googleService)
             .build()
     }
 }
