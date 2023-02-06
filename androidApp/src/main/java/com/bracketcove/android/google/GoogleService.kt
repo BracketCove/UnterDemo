@@ -48,6 +48,8 @@ class GoogleService(
             if (token == null) token = AutocompleteSessionToken.newInstance()
 
             val request = FindAutocompletePredictionsRequest.builder()
+                    //Obviously change this according to distribution of the app
+                .setCountry("CA")
                 .setTypesFilter(listOf(PlaceTypes.ADDRESS))
                 .setSessionToken(token)
                 .setQuery(query)

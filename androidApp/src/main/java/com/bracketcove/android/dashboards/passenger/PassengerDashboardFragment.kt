@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ListAdapter
 import android.widget.Toast
@@ -119,7 +120,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
             }
 
             searchEditText.doOnTextChanged { text, start, before, count ->
-                if (text.isNullOrBlank()) Unit
+                if (text.isNullOrBlank() || text.length < 3) Unit
                 else {
                     viewModel.requestAutocompleteResults(text.toString())
                 }
@@ -215,6 +216,9 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                     val lon = location.longitude.toFloat()
 
                 } else {
+
+                    Log.d("PLACES", locationRequest.exception.toString())
+
                     Toast.makeText(
                         requireContext(),
                         R.string.unable_to_retrieve_coordinates_user,

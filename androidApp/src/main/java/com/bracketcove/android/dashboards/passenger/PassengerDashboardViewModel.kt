@@ -69,7 +69,7 @@ class PassengerDashboardViewModel(
 
                 ride == null -> PassengerDashboardUiState.RideInactive
 
-                driver != null && ride.driverId == null -> PassengerDashboardUiState.SearchingForDriver(
+                ride.driverId == null -> PassengerDashboardUiState.SearchingForDriver(
                     passenger.latitude, passenger.longitude
                 )
 
@@ -195,22 +195,21 @@ class PassengerDashboardViewModel(
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
             is ServiceResult.Success -> {
                 if (getCoordinates.value != null &&
-                    getCoordinates.value!!.place.latLng != null &&
-                    getCoordinates.value!!.place.address != null
+                    getCoordinates.value!!.place.latLng != null
                 ) {
-                    attemptToCreateNewRide(getCoordinates.value!!)
+                    attemptToCreateNewRide(getCoordinates.value!!, selectedPlace.address)
                 }
                 else toastHandler?.invoke(ToastMessages.UNABLE_TO_RETRIEVE_COORDINATES)
             }
         }
     }
 
-    private suspend fun attemptToCreateNewRide(response: FetchPlaceResponse) {
+    private suspend fun attemptToCreateNewRide(response: FetchPlaceResponse, address: String) {
         val createRide = rideService.createRide(
             passengerId = _passengerModel.value!!.userId,
             latitude = response.place.latLng!!.latitude,
             longitude = response.place.latLng!!.longitude,
-            address = response.place.address!!
+            address = address
         )
 
         when (createRide) {
