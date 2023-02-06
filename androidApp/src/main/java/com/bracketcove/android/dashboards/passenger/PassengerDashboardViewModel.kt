@@ -1,5 +1,6 @@
 package com.bracketcove.android.dashboards.passenger
 
+import android.util.Log
 import com.bracketcove.ServiceResult
 import com.bracketcove.android.navigation.LoginKey
 import com.bracketcove.android.navigation.SplashKey
@@ -55,7 +56,10 @@ class PassengerDashboardViewModel(
             val ride = it.third
 
             when {
-                passenger == null -> PassengerDashboardUiState.Error
+                passenger == null -> {
+                    Log.d("PASSENGER", "${passenger.toString()}, ${driver.toString()}, ${ride.toString()}")
+                    PassengerDashboardUiState.Error
+                }
 
                 ride == null -> PassengerDashboardUiState.RideInactive
 
@@ -95,7 +99,10 @@ class PassengerDashboardViewModel(
                     destinationLon = ride.destinationLongitude
                 )
 
-                else -> PassengerDashboardUiState.Error
+                else -> {
+                    Log.d("ELSE", "${passenger}, ${driver}, ${ride}")
+                    PassengerDashboardUiState.Error
+                }
             }
         }
     }

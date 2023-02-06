@@ -7,7 +7,8 @@ import com.bracketcove.rides.RideService
 
 class FakeRideService : RideService {
     override suspend fun getRideIfInProgress(): ServiceResult<Ride?> {
-        return ServiceResult.Success(testRide())
+      //  return ServiceResult.Success(testRide())
+        return ServiceResult.Success(null)
     }
 
     override suspend fun updateRide(ride: Ride): ServiceResult<Ride?> {

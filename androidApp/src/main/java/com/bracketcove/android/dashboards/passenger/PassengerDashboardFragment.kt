@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ListAdapter
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.location.LocationManagerCompat
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.zhuinden.simplestackextensions.fragmentsktx.lookup
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboard),
@@ -46,17 +48,18 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
         mapView = binding.mapLayout.mapView
         mapView?.onCreate(savedInstanceState)
-        mapView?.getMapAsync(this)
+
         locationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
+        requestPermission()
 
         lifecycleScope.launch {
             viewModel.uiState
                 //Only emit states when lifecycle of the fragment is started
                 .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .distinctUntilChanged()
                 .collect { uiState ->
                     updateUi(uiState)
-
                 }
         }
 
@@ -93,7 +96,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
             if (autocompleteResults.adapter == null) {
                 autocompleteResults.adapter = AutocompleteResultsAdapter().apply {
-                    handleItemClick = { viewModel.handleSearchItemClick(it)}
+                    handleItemClick = { viewModel.handleSearchItemClick(it) }
                 }
             }
 
@@ -114,9 +117,22 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
         googleMap.uiSettings.isZoomControlsEnabled = true
-        googleMap.isMyLocationEnabled = true
 
-        viewModel.mapIsReady()
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Toast.makeText(
+                requireContext(),
+                R.string.permissions_required_to_use_this_app,
+                Toast.LENGTH_LONG
+            ).show()
+            viewModel.handleError()
+        } else {
+            googleMap.isMyLocationEnabled = true
+            viewModel.mapIsReady()
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -202,26 +218,29 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             //permission not granted
+            requestPermissionLauncher.launch(
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        } else {
+            //begin map initialization
+            mapView?.getMapAsync(this)
+
+            //get user location
+            requestLocation()
+        }
+    }
+
+    val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) requestLocation()
+        else {
             Toast.makeText(
                 requireContext(),
                 R.string.permissions_required_to_use_this_app,
                 Toast.LENGTH_LONG
             ).show()
             viewModel.handleError()
-        } else {
-            //permission granted
-            requestLocation()
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == LOCATION_PERMISSION) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                requestLocation()
         }
     }
 }
