@@ -34,6 +34,7 @@ class PassengerDashboardViewModel(
     private val _passengerModel = MutableStateFlow<User?>(null)
     private val _driverModel = MutableStateFlow<User?>(null)
     private val _rideModel = MutableStateFlow<Ride?>(null)
+    private val _mapIsReady = MutableStateFlow(false)
 
     /*
     Different UI states:
@@ -45,8 +46,9 @@ class PassengerDashboardViewModel(
         - EN_ROUTE
         - ARRIVED
      */
-    val uiState = combineTuple(_passengerModel, _driverModel, _rideModel).map {
-        if (_passengerModel.value == null) PassengerDashboardUiState.Loading
+    val uiState = combineTuple(_passengerModel, _driverModel, _rideModel, _mapIsReady).map {
+        //only publish state updates whe map is ready!
+        if (_passengerModel.value == null || !_mapIsReady.value) PassengerDashboardUiState.Loading
         else {
             val passenger = it.first
             val driver = it.second
@@ -55,12 +57,10 @@ class PassengerDashboardViewModel(
             when {
                 passenger == null -> PassengerDashboardUiState.Error
 
-                ride == null -> PassengerDashboardUiState.RideInactive(
-                    passenger.latitude, passenger.longitude
-                )
+                ride == null -> PassengerDashboardUiState.RideInactive
 
                 driver != null && ride.driverId == null -> PassengerDashboardUiState.SearchingForDriver(
-                    ride.destinationLatitude, ride.destinationLongitude
+                    passenger.latitude, passenger.longitude
                 )
 
                 driver != null && ride.status == RideStatus.PASSENGER_PICK_UP.value -> PassengerDashboardUiState.PassengerPickUp(
@@ -100,8 +100,12 @@ class PassengerDashboardViewModel(
         }
     }
 
-    private val _autoCompleteList = MutableStateFlow<List<String>>(emptyList())
-    val autoCompleteList: StateFlow<List<String>> get() = _autoCompleteList
+    private val _autoCompleteList = MutableStateFlow<List<AutoCompleteModel>>(emptyList())
+    val autoCompleteList: StateFlow<List<AutoCompleteModel>> get() = _autoCompleteList
+
+    fun mapIsReady() {
+        _mapIsReady.value = true
+    }
 
     fun getPassenger() = launch(Dispatchers.Main) {
         val getUser = userService.getUser()
@@ -132,15 +136,15 @@ class PassengerDashboardViewModel(
                 sendToLogin()
             }
             is ServiceResult.Success -> {
-                when  {
-                   getRide.value == null -> {
-                       _passengerModel.value = passenger
-                   }
+                when {
+                    getRide.value == null -> {
+                        _passengerModel.value = passenger
+                    }
 
-                   getRide.value!!.driverId == null -> {
-                       _rideModel.value = getRide.value
-                       _passengerModel.value = passenger
-                   }
+                    getRide.value!!.driverId == null -> {
+                        _rideModel.value = getRide.value
+                        _passengerModel.value = passenger
+                    }
                     else -> {
                         //driver is already present
                         getDriver(passenger, getRide.value!!)
@@ -190,6 +194,7 @@ class PassengerDashboardViewModel(
             StateChange.BACKWARD
         )
     }
+
     private fun sendToSplash() {
         backstack.setHistory(
             History.of(SplashKey()),
@@ -208,6 +213,10 @@ class PassengerDashboardViewModel(
 
     fun handleError() {
         sendToLogin()
+    }
+
+    fun handleSearchItemClick(selectedPlace: AutoCompleteModel) {
+        TODO("Not yet implemented")
     }
 
     private val canceller = Job()

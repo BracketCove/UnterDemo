@@ -1,7 +1,9 @@
 package com.bracketcove.android.splashscreen
 
 import com.bracketcove.ServiceResult
+import com.bracketcove.android.navigation.DriverDashboardKey
 import com.bracketcove.android.navigation.LoginKey
+import com.bracketcove.android.navigation.PassengerDashboardKey
 import com.bracketcove.android.navigation.ProfileSettingsKey
 import com.bracketcove.authorization.UserService
 import com.bracketcove.domain.User
@@ -45,24 +47,18 @@ class SplashViewModel(
     }
 
     private fun sendToDashboard(user: User) {
-        //TODO fix when done with testing
-        backstack.setHistory(
-            History.of(ProfileSettingsKey()),
-            //Direction of navigation which is used for animation
-            StateChange.FORWARD
-        )
-//        when (user.type) {
-//            "PASSENGER" -> backstack.setHistory(
-//                History.of((PassengerDashboardKey())),
-//                //Direction of navigation which is used for animation
-//                StateChange.FORWARD
-//            )
-//            "DRIVER" -> backstack.setHistory(
-//                History.of((DriverDashboardKey())),
-//                //Direction of navigation which is used for animation
-//                StateChange.FORWARD
-//            )
-//        }
+        when (user.type) {
+            "PASSENGER" -> backstack.setHistory(
+                History.of((PassengerDashboardKey())),
+                //Direction of navigation which is used for animation
+                StateChange.FORWARD
+            )
+            "DRIVER" -> backstack.setHistory(
+                History.of((DriverDashboardKey())),
+                //Direction of navigation which is used for animation
+                StateChange.FORWARD
+            )
+        }
     }
 
     //Lifecycle method to Fetch things if necessary

@@ -20,9 +20,9 @@
     <!-- Enter destination   -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/searchingLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,12 +30,12 @@
 
         <TextView
             android:id="@+id/destinationTitle"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="16dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
             android:fontFamily="@font/poppins_regular"
             android:includeFontPadding="false"
-            android:text="@string/passenger_requests"
+            android:text="@string/enter_a_destination"
             android:textColor="@android:color/black"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,43 +46,54 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/searchEditText"
+            android:layout_margin="16dp"
+            android:hint="@string/search"
+            android:textSize="18sp"
+            android:fontFamily="@font/poppins_regular"
+            android:textColor="@android:color/black"
+            app:backgroundTint="@color/color_light_grey"
             app:layout_constraintTop_toBottomOf="@id/destinationTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             />
 
         <androidx.cardview.widget.CardView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:backgroundTint="@android:color/white"
             app:layout_constraintTop_toBottomOf="@id/searchEditText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            app:layout_constrainedHeight="true"
             >
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/autocompleteResults"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="10"
+                tools:itemCount="20"
                 tools:listitem="@layout/list_item_search_location"
                 />
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+
+
     <!-- Driver matched   -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rideLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <include
             android:id="@+id/mapLayout"
@@ -168,4 +179,17 @@
                 app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Loading view   -->
+    <include
+        layout="@layout/view_loading"
+        android:id="@+id/loadingView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

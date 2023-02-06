@@ -20,12 +20,25 @@ import com.bracketcove.android.style.typography
 import com.bracketcove.isValidPhoneNumber
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import java.io.Serializable
 
 /*
 This function is from:
 https://github.com/Zhuinden/flow-combinetuple-kt/blob/master/src/main/java/com/zhuinden/flowcombinetuplekt/FlowCombineTuple.kt
  */
-fun <T1, T2, T3> combineTuple(f1: Flow<T1>, f2: Flow<T2>, f3: Flow<T3>): Flow<Triple<T1, T2, T3>> = combine(f1, f2, f3) { t1, t2, t3 -> Triple<T1, T2, T3>(t1, t2, t3) }
+fun <T1, T2, T3, T4> combineTuple(f1: Flow<T1>, f2: Flow<T2>, f3: Flow<T3>, f4: Flow<T4>): Flow<Tuple4<T1, T2, T3, T4>> = combine(f1, f2, f3, f4) { t1, t2, t3, t4 -> Tuple4<T1, T2, T3, T4>(t1, t2, t3, t4) }
+
+//This class is from: https://github.com/Zhuinden/tuples-kt/blob/master/src/main/java/com/zhuinden/tupleskt/Tuples.kt
+data class Tuple4<A, B, C, D>(
+    val first: A,
+    val second: B,
+    val third: C,
+    val fourth: D
+) : Serializable {
+    override fun toString(): String {
+        return "Tuple4[$first, $second, $third, $fourth]"
+    }
+}
 
 //This value is picked somewhat arbitrarily; it's just a unique identifier
 internal const val LOCATION_PERMISSION = 1000

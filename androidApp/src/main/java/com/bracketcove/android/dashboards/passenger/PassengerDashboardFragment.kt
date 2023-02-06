@@ -7,11 +7,15 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
 import android.view.View
+import android.widget.ListAdapter
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.location.LocationManagerCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.bracketcove.android.R
 import com.bracketcove.android.databinding.FragmentPassengerDashboardBinding
 import com.bracketcove.android.uicommon.LOCATION_PERMISSION
@@ -21,6 +25,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.zhuinden.simplestackextensions.fragmentsktx.lookup
+import kotlinx.coroutines.launch
 
 class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboard),
     OnMapReadyCallback {
@@ -33,16 +38,76 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
     private var locationRequest: LocationRequest? = null
     private lateinit var locationClient: FusedLocationProviderClient
 
+    lateinit var binding: FragmentPassengerDashboardBinding
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = FragmentPassengerDashboardBinding.bind(view)
+        binding = FragmentPassengerDashboardBinding.bind(view)
 
         mapView = binding.mapLayout.mapView
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
         locationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
+
+        lifecycleScope.launch {
+            viewModel.uiState
+                //Only emit states when lifecycle of the fragment is started
+                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .collect { uiState ->
+                    updateUi(uiState)
+
+                }
+        }
+
+    }
+
+    private fun updateUi(uiState: PassengerDashboardUiState) {
+        when (uiState) {
+            PassengerDashboardUiState.Error -> viewModel.handleError()
+            PassengerDashboardUiState.Loading -> {
+                binding.loadingView.loadingLayout.visibility = View.VISIBLE
+            }
+            is PassengerDashboardUiState.RideInactive -> rideInactiveState()
+            is PassengerDashboardUiState.SearchingForDriver -> searchingForDriverState(uiState)
+            is PassengerDashboardUiState.PassengerPickUp -> TODO()
+            is PassengerDashboardUiState.EnRoute -> TODO()
+            is PassengerDashboardUiState.Arrived -> TODO()
+        }
+    }
+
+    private fun searchingForDriverState(uiState: PassengerDashboardUiState.SearchingForDriver) {
+
+    }
+
+    /**
+     * - Map is visible
+     * - Search layout is visible
+     */
+    private fun rideInactiveState() {
+        binding.apply {
+            rideLayout.visibility = View.INVISIBLE
+            loadingView.loadingLayout.visibility = View.INVISIBLE
+            searchingLayout.visibility = View.VISIBLE
+
+
+            if (autocompleteResults.adapter == null) {
+                autocompleteResults.adapter = AutocompleteResultsAdapter().apply {
+                    handleItemClick = { viewModel.handleSearchItemClick(it)}
+                }
+            }
+
+            //somewhat worried this could attach multiple observers
+            lifecycleScope.launch {
+                viewModel.autoCompleteList
+                    //Only emit states when lifecycle of the fragment is started
+                    .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                    .collect { models ->
+                        (autocompleteResults.adapter as AutocompleteResultsAdapter)
+                            .submitList(models)
+                    }
+            }
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -50,6 +115,8 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
         this.googleMap = googleMap
         googleMap.uiSettings.isZoomControlsEnabled = true
         googleMap.isMyLocationEnabled = true
+
+        viewModel.mapIsReady()
     }
 
     @SuppressLint("MissingPermission")
@@ -79,7 +146,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                 }.build()
 
                 //determine if device settings are configured properly
-                val locationSettingsRequest =  LocationSettingsRequest.Builder().apply {
+                val locationSettingsRequest = LocationSettingsRequest.Builder().apply {
                     addLocationRequest(locationRequest!!)
                 }.build()
 

@@ -43,4 +43,7 @@
     <string name="update_successful">Update successful.</string>
     <string name="system_settings_are_preventing_location_updates">System settings are preventing location updates</string>
     <string name="location_must_be_enabled">This app requires device location to be accessible during rides.</string>
+    <string name="loading">Loading...</string>
+    <string name="enter_a_destination">Enter a destination</string>
+    <string name="search">Search</string>
 </resources>
