@@ -1,5 +1,8 @@
 package com.bracketcove.android.uicommon
 
+import android.content.Context
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -44,6 +47,11 @@ data class Tuple4<A, B, C, D>(
 internal const val LOCATION_PERMISSION = 1000
 //How frequently do we want to request the location in milliseconds (10s here)
 internal const val LOCATION_REQUEST_INTERVAL = 10000L
+
+fun hideKeyboard(view: View, context: Context) {
+    val inputMethodManager : InputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    inputMethodManager.hideSoftInputFromWindow(view.windowToken,0)
+}
 
 fun Fragment.handleToast(code: ToastMessages) {
     val message = when (code) {

@@ -8,7 +8,6 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ListAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -22,13 +21,15 @@ import androidx.lifecycle.lifecycleScope
 import com.bracketcove.android.BuildConfig
 import com.bracketcove.android.R
 import com.bracketcove.android.databinding.FragmentPassengerDashboardBinding
-import com.bracketcove.android.uicommon.LOCATION_PERMISSION
 import com.bracketcove.android.uicommon.LOCATION_REQUEST_INTERVAL
 import com.bracketcove.android.uicommon.handleToast
+import com.bracketcove.android.uicommon.hideKeyboard
 import com.google.android.gms.location.*
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.zhuinden.simplestackextensions.fragmentsktx.lookup
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -71,6 +72,9 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
         viewModel.toastHandler = {
             handleToast(it)
         }
+
+        //This button is reused in most states so we add the listener here
+        binding.mapLayout.cancelButton.setOnClickListener { viewModel.cancelRide() }
     }
 
     private fun updateUi(uiState: PassengerDashboardUiState) {
@@ -85,10 +89,27 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
             is PassengerDashboardUiState.EnRoute -> TODO()
             is PassengerDashboardUiState.Arrived -> TODO()
         }
+
+        updateMap(uiState)
     }
 
     private fun searchingForDriverState(uiState: PassengerDashboardUiState.SearchingForDriver) {
+            binding.apply {
+                rideLayout.visibility = View.VISIBLE
+                loadingView.loadingLayout.visibility = View.GONE
+                searchingLayout.visibility = View.GONE
 
+                driverInfoLayout.visibility = View.GONE
+                searchingForDriver.searchingForDriverLayout.visibility = View.VISIBLE
+                //unbind recyclerview from adapter
+                autocompleteResults.adapter = null
+
+                mapLayout.subtitle.text = getString(R.string.destination)
+                mapLayout.address.text = uiState.destinationAddress
+                if (!mapLayout.cancelButton.hasOnClickListeners()) {
+                }
+
+            }
     }
 
     /**
@@ -97,14 +118,17 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
      */
     private fun rideInactiveState() {
         binding.apply {
-            rideLayout.visibility = View.INVISIBLE
-            loadingView.loadingLayout.visibility = View.INVISIBLE
+            rideLayout.visibility = View.GONE
+            loadingView.loadingLayout.visibility = View.GONE
             searchingLayout.visibility = View.VISIBLE
 
 
             if (autocompleteResults.adapter == null) {
                 autocompleteResults.adapter = AutocompleteResultsAdapter().apply {
-                    handleItemClick = { viewModel.handleSearchItemClick(it) }
+                    handleItemClick = {
+                        hideKeyboard(binding.searchEditText, requireContext())
+                        viewModel.handleSearchItemClick(it)
+                    }
                 }
             }
 
@@ -113,6 +137,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                 viewModel.autoCompleteList
                     //Only emit states when lifecycle of the fragment is started
                     .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                    .distinctUntilChanged()
                     .collect { models ->
                         (autocompleteResults.adapter as AutocompleteResultsAdapter)
                             .submitList(models)
@@ -131,7 +156,6 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
-        googleMap.uiSettings.isZoomControlsEnabled = true
 
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -145,9 +169,39 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
             ).show()
             viewModel.handleError()
         } else {
+            googleMap.uiSettings.isZoomControlsEnabled = true
             googleMap.isMyLocationEnabled = true
+            googleMap.uiSettings.setAllGesturesEnabled(true)
+
+            //  googleMap.setMaxZoomPreference(5f)
             viewModel.mapIsReady()
         }
+    }
+
+
+    private fun updateMap(
+        uiState: PassengerDashboardUiState
+    ) {
+        if (googleMap != null) {
+            when (uiState) {
+                is PassengerDashboardUiState.SearchingForDriver -> {
+                    googleMap!!.moveCamera(
+                        CameraUpdateFactory.newLatLngZoom(
+                            LatLng(uiState.passengerLat, uiState.passengerLon),
+                            5f
+                        )
+                    )
+                }
+                is PassengerDashboardUiState.PassengerPickUp -> TODO()
+                is PassengerDashboardUiState.EnRoute -> TODO()
+                is PassengerDashboardUiState.Arrived -> TODO()
+
+
+                //do nothing
+                else -> Unit
+            }
+        }
+
     }
 
     @SuppressLint("MissingPermission")
@@ -260,5 +314,27 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
             ).show()
             viewModel.handleError()
         }
+    }
+
+    //So yeah, if you don't add this crap here, the MapView will be basically useless.
+    //Apparently this happenings when working with a MapView that starts out View.INVISIBLE or smth?
+    override fun onResume() {
+        mapView?.onResume()
+        super.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView?.onPause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapView?.onDestroy()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapView?.onLowMemory()
     }
 }

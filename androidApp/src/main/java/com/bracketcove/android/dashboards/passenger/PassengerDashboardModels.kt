@@ -4,7 +4,8 @@ sealed interface PassengerDashboardUiState {
     object RideInactive: PassengerDashboardUiState
     data class SearchingForDriver(
         val passengerLat: Double,
-        val passengerLon: Double
+        val passengerLon: Double,
+        val destinationAddress: String
     ): PassengerDashboardUiState
     data class PassengerPickUp(
         val passengerLat: Double,

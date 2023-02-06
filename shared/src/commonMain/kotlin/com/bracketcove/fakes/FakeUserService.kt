@@ -8,8 +8,11 @@ import com.bracketcove.domain.User
 import com.bracketcove.domain.UserStatus
 import com.bracketcove.domain.UserType
 
-class FakeUserService : UserService{
-    override suspend fun attemptSignUp(phoneNumber: String, userName: String): ServiceResult<SignUpResult> {
+class FakeUserService : UserService {
+    override suspend fun attemptSignUp(
+        phoneNumber: String,
+        userName: String
+    ): ServiceResult<SignUpResult> {
         return ServiceResult.Success(SignUpResult.SUCCESS)
     }
 
@@ -42,8 +45,8 @@ class FakeUserService : UserService{
     }
 }
 
-private val testUser = User (
-        "123456",
+private val testUser = User(
+    "123456",
     "Saitama",
     UserType.PASSENGER.value,
     UserStatus.INACTIVE.value,
@@ -51,8 +54,8 @@ private val testUser = User (
     "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Wild_Burros.jpg/1280px-Wild_Burros.jpg",
     "We ride tandem on a Donkey.",
     false,
-    0.0,
-    0.0,
+    51.0443,
+    -114.06,
     "Some time before",
     "Some time after"
-        )
+)

@@ -70,7 +70,7 @@ class PassengerDashboardViewModel(
                 ride == null -> PassengerDashboardUiState.RideInactive
 
                 ride.driverId == null -> PassengerDashboardUiState.SearchingForDriver(
-                    passenger.latitude, passenger.longitude
+                    passenger.latitude, passenger.longitude, ride.destinationAddress
                 )
 
                 driver != null && ride.status == RideStatus.PASSENGER_PICK_UP.value -> PassengerDashboardUiState.PassengerPickUp(

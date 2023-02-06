@@ -6,6 +6,7 @@ import com.bracketcove.authorization.UserService
 import com.bracketcove.fakes.FakeUserService
 import com.bracketcove.fakes.FakeRideService
 import com.bracketcove.rides.RideService
+import com.google.android.gms.maps.MapsInitializer
 import com.zhuinden.simplestack.GlobalServices
 import com.zhuinden.simplestackextensions.servicesktx.add
 import com.zhuinden.simplestackextensions.servicesktx.rebind
@@ -15,7 +16,7 @@ class UnterApp: Application() {
 
     override fun onCreate() {
         super.onCreate()
-
+        MapsInitializer.initialize(this)
         val fakeUser = FakeUserService()
         val fakeRideService = FakeRideService()
 
