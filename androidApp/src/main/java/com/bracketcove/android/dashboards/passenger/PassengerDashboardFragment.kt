@@ -49,11 +49,11 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentPassengerDashboardBinding.bind(view)
+        Places.initialize(requireActivity().application, BuildConfig.MAPS_API_KEY)
+        locationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         mapView = binding.mapLayout.mapView
         mapView?.onCreate(savedInstanceState)
-        Places.initialize(requireActivity().application, BuildConfig.MAPS_API_KEY)
-        locationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         requestPermission()
 
@@ -217,7 +217,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                 } else {
                     Toast.makeText(
                         requireContext(),
-                        R.string.permissions_required_to_use_this_app,
+                        R.string.unable_to_retrieve_coordinates_user,
                         Toast.LENGTH_LONG
                     ).show()
                     viewModel.handleError()

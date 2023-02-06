@@ -53,7 +53,7 @@ fun Fragment.handleToast(code: ToastMessages) {
         ToastMessages.INVALID_CREDENTIALS -> getString(R.string.invalid_credentails)
         ToastMessages.ACCOUNT_EXISTS -> getString(R.string.an_account_already_exists)
         ToastMessages.UPDATE_SUCCESSFUL -> getString(R.string.update_successful)
-        ToastMessages.UNABLE_TO_RETRIEVE_COORDINATES -> getString(R.string.unable_to_retrieve_coordinates)
+        ToastMessages.UNABLE_TO_RETRIEVE_COORDINATES -> getString(R.string.unable_to_retrieve_coordinates_address)
     }
     Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
 }
