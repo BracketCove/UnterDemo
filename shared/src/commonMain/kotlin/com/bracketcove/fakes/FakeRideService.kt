@@ -9,6 +9,8 @@ import com.bracketcove.rides.RideService
 class FakeRideService : RideService {
     override suspend fun getRideIfInProgress(): ServiceResult<Ride?> {
         return ServiceResult.Success(testRide().copy(
+            status = RideStatus.PASSENGER_PICK_UP.value,
+            driverId = "654321",
             passengerId = "123456",
             destinationLatitude = 51.0443,
             destinationLongitude = -114.06,

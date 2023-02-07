@@ -110,6 +110,7 @@
             layout="@layout/view_searching_for_driver"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/mapLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -122,11 +123,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:background="@android:color/white"
-            android:visibility="invisible"
             app:layout_constraintTop_toBottomOf="@id/mapLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.0"
             >
 
             <com.google.android.material.imageview.ShapeableImageView
@@ -141,7 +142,7 @@
                 tools:src="@drawable/donkey" />
 
             <TextView
-                android:id="@+id/username"
+                android:id="@+id/driverName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
@@ -149,38 +150,12 @@
                 android:includeFontPadding="false"
                 android:textColor="@android:color/black"
                 android:textSize="28sp"
+                android:ellipsize="end"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/avatar"
                 app:layout_constraintTop_toTopOf="@+id/avatar"
+                app:layout_constraintBottom_toBottomOf="@+id/avatar"
                 tools:text="Saitama" />
-
-            <TextView
-                android:id="@+id/passengerDistance"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:fontFamily="@font/poppins_light"
-                android:includeFontPadding="false"
-                android:textColor="@android:color/black"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/avatar"
-                app:layout_constraintTop_toBottomOf="@+id/username"
-                tools:text="Passenger is 2.5km away" />
-
-            <TextView
-                android:id="@+id/tripDistance"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:fontFamily="@font/poppins_light"
-                android:includeFontPadding="false"
-                android:textColor="@android:color/black"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/avatar"
-                app:layout_constraintTop_toBottomOf="@+id/passengerDistance"
-                tools:text="Ride is 2.5km" />
 
             <View
                 android:id="@+id/bottomDiv"

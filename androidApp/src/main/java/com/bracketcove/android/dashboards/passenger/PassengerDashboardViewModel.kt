@@ -80,6 +80,7 @@ class PassengerDashboardViewModel(
                     driverLon = driver.longitude,
                     destinationLat = ride.destinationLatitude,
                     destinationLon = ride.destinationLongitude,
+                    destinationAddress = ride.destinationAddress,
                     driverName = driver.username,
                     vehicleDescription = driver.vehicleDescription ?: "",
                     vehicleAvatar = driver.avatarPhotoUrl,
@@ -90,6 +91,7 @@ class PassengerDashboardViewModel(
                     passengerLon = passenger.longitude,
                     driverName = driver.username,
                     vehicleDescription = driver.vehicleDescription ?: "",
+                    destinationAddress = ride.destinationAddress,
                     vehicleAvatar = driver.avatarPhotoUrl,
                     destinationLat = ride.destinationLatitude,
                     destinationLon = ride.destinationLongitude
@@ -102,8 +104,9 @@ class PassengerDashboardViewModel(
                     vehicleDescription = driver.vehicleDescription ?: "",
                     vehicleAvatar = driver.avatarPhotoUrl,
                     destinationLat = ride.destinationLatitude,
-                    destinationLon = ride.destinationLongitude
-                )
+                    destinationLon = ride.destinationLongitude,
+                    destinationAddress = ride.destinationAddress,
+                    )
 
                 else -> {
                     Log.d("ELSE", "${passenger}, ${driver}, ${ride}")
@@ -198,8 +201,7 @@ class PassengerDashboardViewModel(
                     getCoordinates.value!!.place.latLng != null
                 ) {
                     attemptToCreateNewRide(getCoordinates.value!!, selectedPlace.address)
-                }
-                else toastHandler?.invoke(ToastMessages.UNABLE_TO_RETRIEVE_COORDINATES)
+                } else toastHandler?.invoke(ToastMessages.UNABLE_TO_RETRIEVE_COORDINATES)
             }
         }
     }

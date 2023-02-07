@@ -14,6 +14,7 @@ sealed interface PassengerDashboardUiState {
         val driverLon: Double,
         val destinationLat: Double,
         val destinationLon: Double,
+        val destinationAddress: String,
         val driverName: String,
         val vehicleAvatar: String,
         val vehicleDescription: String
@@ -23,6 +24,7 @@ sealed interface PassengerDashboardUiState {
         val passengerLon: Double,
         val destinationLat: Double,
         val destinationLon: Double,
+        val destinationAddress: String,
         val driverName: String,
         val vehicleAvatar: String,
         val vehicleDescription: String
@@ -33,6 +35,7 @@ sealed interface PassengerDashboardUiState {
         val passengerLon: Double,
         val destinationLat: Double,
         val destinationLon: Double,
+        val destinationAddress: String,
         val driverName: String,
         val vehicleAvatar: String,
         val vehicleDescription: String

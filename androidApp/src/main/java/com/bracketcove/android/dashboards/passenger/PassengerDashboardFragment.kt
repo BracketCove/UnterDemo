@@ -18,12 +18,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bracketcove.android.BuildConfig
 import com.bracketcove.android.R
 import com.bracketcove.android.databinding.FragmentPassengerDashboardBinding
 import com.bracketcove.android.uicommon.LOCATION_REQUEST_INTERVAL
 import com.bracketcove.android.uicommon.handleToast
 import com.bracketcove.android.uicommon.hideKeyboard
+import com.bumptech.glide.Glide
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -85,7 +87,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
             }
             is PassengerDashboardUiState.RideInactive -> rideInactiveState()
             is PassengerDashboardUiState.SearchingForDriver -> searchingForDriverState(uiState)
-            is PassengerDashboardUiState.PassengerPickUp -> TODO()
+            is PassengerDashboardUiState.PassengerPickUp -> passengerPickUp(uiState)
             is PassengerDashboardUiState.EnRoute -> TODO()
             is PassengerDashboardUiState.Arrived -> TODO()
         }
@@ -93,23 +95,57 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
         updateMap(uiState)
     }
 
+    private fun passengerPickUp(uiState: PassengerDashboardUiState.PassengerPickUp) {
+        binding.apply {
+            rideLayout.visibility = View.VISIBLE
+            loadingView.loadingLayout.visibility = View.GONE
+            searchingLayout.visibility = View.GONE
+
+            searchingForDriver.searchingForDriverLayout.visibility = View.GONE
+            //unbind recyclerview from adapter
+            autocompleteResults.adapter = null
+
+            mapLayout.subtitle.text = getString(R.string.destination)
+            mapLayout.address.text = uiState.destinationAddress
+
+            driverName.text = uiState.driverName
+            Glide.with(requireContext())
+                .load(uiState.vehicleAvatar)
+                .fitCenter()
+                .placeholder(
+                    CircularProgressDrawable(requireContext()).apply {
+                        setColorSchemeColors(
+                            ContextCompat.getColor(requireContext(), R.color.color_light_grey)
+                        )
+
+                        strokeWidth = 2f
+                        centerRadius = 48f
+                        start()
+                    }
+                )
+                .into(binding.avatar)
+
+            driverInfoLayout.visibility = View.VISIBLE
+
+        }
+    }
+
     private fun searchingForDriverState(uiState: PassengerDashboardUiState.SearchingForDriver) {
-            binding.apply {
-                rideLayout.visibility = View.VISIBLE
-                loadingView.loadingLayout.visibility = View.GONE
-                searchingLayout.visibility = View.GONE
+        binding.apply {
+            rideLayout.visibility = View.VISIBLE
+            loadingView.loadingLayout.visibility = View.GONE
+            searchingLayout.visibility = View.GONE
 
-                driverInfoLayout.visibility = View.GONE
-                searchingForDriver.searchingForDriverLayout.visibility = View.VISIBLE
-                //unbind recyclerview from adapter
-                autocompleteResults.adapter = null
+            driverInfoLayout.visibility = View.GONE
+            searchingForDriver.searchingForDriverLayout.visibility = View.VISIBLE
+            //unbind recyclerview from adapter
+            autocompleteResults.adapter = null
 
-                mapLayout.subtitle.text = getString(R.string.destination)
-                mapLayout.address.text = uiState.destinationAddress
-                if (!mapLayout.cancelButton.hasOnClickListeners()) {
-                }
+            mapLayout.subtitle.text = getString(R.string.destination)
+            mapLayout.address.text = uiState.destinationAddress
 
-            }
+
+        }
     }
 
     /**
@@ -192,7 +228,9 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                         )
                     )
                 }
-                is PassengerDashboardUiState.PassengerPickUp -> TODO()
+                is PassengerDashboardUiState.PassengerPickUp -> {
+
+                }
                 is PassengerDashboardUiState.EnRoute -> TODO()
                 is PassengerDashboardUiState.Arrived -> TODO()
 
