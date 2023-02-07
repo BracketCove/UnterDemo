@@ -21,6 +21,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bracketcove.android.BuildConfig
 import com.bracketcove.android.R
+import com.bracketcove.android.UnterApp
 import com.bracketcove.android.databinding.FragmentPassengerDashboardBinding
 import com.bracketcove.android.uicommon.LOCATION_REQUEST_INTERVAL
 import com.bracketcove.android.uicommon.handleToast
@@ -34,6 +35,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.libraries.places.api.Places
+import com.google.maps.DirectionsApi
+import com.google.maps.model.TravelMode
+import com.google.maps.model.Unit
 import com.zhuinden.simplestackextensions.fragmentsktx.lookup
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -230,23 +234,85 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                     )
                 }
                 is PassengerDashboardUiState.PassengerPickUp -> {
-                    googleMap!!.addPolyline(
-                        PolylineOptions().apply {
-                            clickable(false)
-                            add(
-                                LatLng(uiState.passengerLat, uiState.passengerLon),
-                                LatLng(uiState.driverLat, uiState.driverLon)
-                            )
-                            color(ContextCompat.getColor(requireContext(), R.color.color_primary))
-                        }
-                    )
 
-                    googleMap!!.moveCamera(
-                        CameraUpdateFactory.newLatLngZoom(
-                            LatLng(uiState.passengerLat, uiState.passengerLon),
-                            14f
+                    lifecycleScope.launch {
+                        val dirResult =
+                            DirectionsApi.newRequest((requireActivity().application as UnterApp).geoContext)
+                                .mode(TravelMode.DRIVING)
+                                .units(Unit.METRIC)
+                                //Change this appropriately
+                                .region("ca")
+                                .origin(
+                                    com.google.maps.model.LatLng(
+                                        uiState.passengerLat,
+                                        uiState.passengerLon
+                                    )
+                                )
+                                .destination(
+                                    com.google.maps.model.LatLng(
+                                        uiState.driverLat,
+                                        uiState.driverLon
+                                    ).toString()
+                                )
+                                .await()
+
+                        if (dirResult.routes?.first() != null &&
+                            dirResult.routes.isNotEmpty() &&
+                            dirResult.routes.first().legs.isNotEmpty()
+                        ) {
+                            dirResult.routes.first().let { route ->
+                                route.legs.first().let { leg ->
+                                    leg.steps.forEach { step ->
+                                        googleMap!!.addPolyline(
+                                            PolylineOptions().apply {
+                                                clickable(false)
+                                                /*
+                                                Unfortunately the Directions API uses a different
+                                                LatLng from the Android Maps SDK, so we have to
+                                                convert it here.
+                                                 */
+                                                add(
+                                                    LatLng(
+                                                        step.startLocation.lat,
+                                                        step.startLocation.lng
+                                                    )
+                                                )
+
+                                                add(
+                                                    LatLng(
+                                                        step.endLocation.lat,
+                                                        step.endLocation.lng
+                                                    )
+                                                )
+
+                                                color(
+                                                    ContextCompat.getColor(
+                                                        requireContext(),
+                                                        R.color.color_primary
+                                                    )
+                                                )
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                R.string.unable_to_get_map_directions,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+
+                        googleMap!!.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(uiState.passengerLat, uiState.passengerLon),
+                                14f
+                            )
                         )
-                    )
+
+                    }
+
 
                 }
                 is PassengerDashboardUiState.EnRoute -> TODO()
