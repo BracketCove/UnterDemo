@@ -11,6 +11,7 @@ import com.bracketcove.authorization.UserService
 import com.bracketcove.domain.Ride
 import com.bracketcove.domain.RideStatus
 import com.bracketcove.domain.User
+import com.bracketcove.domain.UserStatus
 import com.bracketcove.rides.RideService
 import com.google.android.libraries.places.api.net.FetchPlaceResponse
 import com.zhuinden.simplestack.Backstack
@@ -218,7 +219,6 @@ class PassengerDashboardViewModel(
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
             is ServiceResult.Success -> {
                 _rideModel.value = createRide.value
-                //Note: what to do about user state?
             }
         }
     }
@@ -280,6 +280,18 @@ class PassengerDashboardViewModel(
         sendToLogin()
     }
 
+    fun completeRide() = launch(Dispatchers.Main) {
+        val completeRide = rideService.completeRide(_rideModel.value!!)
+        when (completeRide) {
+            is ServiceResult.Failure -> {
+                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
+                sendToSplash()
+            }
+            is ServiceResult.Success -> {
+                sendToSplash()
+            }
+        }
+    }
 
     private val canceller = Job()
 

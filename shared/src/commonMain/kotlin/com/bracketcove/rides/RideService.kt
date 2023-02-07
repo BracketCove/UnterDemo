@@ -15,4 +15,5 @@ interface RideService {
     ): ServiceResult<Ride>
 
     suspend fun cancelRide(ride: Ride): ServiceResult<Unit>
+    suspend fun completeRide(value: Ride): ServiceResult<Unit>
 }

@@ -33,6 +33,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.libraries.places.api.Places
 import com.google.maps.DirectionsApi
@@ -93,11 +94,84 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
             is PassengerDashboardUiState.RideInactive -> rideInactiveState()
             is PassengerDashboardUiState.SearchingForDriver -> searchingForDriverState(uiState)
             is PassengerDashboardUiState.PassengerPickUp -> passengerPickUp(uiState)
-            is PassengerDashboardUiState.EnRoute -> TODO()
-            is PassengerDashboardUiState.Arrived -> TODO()
+            is PassengerDashboardUiState.EnRoute -> enRoute(uiState)
+            is PassengerDashboardUiState.Arrived -> arrived(uiState)
         }
 
         updateMap(uiState)
+    }
+
+    private fun arrived(uiState: PassengerDashboardUiState.Arrived) {
+        binding.apply {
+            rideLayout.visibility = View.VISIBLE
+            loadingView.loadingLayout.visibility = View.GONE
+            searchingLayout.visibility = View.GONE
+
+            searchingForDriver.searchingForDriverLayout.visibility = View.GONE
+            //unbind recyclerview from adapter
+            autocompleteResults.adapter = null
+
+            mapLayout.subtitle.text = getString(R.string.destination)
+            mapLayout.address.text = uiState.destinationAddress
+
+            rideComplete.rideCompleteLayout.visibility = View.VISIBLE
+            rideComplete.advanceButton.setOnClickListener {
+                viewModel.completeRide()
+            }
+
+            driverName.text = uiState.driverName
+            Glide.with(requireContext())
+                .load(uiState.vehicleAvatar)
+                .fitCenter()
+                .placeholder(
+                    CircularProgressDrawable(requireContext()).apply {
+                        setColorSchemeColors(
+                            ContextCompat.getColor(requireContext(), R.color.color_light_grey)
+                        )
+
+                        strokeWidth = 2f
+                        centerRadius = 48f
+                        start()
+                    }
+                )
+                .into(binding.avatar)
+
+            driverInfoLayout.visibility = View.VISIBLE
+        }
+    }
+
+    private fun enRoute(uiState: PassengerDashboardUiState.EnRoute) {
+        binding.apply {
+            rideLayout.visibility = View.VISIBLE
+            loadingView.loadingLayout.visibility = View.GONE
+            searchingLayout.visibility = View.GONE
+
+            searchingForDriver.searchingForDriverLayout.visibility = View.GONE
+            //unbind recyclerview from adapter
+            autocompleteResults.adapter = null
+
+            mapLayout.subtitle.text = getString(R.string.destination)
+            mapLayout.address.text = uiState.destinationAddress
+
+            driverName.text = uiState.driverName
+            Glide.with(requireContext())
+                .load(uiState.vehicleAvatar)
+                .fitCenter()
+                .placeholder(
+                    CircularProgressDrawable(requireContext()).apply {
+                        setColorSchemeColors(
+                            ContextCompat.getColor(requireContext(), R.color.color_light_grey)
+                        )
+
+                        strokeWidth = 2f
+                        centerRadius = 48f
+                        start()
+                    }
+                )
+                .into(binding.avatar)
+
+            driverInfoLayout.visibility = View.VISIBLE
+        }
     }
 
     private fun passengerPickUp(uiState: PassengerDashboardUiState.PassengerPickUp) {
@@ -131,7 +205,6 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                 .into(binding.avatar)
 
             driverInfoLayout.visibility = View.VISIBLE
-
         }
     }
 
@@ -234,7 +307,6 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                     )
                 }
                 is PassengerDashboardUiState.PassengerPickUp -> {
-
                     lifecycleScope.launch {
                         val dirResult =
                             DirectionsApi.newRequest((requireActivity().application as UnterApp).geoContext)
@@ -310,19 +382,138 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                             ).show()
                         }
 
+                        googleMap!!.addMarker(
+                            MarkerOptions().apply {
+                                position(LatLng(uiState.passengerLat, uiState.passengerLon))
+                            }
+                        )
+                        googleMap!!.addMarker(
+                            MarkerOptions().apply {
+                                position(LatLng(uiState.driverLat, uiState.driverLon))
+                            }
+                        )
+
+
                         googleMap!!.moveCamera(
                             CameraUpdateFactory.newLatLngZoom(
                                 LatLng(uiState.passengerLat, uiState.passengerLon),
                                 14f
                             )
                         )
-
                     }
 
 
                 }
-                is PassengerDashboardUiState.EnRoute -> TODO()
-                is PassengerDashboardUiState.Arrived -> TODO()
+                is PassengerDashboardUiState.EnRoute -> {
+                    lifecycleScope.launch {
+                        val dirResult =
+                            DirectionsApi.newRequest((requireActivity().application as UnterApp).geoContext)
+                                .mode(TravelMode.DRIVING)
+                                .units(Unit.METRIC)
+                                //Change this appropriately
+                                .region("ca")
+                                .origin(
+                                    com.google.maps.model.LatLng(
+                                        uiState.passengerLat,
+                                        uiState.passengerLon
+                                    )
+                                )
+                                .destination(
+                                    com.google.maps.model.LatLng(
+                                        uiState.destinationLat,
+                                        uiState.destinationLon
+                                    ).toString()
+                                )
+                                .await()
+
+                        if (dirResult.routes?.first() != null &&
+                            dirResult.routes.isNotEmpty() &&
+                            dirResult.routes.first().legs.isNotEmpty()
+                        ) {
+                            dirResult.routes.first().let { route ->
+                                route.legs.first().let { leg ->
+                                    binding.distance.text = buildString {
+                                        append(getString(R.string.driver_is))
+                                        append(leg.distance.humanReadable)
+                                        append(getString(R.string.away))
+                                    }
+
+                                    leg.steps.forEach { step ->
+                                        googleMap!!.addPolyline(
+                                            PolylineOptions().apply {
+                                                clickable(false)
+                                                /*
+                                                Unfortunately the Directions API uses a different
+                                                LatLng from the Android Maps SDK, so we have to
+                                                convert it here.
+                                                 */
+                                                add(
+                                                    LatLng(
+                                                        step.startLocation.lat,
+                                                        step.startLocation.lng
+                                                    )
+                                                )
+
+                                                add(
+                                                    LatLng(
+                                                        step.endLocation.lat,
+                                                        step.endLocation.lng
+                                                    )
+                                                )
+
+                                                color(
+                                                    ContextCompat.getColor(
+                                                        requireContext(),
+                                                        R.color.color_primary
+                                                    )
+                                                )
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                R.string.unable_to_get_map_directions,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+
+                        googleMap!!.addMarker(
+                            MarkerOptions().apply {
+                                position(LatLng(uiState.passengerLat, uiState.passengerLon))
+                            }
+                        )
+                        googleMap!!.addMarker(
+                            MarkerOptions().apply {
+                                position(LatLng(uiState.destinationLat, uiState.destinationLon))
+                            }
+                        )
+
+                        googleMap!!.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(uiState.passengerLat, uiState.passengerLon),
+                                14f
+                            )
+                        )
+                    }
+
+                }
+                is PassengerDashboardUiState.Arrived -> {
+                    googleMap!!.addMarker(
+                        MarkerOptions().apply {
+                            position(LatLng(uiState.destinationLat, uiState.destinationLon))
+                        }
+                    )
+
+                    googleMap!!.moveCamera(
+                        CameraUpdateFactory.newLatLngZoom(
+                            LatLng(uiState.destinationLat, uiState.destinationLon),
+                            14f
+                        )
+                    )
+                }
 
 
                 //do nothing
