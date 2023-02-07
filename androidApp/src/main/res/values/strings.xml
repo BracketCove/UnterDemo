@@ -51,4 +51,6 @@
     <string name="looking_for_a_ride">Looking for\na ride...</string>
     <string name="destination">Destination</string>
     <string name="unable_to_get_map_directions">Unable to get map directions.</string>
+    <string name="driver_is">"Driver is "</string>
+    <string name="away">" away."</string>
 </resources>

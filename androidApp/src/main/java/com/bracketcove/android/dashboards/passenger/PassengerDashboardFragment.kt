@@ -262,6 +262,12 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                         ) {
                             dirResult.routes.first().let { route ->
                                 route.legs.first().let { leg ->
+                                    binding.distance.text = buildString {
+                                        append(getString(R.string.driver_is))
+                                        append(leg.distance.humanReadable)
+                                        append(getString(R.string.away))
+                                    }
+
                                     leg.steps.forEach { step ->
                                         googleMap!!.addPolyline(
                                             PolylineOptions().apply {
