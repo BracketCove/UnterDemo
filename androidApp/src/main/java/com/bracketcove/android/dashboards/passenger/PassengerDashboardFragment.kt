@@ -32,6 +32,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.libraries.places.api.Places
 import com.zhuinden.simplestackextensions.fragmentsktx.lookup
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -209,7 +210,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
             googleMap.isMyLocationEnabled = true
             googleMap.uiSettings.setAllGesturesEnabled(true)
 
-            //  googleMap.setMaxZoomPreference(5f)
+            googleMap.setMinZoomPreference(12f)
             viewModel.mapIsReady()
         }
     }
@@ -224,11 +225,28 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                     googleMap!!.moveCamera(
                         CameraUpdateFactory.newLatLngZoom(
                             LatLng(uiState.passengerLat, uiState.passengerLon),
-                            5f
+                            14f
                         )
                     )
                 }
                 is PassengerDashboardUiState.PassengerPickUp -> {
+                    googleMap!!.addPolyline(
+                        PolylineOptions().apply {
+                            clickable(false)
+                            add(
+                                LatLng(uiState.passengerLat, uiState.passengerLon),
+                                LatLng(uiState.driverLat, uiState.driverLon)
+                            )
+                            color(ContextCompat.getColor(requireContext(), R.color.color_primary))
+                        }
+                    )
+
+                    googleMap!!.moveCamera(
+                        CameraUpdateFactory.newLatLngZoom(
+                            LatLng(uiState.passengerLat, uiState.passengerLon),
+                            14f
+                        )
+                    )
 
                 }
                 is PassengerDashboardUiState.EnRoute -> TODO()

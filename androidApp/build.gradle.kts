@@ -87,7 +87,6 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.google.android.libraries.places:places:3.0.0")
 
-
     implementation(platform("com.google.firebase:firebase-bom:31.2.0"))
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-database-ktx")

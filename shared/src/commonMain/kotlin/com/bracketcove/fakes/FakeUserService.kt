@@ -25,7 +25,10 @@ class FakeUserService : UserService {
     }
 
     override suspend fun getUserById(userId: String): ServiceResult<User?> {
-        return ServiceResult.Success(testUser.copy(type = UserType.DRIVER.value))
+        return ServiceResult.Success(testUser.copy(type = UserType.DRIVER.value,
+            latitude = 51.0443,
+            longitude = -113.06,
+        ))
     }
 
     override suspend fun attemptLogout(): ServiceResult<Unit> {
