@@ -80,6 +80,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
     }
 
     private fun updateUi(uiState: DriverDashboardUiState) {
+        Log.d("UI_STATE", uiState.toString())
         when (uiState) {
             DriverDashboardUiState.Error -> viewModel.handleError()
             DriverDashboardUiState.Loading -> {
@@ -318,7 +319,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                         ) {
                             dirResult.routes.first().let { route ->
                                 route.legs.first().let { leg ->
-                                    binding.passengerDistance.text = buildString {
+                                    binding.tripDistance.text = buildString {
                                         append(getString(R.string.passenger_is))
                                         append(leg.distance.humanReadable)
                                         append(getString(R.string.away))
@@ -416,7 +417,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                         ) {
                             dirResult.routes.first().let { route ->
                                 route.legs.first().let { leg ->
-                                    binding.passengerDistance.text = buildString {
+                                    binding.tripDistance.text = buildString {
                                         append(getString(R.string.destination_is))
                                         append(leg.distance.humanReadable)
                                         append(getString(R.string.away))
