@@ -87,7 +87,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
             }
             is DriverDashboardUiState.SearchingForPassengers -> searchingForPassenger()
             is DriverDashboardUiState.PassengerPickUp -> passengerPickUp(uiState)
-            is DriverDashboardUiState.EnRoute -> Unit //enRoute(uiState)
+            is DriverDashboardUiState.EnRoute -> enRoute(uiState)
             is DriverDashboardUiState.Arrived -> Unit //arrived(uiState)
         }
 
@@ -133,39 +133,46 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 //        }
 //    }
 //
-//    private fun enRoute(uiState: DriverDashboardUiState.EnRoute) {
-//        binding.apply {
-//            rideLayout.visibility = View.VISIBLE
-//            loadingView.loadingLayout.visibility = View.GONE
-//            searchingLayout.visibility = View.GONE
-//
-//            searchingForDriver.searchingForDriverLayout.visibility = View.GONE
-//            //unbind recyclerview from adapter
-//            passengerList.adapter = null
-//
-//            mapLayout.subtitle.text = getString(R.string.destination)
-//            mapLayout.address.text = uiState.destinationAddress
-//
-//            driverName.text = uiState.driverName
-//            Glide.with(requireContext())
-//                .load(uiState.vehicleAvatar)
-//                .fitCenter()
-//                .placeholder(
-//                    CircularProgressDrawable(requireContext()).apply {
-//                        setColorSchemeColors(
-//                            ContextCompat.getColor(requireContext(), R.color.color_light_grey)
-//                        )
-//
-//                        strokeWidth = 2f
-//                        centerRadius = 48f
-//                        start()
-//                    }
-//                )
-//                .into(binding.avatar)
-//
-//            driverInfoLayout.visibility = View.VISIBLE
-//        }
-//    }
+    private fun enRoute(uiState: DriverDashboardUiState.EnRoute) {
+        binding.apply {
+            rideLayout.visibility = View.VISIBLE
+            loadingView.loadingLayout.visibility = View.GONE
+            searchingLayout.visibility = View.GONE
+
+            //unbind recyclerview from adapter
+            passengerList.adapter = null
+
+            mapLayout.subtitle.text = getString(R.string.destination)
+            mapLayout.address.text = uiState.destinationAddress
+
+            advanceLayout.advanceRideStateLayout.visibility = View.VISIBLE
+            advanceLayout.advanceButton.setImageResource(R.drawable.ic_arrival)
+            advanceLayout.advanceButton.setOnLongClickListener() {
+                viewModel.advanceRide()
+                true
+            }
+
+            advanceLayout.title.text = getString(R.string.arrived_at_destination)
+            returnLayout.rideCompleteLayout.visibility = View.GONE
+
+            username.text = uiState.passengerName
+            Glide.with(requireContext())
+                .load(uiState.passengerAvatar)
+                .fitCenter()
+                .placeholder(
+                    CircularProgressDrawable(requireContext()).apply {
+                        setColorSchemeColors(
+                            ContextCompat.getColor(requireContext(), R.color.color_light_grey)
+                        )
+
+                        strokeWidth = 2f
+                        centerRadius = 48f
+                        start()
+                    }
+                )
+                .into(binding.avatar)
+        }
+    }
 
     private fun passengerPickUp(uiState: DriverDashboardUiState.PassengerPickUp) {
         binding.apply {
@@ -177,6 +184,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
             passengerList.adapter = null
 
             mapLayout.subtitle.text = getString(R.string.passenger_location)
+          //TODO this needs to be the passenger address
             mapLayout.address.text = uiState.destinationAddress
 
             advanceLayout.advanceRideStateLayout.visibility = View.VISIBLE
@@ -188,7 +196,6 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 
             advanceLayout.title.text = getString(R.string.pick_up_passenger)
             returnLayout.rideCompleteLayout.visibility = View.GONE
-
 
             username.text = uiState.passengerName
             Glide.with(requireContext())
@@ -410,7 +417,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                             dirResult.routes.first().let { route ->
                                 route.legs.first().let { leg ->
                                     binding.passengerDistance.text = buildString {
-                                        append(getString(R.string.driver_is))
+                                        append(getString(R.string.destination_is))
                                         append(leg.distance.humanReadable)
                                         append(getString(R.string.away))
                                     }
