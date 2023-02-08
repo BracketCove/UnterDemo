@@ -17,12 +17,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bracketcove.android.BuildConfig
 import com.bracketcove.android.R
 import com.bracketcove.android.UnterApp
 import com.bracketcove.android.databinding.FragmentDriverDashboardBinding
 import com.bracketcove.android.uicommon.LOCATION_REQUEST_INTERVAL
 import com.bracketcove.android.uicommon.handleToast
+import com.bumptech.glide.Glide
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -84,7 +86,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                 binding.loadingView.loadingLayout.visibility = View.VISIBLE
             }
             is DriverDashboardUiState.SearchingForPassengers -> searchingForPassenger()
-            is DriverDashboardUiState.PassengerPickUp -> Unit //passengerPickUp(uiState)
+            is DriverDashboardUiState.PassengerPickUp -> passengerPickUp(uiState)
             is DriverDashboardUiState.EnRoute -> Unit //enRoute(uiState)
             is DriverDashboardUiState.Arrived -> Unit //arrived(uiState)
         }
@@ -165,39 +167,48 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 //        }
 //    }
 
-//    private fun passengerPickUp(uiState: DriverDashboardUiState.PassengerPickUp) {
-//        binding.apply {
-//            rideLayout.visibility = View.VISIBLE
-//            loadingView.loadingLayout.visibility = View.GONE
-//            searchingLayout.visibility = View.GONE
-//
-//            searchingForDriver.searchingForDriverLayout.visibility = View.GONE
-//            //unbind recyclerview from adapter
-//            passengerList.adapter = null
-//
-//            mapLayout.subtitle.text = getString(R.string.destination)
-//            mapLayout.address.text = uiState.destinationAddress
-//
-//            driverName.text = uiState.driverName
-//            Glide.with(requireContext())
-//                .load(uiState.vehicleAvatar)
-//                .fitCenter()
-//                .placeholder(
-//                    CircularProgressDrawable(requireContext()).apply {
-//                        setColorSchemeColors(
-//                            ContextCompat.getColor(requireContext(), R.color.color_light_grey)
-//                        )
-//
-//                        strokeWidth = 2f
-//                        centerRadius = 48f
-//                        start()
-//                    }
-//                )
-//                .into(binding.avatar)
-//
-//            driverInfoLayout.visibility = View.VISIBLE
-//        }
-//    }
+    private fun passengerPickUp(uiState: DriverDashboardUiState.PassengerPickUp) {
+        binding.apply {
+            rideLayout.visibility = View.VISIBLE
+            loadingView.loadingLayout.visibility = View.GONE
+            searchingLayout.visibility = View.GONE
+
+            //unbind recyclerview from adapter
+            passengerList.adapter = null
+
+            mapLayout.subtitle.text = getString(R.string.passenger_location)
+            mapLayout.address.text = uiState.destinationAddress
+
+            advanceLayout.advanceRideStateLayout.visibility = View.VISIBLE
+            advanceLayout.advanceButton.setImageResource(R.drawable.ic_pick_up_passenger)
+            advanceLayout.advanceButton.setOnLongClickListener() {
+                viewModel.advanceRide()
+                true
+            }
+
+            advanceLayout.title.text = getString(R.string.pick_up_passenger)
+            returnLayout.rideCompleteLayout.visibility = View.GONE
+
+
+            username.text = uiState.passengerName
+            Glide.with(requireContext())
+                .load(uiState.passengerAvatar)
+                .fitCenter()
+                .placeholder(
+                    CircularProgressDrawable(requireContext()).apply {
+                        setColorSchemeColors(
+                            ContextCompat.getColor(requireContext(), R.color.color_light_grey)
+                        )
+
+                        strokeWidth = 2f
+                        centerRadius = 48f
+                        start()
+                    }
+                )
+                .into(binding.avatar)
+
+        }
+    }
 
     /**
      * - Map is visible
@@ -301,7 +312,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                             dirResult.routes.first().let { route ->
                                 route.legs.first().let { leg ->
                                     binding.passengerDistance.text = buildString {
-                                        append(getString(R.string.driver_is))
+                                        append(getString(R.string.passenger_is))
                                         append(leg.distance.humanReadable)
                                         append(getString(R.string.away))
                                     }
@@ -378,12 +389,12 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                                 .units(com.google.maps.model.Unit.METRIC)
                                 //Change this appropriately
                                 .region("ca")
-//                                .origin(
-//                                    com.google.maps.model.LatLng(
-//                                        uiState.passengerLat,
-//                                        uiState.passengerLon
-//                                    )
-//                                )
+                                .origin(
+                                    com.google.maps.model.LatLng(
+                                        uiState.driverLat,
+                                        uiState.driverLon
+                                    )
+                                )
                                 .destination(
                                     com.google.maps.model.LatLng(
                                         uiState.destinationLat,

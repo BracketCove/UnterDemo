@@ -3,8 +3,6 @@ package com.bracketcove.android.google
 import android.content.Context
 import android.util.Log
 import com.bracketcove.ServiceResult
-import com.bracketcove.android.UnterApp
-import com.bracketcove.domain.User
 import com.google.android.gms.tasks.Task
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompletePrediction
@@ -50,6 +48,7 @@ class GoogleService(
     }
 
     suspend fun getDistanceBetween(userLatLng: LatLng, comparedTo: LatLng): String = withContext(Dispatchers.IO) {
+        Log.d("DIRECTIONS", userLatLng.toString())
         val dirResult =
             DirectionsApi.newRequest(geoApiContext)
                 .mode(TravelMode.DRIVING)

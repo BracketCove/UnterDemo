@@ -109,6 +109,7 @@ class DriverDashboardViewModel(
         if (it.first.lat == DEFAULT_LAT_OR_LON
             || it.first.lng == DEFAULT_LAT_OR_LON
             || it.second.isNullOrEmpty()
+
         ) emptyList<Pair<User, String>>()
         else {
             it.second!!.map { user ->
@@ -163,10 +164,6 @@ class DriverDashboardViewModel(
                         getPassengerList()
                     }
 
-                    getRide.value!!.driverId == null -> {
-                        _rideModel.value = getRide.value
-                        _driverModel.value = driver
-                    }
                     else -> {
                         //driver is already present
                         getPassenger(driver, getRide.value!!)
@@ -191,7 +188,7 @@ class DriverDashboardViewModel(
     }
 
     fun getPassenger(driver: User, ride: Ride) = launch(Dispatchers.Main) {
-        val getPassenger = userService.getUserById(ride.driverId!!)
+        val getPassenger = userService.getUserById(ride.passengerId!!)
         when (getPassenger) {
             is ServiceResult.Failure -> {
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
@@ -203,9 +200,9 @@ class DriverDashboardViewModel(
                     sendToLogin()
                 } else {
                     //The order here is important
-                    _driverModel.value = driver
                     _rideModel.value = ride
                     _passengerModel.value = getPassenger.value
+                    _driverModel.value = driver
                 }
             }
         }
@@ -273,6 +270,35 @@ class DriverDashboardViewModel(
             is ServiceResult.Success -> {
                 sendToSplash()
             }
+        }
+    }
+
+    fun advanceRide() = launch {
+        val oldRideState = _rideModel.value!!
+
+        val updateRide = rideService.updateRide(
+            oldRideState.copy(
+                status = advanceRideState(oldRideState.status)
+            )
+        )
+
+        when (updateRide) {
+            is ServiceResult.Failure -> {
+                toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+                sendToSplash()
+            }
+            is ServiceResult.Success -> {
+                _rideModel.value = updateRide.value!!
+            }
+        }
+
+    }
+
+    private fun advanceRideState(status: String) : String {
+       return when (status) {
+            RideStatus.SEARCHING_FOR_DRIVER.value -> RideStatus.PASSENGER_PICK_UP.value
+            RideStatus.PASSENGER_PICK_UP.value -> RideStatus.EN_ROUTE.value
+            else -> RideStatus.ARRIVED.value
         }
     }
 
