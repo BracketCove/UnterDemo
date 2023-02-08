@@ -18,11 +18,12 @@ interface UserService {
 
     suspend fun getUserById(userId: String): ServiceResult<User?>
     suspend fun attemptLogout(): ServiceResult<Unit>
-    fun updateUser(user: User): ServiceResult<User?>
+    suspend fun updateUser(user: User): ServiceResult<User?>
 
-    fun attemptUserAvatarUpdate(user: User, url: String): ServiceResult<String?>
+    suspend fun attemptUserAvatarUpdate(user: User, url: String): ServiceResult<String?>
 
-    fun attemptVehicleAvatarUpdate(user: User, url: String): ServiceResult<String?>
+    suspend fun attemptVehicleAvatarUpdate(user: User, url: String): ServiceResult<String?>
+    suspend fun getPassengersLookingForRide(): ServiceResult<List<User>?>
 }
 
 enum class SignUpResult {

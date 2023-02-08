@@ -14,12 +14,9 @@ import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices
 import com.zhuinden.simplestack.StateChange
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 class ProfileSettingsViewModel(
@@ -80,7 +77,7 @@ class ProfileSettingsViewModel(
         toastHandler = null
     }
 
-    fun handleThumbnailUpdate(imageUri: Uri?) {
+    fun handleThumbnailUpdate(imageUri: Uri?) = launch(Dispatchers.Main) {
         if (imageUri != null) {
             val updateAttempt =
                 userService.attemptUserAvatarUpdate(_userModel.value!!, imageUri.toString())
@@ -97,7 +94,7 @@ class ProfileSettingsViewModel(
         }
     }
 
-    private fun updateUser(user: User) {
+    private suspend fun updateUser(user: User) {
         val updateAttempt = userService.updateUser(user)
 
         when (updateAttempt) {
@@ -109,7 +106,7 @@ class ProfileSettingsViewModel(
         }
     }
 
-    fun handleToggleUserType() {
+    fun handleToggleUserType() = launch(Dispatchers.Main) {
         val oldModel = _userModel.value!!
         val newType = flipType(oldModel.type)
 

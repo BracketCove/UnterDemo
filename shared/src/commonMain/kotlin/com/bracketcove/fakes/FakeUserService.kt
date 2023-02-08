@@ -35,16 +35,21 @@ class FakeUserService : UserService {
         return ServiceResult.Success(Unit)
     }
 
-    override fun updateUser(user: User): ServiceResult<User?> {
+    override suspend fun updateUser(user: User): ServiceResult<User?> {
         return ServiceResult.Success(testUser)
     }
 
-    override fun attemptUserAvatarUpdate(user: User, uri: String): ServiceResult<String?> {
+    override suspend fun attemptUserAvatarUpdate(user: User, uri: String): ServiceResult<String?> {
         return ServiceResult.Success(uri)
     }
 
-    override fun attemptVehicleAvatarUpdate(user: User, url: String): ServiceResult<String?> {
-        TODO("Not yet implemented")
+    override suspend fun attemptVehicleAvatarUpdate(user: User, url: String): ServiceResult<String?> {
+        return ServiceResult.Success(url)
+    }
+
+    override suspend fun getPassengersLookingForRide(): ServiceResult<List<User>?> {
+        return ServiceResult.Success(listOf(testUser))
+
     }
 }
 

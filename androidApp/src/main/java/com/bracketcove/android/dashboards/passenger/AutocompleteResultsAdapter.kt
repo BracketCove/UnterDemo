@@ -46,8 +46,5 @@ class AutocompleteResultsAdapter : ListAdapter<AutoCompleteModel, AutocompleteRe
             val location: TextView = binding.place
             val layout: View = binding.itemLayout
     }
-
-
-
 }
 

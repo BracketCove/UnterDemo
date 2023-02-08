@@ -43,7 +43,7 @@ class DriverSettingsViewModel(
 //    var vehiclePhotoUrl by mutableStateOf("")
 //        private set
 
-    fun handleThumbnailUpdate(imageUri: Uri?) {
+    fun handleThumbnailUpdate(imageUri: Uri?) = launch {
         if (imageUri != null) {
             val updateAttempt =
                 userService.attemptUserAvatarUpdate(_userModel.value!!, imageUri.toString())

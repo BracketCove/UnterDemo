@@ -47,6 +47,19 @@ class FakeRideService : RideService {
     override suspend fun completeRide(value: Ride): ServiceResult<Unit> {
         return ServiceResult.Success(Unit)
     }
+
+    override suspend fun getRideByPassengerId(passengerId: String): ServiceResult<Ride?> {
+        return ServiceResult.Success(testRide().copy(
+            status = RideStatus.PASSENGER_PICK_UP.value,
+            driverId = "654321",
+            passengerId = "123456",
+            destinationLatitude = 51.0543,
+            destinationLongitude = -114.20,
+            destinationAddress = "101 9 Avenue SW " +
+                    "Calgary, Alberta " +
+                    "T2P 1J9"
+        ))
+    }
 }
 
 private fun testRide(): Ride = Ride(
