@@ -121,8 +121,24 @@ class DriverDashboardViewModel(
         }
     }
 
-    fun updateDriverLocation(latLng: LatLng) {
-        _driverLocation.value = latLng
+    fun updateDriverLocation(latLng: LatLng) = launch(Dispatchers.Main) {
+        val updateAttempt = userService.updateUser(
+            _passengerModel.value!!.copy(
+                latitude = latLng.lat,
+                longitude = latLng.lng
+            )
+        )
+
+        when (updateAttempt) {
+            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+            is ServiceResult.Success -> {
+                if (updateAttempt.value == null) toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+                else{
+                    _driverModel.value = updateAttempt.value
+                    _driverLocation.value = latLng
+                }
+            }
+        }
     }
 
     fun mapIsReady() {

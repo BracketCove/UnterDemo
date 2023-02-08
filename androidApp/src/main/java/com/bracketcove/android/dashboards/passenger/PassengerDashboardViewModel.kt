@@ -14,6 +14,7 @@ import com.bracketcove.domain.User
 import com.bracketcove.domain.UserStatus
 import com.bracketcove.rides.RideService
 import com.google.android.libraries.places.api.net.FetchPlaceResponse
+import com.google.maps.model.LatLng
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices
@@ -283,6 +284,23 @@ class PassengerDashboardViewModel(
             }
             is ServiceResult.Success -> {
                 sendToSplash()
+            }
+        }
+    }
+
+    fun updatePassengerLocation(latLng: LatLng) = launch (Dispatchers.Main){
+        val updateAttempt = userService.updateUser(
+            _passengerModel.value!!.copy(
+                latitude = latLng.lat,
+                longitude = latLng.lng
+            )
+        )
+
+        when (updateAttempt) {
+            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+            is ServiceResult.Success -> {
+                if (updateAttempt.value == null) toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+                else _passengerModel.value = updateAttempt.value
             }
         }
     }

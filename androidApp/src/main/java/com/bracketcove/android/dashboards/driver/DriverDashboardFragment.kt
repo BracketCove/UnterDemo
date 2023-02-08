@@ -88,51 +88,50 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
             is DriverDashboardUiState.SearchingForPassengers -> searchingForPassenger()
             is DriverDashboardUiState.PassengerPickUp -> passengerPickUp(uiState)
             is DriverDashboardUiState.EnRoute -> enRoute(uiState)
-            is DriverDashboardUiState.Arrived -> Unit //arrived(uiState)
+            is DriverDashboardUiState.Arrived -> arrived(uiState)
         }
 
         updateMap(uiState)
     }
 
-//    private fun arrived(uiState: DriverDashboardUiState.Arrived) {
-//        binding.apply {
-//            rideLayout.visibility = View.VISIBLE
-//            loadingView.loadingLayout.visibility = View.GONE
-//            searchingLayout.visibility = View.GONE
-//
-//            searchingForDriver.searchingForDriverLayout.visibility = View.GONE
-//            //unbind recyclerview from adapter
-//            passengerList.adapter = null
-//
-//            mapLayout.subtitle.text = getString(R.string.destination)
-//            mapLayout.address.text = uiState.destinationAddress
-//
-//            rideComplete.rideCompleteLayout.visibility = View.VISIBLE
-//            rideComplete.advanceButton.setOnClickListener {
-//                viewModel.completeRide()
-//            }
-//
-//            driverName.text = uiState.driverName
-//            Glide.with(requireContext())
-//                .load(uiState.vehicleAvatar)
-//                .fitCenter()
-//                .placeholder(
-//                    CircularProgressDrawable(requireContext()).apply {
-//                        setColorSchemeColors(
-//                            ContextCompat.getColor(requireContext(), R.color.color_light_grey)
-//                        )
-//
-//                        strokeWidth = 2f
-//                        centerRadius = 48f
-//                        start()
-//                    }
-//                )
-//                .into(binding.avatar)
-//
-//            driverInfoLayout.visibility = View.VISIBLE
-//        }
-//    }
-//
+    private fun arrived(uiState: DriverDashboardUiState.Arrived) {
+        binding.apply {
+            rideLayout.visibility = View.VISIBLE
+            loadingView.loadingLayout.visibility = View.GONE
+            searchingLayout.visibility = View.GONE
+
+            //unbind recyclerview from adapter
+            passengerList.adapter = null
+
+            mapLayout.subtitle.text = getString(R.string.destination)
+            mapLayout.address.text = uiState.destinationAddress
+
+            advanceLayout.advanceRideStateLayout.visibility = View.VISIBLE
+
+            returnLayout.rideCompleteLayout.visibility = View.VISIBLE
+            returnLayout.advanceButton.setOnClickListener {
+                viewModel.completeRide()
+            }
+
+            username.text = uiState.passengerName
+            Glide.with(requireContext())
+                .load(uiState.passengerAvatar)
+                .fitCenter()
+                .placeholder(
+                    CircularProgressDrawable(requireContext()).apply {
+                        setColorSchemeColors(
+                            ContextCompat.getColor(requireContext(), R.color.color_light_grey)
+                        )
+
+                        strokeWidth = 2f
+                        centerRadius = 48f
+                        start()
+                    }
+                )
+                .into(binding.avatar)
+        }
+    }
+
     private fun enRoute(uiState: DriverDashboardUiState.EnRoute) {
         binding.apply {
             rideLayout.visibility = View.VISIBLE
@@ -288,6 +287,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
         uiState: DriverDashboardUiState
     ) {
         if (googleMap != null) {
+            googleMap!!.clear()
             when (uiState) {
                 is DriverDashboardUiState.SearchingForPassengers -> Unit
                 is DriverDashboardUiState.PassengerPickUp -> {
@@ -464,23 +464,18 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                             ).show()
                         }
 
-//                        googleMap!!.addMarker(
-//                            MarkerOptions().apply {
-//                                position(LatLng(uiState.passengerLat, uiState.passengerLon))
-//                            }
-//                        )
-//                        googleMap!!.addMarker(
-//                            MarkerOptions().apply {
-//                                position(LatLng(uiState.destinationLat, uiState.destinationLon))
-//                            }
-//                        )
-//
-//                        googleMap!!.moveCamera(
-//                            CameraUpdateFactory.newLatLngZoom(
-//                                LatLng(uiState.passengerLat, uiState.passengerLon),
-//                                14f
-//                            )
-//                        )
+                        googleMap!!.addMarker(
+                            MarkerOptions().apply {
+                                position(LatLng(uiState.destinationLat, uiState.destinationLon))
+                            }
+                        )
+
+                        googleMap!!.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(uiState.destinationLat, uiState.destinationLat),
+                                14f
+                            )
+                        )
                     }
 
                 }
@@ -498,8 +493,6 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                         )
                     )
                 }
-
-
                 //do nothing
                 else -> Unit
             }

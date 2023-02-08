@@ -585,8 +585,11 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                 if (locationRequest.isSuccessful && locationRequest.result != null) {
                     val location = locationRequest.result
 
-                    val lat = location.latitude.toFloat()
-                    val lon = location.longitude.toFloat()
+                    val lat = location.latitude
+                    val lon = location.longitude
+
+                    viewModel.updatePassengerLocation(com.google.maps.model.LatLng(lat, lon))
+
 
                 } else {
 
