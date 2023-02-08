@@ -220,12 +220,12 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 
             //somewhat worried this could attach multiple observers
             lifecycleScope.launch {
-                viewModel.passengerList
+                viewModel.locationAwarePassengerList
                     //Only emit states when lifecycle of the fragment is started
                     .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
                     .distinctUntilChanged()
                     .collect { models ->
-                        if (models.isEmpty()) {
+                        if (models.isNullOrEmpty()) {
                             passengerList.visibility = View.GONE
                             passengersLoadingLayout.visibility = View.VISIBLE
                         } else {
@@ -233,7 +233,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                             passengersLoadingLayout.visibility = View.GONE
 
                             (passengerList.adapter as PassengerListAdapter)
-                                .submitList(models.map { Pair(it, 0.0) })
+                                .submitList(models)
                         }
                     }
             }
@@ -551,9 +551,9 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                 if (locationRequest.isSuccessful && locationRequest.result != null) {
                     val location = locationRequest.result
 
-                    val lat = location.latitude.toFloat()
-                    val lon = location.longitude.toFloat()
-
+                    val lat = location.latitude
+                    val lon = location.longitude
+                    viewModel.updateDriverLocation(com.google.maps.model.LatLng(lat, lon))
                 } else {
 
                     Log.d("PLACES", locationRequest.exception.toString())

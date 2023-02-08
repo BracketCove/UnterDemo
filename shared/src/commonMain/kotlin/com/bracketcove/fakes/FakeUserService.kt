@@ -48,8 +48,11 @@ class FakeUserService : UserService {
     }
 
     override suspend fun getPassengersLookingForRide(): ServiceResult<List<User>?> {
-       // return ServiceResult.Success(listOf(testUser))
-        return ServiceResult.Success(emptyList())
+        return ServiceResult.Success(listOf(testUser.copy(
+            latitude = 51.0543,
+            longitude = -114.20,
+        )))
+        //return ServiceResult.Success(emptyList())
 
     }
 }

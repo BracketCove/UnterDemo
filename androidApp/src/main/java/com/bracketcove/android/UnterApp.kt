@@ -19,10 +19,14 @@ class UnterApp: Application() {
     override fun onCreate() {
         super.onCreate()
         MapsInitializer.initialize(this)
+        geoContext = GeoApiContext.Builder()
+            .apiKey(BuildConfig.MAPS_API_KEY)
+            .build()
+
         val fakeUser = FakeUserService()
         val fakeRideService = FakeRideService()
 
-        val googleService = GoogleService(this)
+        val googleService = GoogleService(this, geoContext)
         globalServices = GlobalServices.builder()
             .add(fakeUser)
             .rebind<UserService>(fakeUser)
@@ -31,8 +35,6 @@ class UnterApp: Application() {
             .add(googleService)
             .build()
 
-        geoContext = GeoApiContext.Builder()
-            .apiKey(BuildConfig.MAPS_API_KEY)
-            .build()
+
     }
 }

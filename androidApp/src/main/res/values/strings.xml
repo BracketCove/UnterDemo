@@ -27,7 +27,7 @@
     <string name="description">Description</string>
     <string name="apply">Apply</string>
     <string name="passenger_requests">Passenger Requests</string>
-    <string name="no_passengers_available">No Passengers Available Currently</string>
+    <string name="searching_for_passengers">Searching for passengers…</string>
     <string name="passenger_location">Passenger Location</string>
     <string name="cancel">Cancel</string>
     <string name="arrived_at_destination">Arrived At Destination\n(Hold Icon Down)</string>
@@ -52,6 +52,7 @@
     <string name="destination">Destination</string>
     <string name="unable_to_get_map_directions">Unable to get map directions.</string>
     <string name="driver_is">"Driver is "</string>
-    <string name="away">" away."</string>
+    <string name="away">" away"</string>
     <string name="searching">Searching...</string>
+    <string name="passenger_is">"Passenger is "</string>
 </resources>

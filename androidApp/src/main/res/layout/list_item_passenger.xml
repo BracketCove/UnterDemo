@@ -35,7 +35,7 @@
         />
 
     <TextView
-        android:id="@+id/passengerDistance"
+        android:id="@+id/rideDistance"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         tools:text="Passenger is 2.5km away"
@@ -45,21 +45,6 @@
         android:layout_marginHorizontal="16dp"
         android:includeFontPadding="false"
         app:layout_constraintTop_toBottomOf="@+id/username"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/avatar"
-        />
-
-    <TextView
-        android:id="@+id/tripDistance"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        tools:text="Ride is 2.5km"
-        android:textSize="16sp"
-        android:fontFamily="@font/poppins_light"
-        android:textColor="@android:color/black"
-        android:layout_marginHorizontal="16dp"
-        android:includeFontPadding="false"
-        app:layout_constraintTop_toBottomOf="@+id/passengerDistance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/avatar"
         />

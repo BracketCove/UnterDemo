@@ -3,6 +3,8 @@ package com.bracketcove.android.google
 import android.content.Context
 import android.util.Log
 import com.bracketcove.ServiceResult
+import com.bracketcove.android.UnterApp
+import com.bracketcove.domain.User
 import com.google.android.gms.tasks.Task
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompletePrediction
@@ -13,6 +15,11 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FetchPlaceResponse
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.maps.DirectionsApi
+import com.google.maps.GeoApiContext
+import com.google.maps.model.LatLng
+import com.google.maps.model.TravelMode
+import com.google.maps.model.Unit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
@@ -20,7 +27,8 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 class GoogleService(
-    context: Context
+    context: Context,
+    val geoApiContext: GeoApiContext
 ) {
 
     private val client: PlacesClient by lazy {
@@ -38,6 +46,31 @@ class GoogleService(
             ServiceResult.Success(awaitResult(client.fetchPlace(request)))
         } catch (e: Exception) {
             ServiceResult.Failure(e)
+        }
+    }
+
+    suspend fun getDistanceBetween(userLatLng: LatLng, comparedTo: LatLng): String = withContext(Dispatchers.IO) {
+        val dirResult =
+            DirectionsApi.newRequest(geoApiContext)
+                .mode(TravelMode.DRIVING)
+                .units(Unit.METRIC)
+                //Change this appropriately
+                .region("ca")
+                .origin(
+                    userLatLng
+                )
+                .destination(
+                    comparedTo
+                )
+                .await()
+
+        if (dirResult.routes?.first() != null &&
+            dirResult.routes.isNotEmpty() &&
+            dirResult.routes.first().legs.isNotEmpty()
+        ) {
+            dirResult.routes.first().legs.first().distance.humanReadable
+        } else{
+            "Error"
         }
     }
 

@@ -12,6 +12,7 @@ import com.bracketcove.domain.Ride
 import com.bracketcove.domain.RideStatus
 import com.bracketcove.domain.User
 import com.bracketcove.rides.RideService
+import com.google.maps.model.LatLng
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices
@@ -20,7 +21,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
@@ -50,21 +50,14 @@ class DriverDashboardViewModel(
      */
     val uiState = combineTuple(_driverModel, _passengerModel, _rideModel, _mapIsReady).map {
         //only publish state updates whe map is ready!
-        if (_driverModel.value == null || !_mapIsReady.value) DriverDashboardUiState.Loading
+        val driver = it.first
+        val passenger = it.second
+        val ride = it.third
+        val isMapReady = it.fourth
+
+        if (driver == null || !isMapReady) DriverDashboardUiState.Loading
         else {
-            val driver = it.first
-            val passenger = it.second
-            val ride = it.third
-
             when {
-                driver == null -> {
-                    Log.d(
-                        "DRIVER",
-                        "${driver.toString()}, ${passenger.toString()}, ${ride.toString()}"
-                    )
-                    DriverDashboardUiState.Error
-                }
-
                 ride == null -> DriverDashboardUiState.SearchingForPassengers
 
                 passenger != null && ride.status == RideStatus.PASSENGER_PICK_UP.value -> DriverDashboardUiState.PassengerPickUp(
@@ -107,8 +100,29 @@ class DriverDashboardViewModel(
         }
     }
 
-    private val _passengerList = MutableStateFlow<List<User>>(emptyList())
-    val passengerList: StateFlow<List<User>> get() = _passengerList
+    //999 represents an impossible value, indicating we don't know the driver's location
+    private val DEFAULT_LAT_OR_LON = 999.0
+    private val _driverLocation = MutableStateFlow(LatLng(DEFAULT_LAT_OR_LON, DEFAULT_LAT_OR_LON))
+    private val _passengerList = MutableStateFlow<List<User>?>(null)
+
+    val locationAwarePassengerList = combineTuple(_driverLocation, _passengerList).map {
+        if (it.first.lat == DEFAULT_LAT_OR_LON
+            || it.first.lng == DEFAULT_LAT_OR_LON
+            || it.second.isNullOrEmpty()
+        ) emptyList<Pair<User, String>>()
+        else {
+            it.second!!.map { user ->
+                val passengerLatLng = LatLng(user.latitude, user.longitude)
+                val getDistance = googleService.getDistanceBetween(it.first, passengerLatLng)
+
+                Pair(user, getDistance)
+            }
+        }
+    }
+
+    fun updateDriverLocation(latLng: LatLng) {
+        _driverLocation.value = latLng
+    }
 
     fun mapIsReady() {
         _mapIsReady.value = true
@@ -171,7 +185,7 @@ class DriverDashboardViewModel(
                 sendToLogin()
             }
             is ServiceResult.Success -> {
-                _passengerList.value
+                _passengerList.value = getPassengersList.value ?: emptyList()
             }
         }
     }

@@ -15,13 +15,13 @@ import com.bracketcove.domain.User
 import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
 
-class PassengerListAdapter : ListAdapter<Pair<User, Double>, PassengerListAdapter.PassengerViewHolder>(
-    object: DiffUtil.ItemCallback<Pair<User, Double>>() {
-        override fun areItemsTheSame(oldItem: Pair<User, Double>, newItem: Pair<User, Double>): Boolean {
+class PassengerListAdapter : ListAdapter<Pair<User, String>, PassengerListAdapter.PassengerViewHolder>(
+    object: DiffUtil.ItemCallback<Pair<User, String>>() {
+        override fun areItemsTheSame(oldItem: Pair<User, String>, newItem: Pair<User, String>): Boolean {
             return oldItem.first.userId == newItem.first.userId
         }
 
-        override fun areContentsTheSame(oldItem: Pair<User, Double>, newItem: Pair<User, Double>): Boolean {
+        override fun areContentsTheSame(oldItem: Pair<User, String>, newItem: Pair<User, String>): Boolean {
             return oldItem.first == newItem.first
         }
     }
@@ -57,6 +57,13 @@ class PassengerListAdapter : ListAdapter<Pair<User, Double>, PassengerListAdapte
                     }
                 )
                 .into(holder.avatar)
+            holder.distance.text = if (second == "Error") holder.itemView.context.getString(R.string.generic_error)
+            else buildString {
+                append(holder.itemView.context.getString(R.string.passenger_is))
+                append(second)
+                append(holder.itemView.context.getString(R.string.away))
+            }
+
             holder.layout.setOnClickListener { handleItemClick?.invoke(first) }
         }
     }
@@ -64,6 +71,7 @@ class PassengerListAdapter : ListAdapter<Pair<User, Double>, PassengerListAdapte
     inner class PassengerViewHolder constructor(binding: ListItemPassengerBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val username: TextView = binding.username
+        val distance: TextView = binding.rideDistance
         val avatar: ShapeableImageView = binding.avatar
         val layout: View = binding.listItemLayout
     }

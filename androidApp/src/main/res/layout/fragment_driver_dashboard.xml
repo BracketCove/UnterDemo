@@ -22,6 +22,7 @@
         android:id="@+id/searchingLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -46,6 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/requestsTitle"
@@ -56,43 +58,33 @@
             android:id="@+id/passengersLoadingLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:gravity="center_horizontal"
+            android:gravity="center"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/requestsTitle">
 
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/passengersLoadingProgressBar"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:indeterminate="true"
+                app:indicatorColor="@color/color_primary" />
+
             <TextView
                 android:id="@+id/noPassengersAvailable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="64dp"
-                android:fontFamily="@font/poppins_regular"
-                android:includeFontPadding="false"
-                android:text="@string/no_passengers_available"
-                android:textAlignment="center"
-                android:textColor="@android:color/black"
-                android:textSize="36sp" />
-
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/passengersLoadingProgressBar"
-                android:layout_width="98dp"
-                android:layout_height="98dp"
-                android:indeterminate="true"
-                app:indicatorColor="@color/color_primary" />
-
-            <TextView
-                android:id="@+id/searchingSubtitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="64dp"
                 android:fontFamily="@font/poppins_light"
                 android:includeFontPadding="false"
-                android:text="@string/searching"
+                android:text="@string/searching_for_passengers"
                 android:textAlignment="center"
                 android:textColor="@color/color_light_grey"
-                android:textSize="24sp" />
+                android:textSize="36sp" />
+
+
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

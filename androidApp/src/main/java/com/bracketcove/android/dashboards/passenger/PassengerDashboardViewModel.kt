@@ -52,22 +52,16 @@ class PassengerDashboardViewModel(
         - ARRIVED
      */
     val uiState = combineTuple(_passengerModel, _driverModel, _rideModel, _mapIsReady).map {
+        val passenger = it.first
+        val driver = it.second
+        val ride = it.third
+        val isMapReady = it.fourth
+
         //only publish state updates whe map is ready!
-        if (_passengerModel.value == null || !_mapIsReady.value) PassengerDashboardUiState.Loading
+        if (passenger == null || !isMapReady) PassengerDashboardUiState.Loading
         else {
-            val passenger = it.first
-            val driver = it.second
-            val ride = it.third
 
             when {
-                passenger == null -> {
-                    Log.d(
-                        "PASSENGER",
-                        "${passenger.toString()}, ${driver.toString()}, ${ride.toString()}"
-                    )
-                    PassengerDashboardUiState.Error
-                }
-
                 ride == null -> PassengerDashboardUiState.RideInactive
 
                 ride.driverId == null -> PassengerDashboardUiState.SearchingForDriver(
