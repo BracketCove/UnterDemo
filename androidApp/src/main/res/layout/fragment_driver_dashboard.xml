@@ -21,8 +21,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/searchingLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,7 +30,7 @@
         <TextView
             android:id="@+id/requestsTitle"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:fontFamily="@font/poppins_regular"
             android:includeFontPadding="false"
@@ -56,9 +55,10 @@
         <LinearLayout
             android:id="@+id/passengersLoadingLayout"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:gravity="center_horizontal"
             android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/requestsTitle">
@@ -79,6 +79,7 @@
                 android:id="@+id/passengersLoadingProgressBar"
                 android:layout_width="98dp"
                 android:layout_height="98dp"
+                android:indeterminate="true"
                 app:indicatorColor="@color/color_primary" />
 
             <TextView
@@ -88,7 +89,7 @@
                 android:layout_margin="64dp"
                 android:fontFamily="@font/poppins_light"
                 android:includeFontPadding="false"
-                android:text="@string/no_passengers_available"
+                android:text="@string/searching"
                 android:textAlignment="center"
                 android:textColor="@color/color_light_grey"
                 android:textSize="24sp" />
@@ -101,6 +102,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -219,6 +221,7 @@
         android:id="@+id/loadingView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

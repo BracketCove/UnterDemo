@@ -48,7 +48,8 @@ class FakeUserService : UserService {
     }
 
     override suspend fun getPassengersLookingForRide(): ServiceResult<List<User>?> {
-        return ServiceResult.Success(listOf(testUser))
+       // return ServiceResult.Success(listOf(testUser))
+        return ServiceResult.Success(emptyList())
 
     }
 }
@@ -56,7 +57,7 @@ class FakeUserService : UserService {
 private val testUser = User(
     "123456",
     "Saitama",
-    UserType.PASSENGER.value,
+    UserType.DRIVER.value,
     UserStatus.INACTIVE.value,
     "https://static.wikia.nocookie.net/onepunchman/images/9/9b/Saitama_regular_face.jpg/revision/latest?cb=20200316015620",
     "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Wild_Burros.jpg/1280px-Wild_Burros.jpg",

@@ -28,7 +28,8 @@ import kotlin.coroutines.CoroutineContext
 class DriverDashboardViewModel(
     val backstack: Backstack,
     val userService: UserService,
-    val rideService: RideService
+    val rideService: RideService,
+    val googleService: GoogleService
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
@@ -49,7 +50,7 @@ class DriverDashboardViewModel(
      */
     val uiState = combineTuple(_driverModel, _passengerModel, _rideModel, _mapIsReady).map {
         //only publish state updates whe map is ready!
-        if (_passengerModel.value == null || !_mapIsReady.value) DriverDashboardUiState.Loading
+        if (_driverModel.value == null || !_mapIsReady.value) DriverDashboardUiState.Loading
         else {
             val driver = it.first
             val passenger = it.second

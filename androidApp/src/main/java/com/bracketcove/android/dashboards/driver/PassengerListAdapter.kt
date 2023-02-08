@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bracketcove.android.R
-import com.bracketcove.android.dashboards.passenger.AutoCompleteModel
 import com.bracketcove.android.databinding.ListItemPassengerBinding
 import com.bracketcove.domain.User
 import com.bumptech.glide.Glide

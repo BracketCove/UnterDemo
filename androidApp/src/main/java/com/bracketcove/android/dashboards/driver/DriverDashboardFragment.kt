@@ -199,23 +199,11 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 //        }
 //    }
 
-    private fun searchingForPassenger() {
-        binding.apply {
-            rideLayout.visibility = View.GONE
-            loadingView.loadingLayout.visibility = View.GONE
-            searchingLayout.visibility = View.VISIBLE
-
-
-
-
-        }
-    }
-
     /**
      * - Map is visible
      * - Search layout is visible
      */
-    private fun rideInactiveState() {
+    private fun searchingForPassenger() {
         binding.apply {
             rideLayout.visibility = View.GONE
             loadingView.loadingLayout.visibility = View.GONE
@@ -237,8 +225,16 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                     .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
                     .distinctUntilChanged()
                     .collect { models ->
-                        (passengerList.adapter as PassengerListAdapter)
-                            .submitList(models.map { Pair(it, 0.0) })
+                        if (models.isEmpty()) {
+                            passengerList.visibility = View.GONE
+                            passengersLoadingLayout.visibility = View.VISIBLE
+                        } else {
+                            passengerList.visibility = View.VISIBLE
+                            passengersLoadingLayout.visibility = View.GONE
+
+                            (passengerList.adapter as PassengerListAdapter)
+                                .submitList(models.map { Pair(it, 0.0) })
+                        }
                     }
             }
         }

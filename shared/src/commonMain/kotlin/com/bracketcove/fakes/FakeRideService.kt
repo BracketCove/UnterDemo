@@ -8,18 +8,18 @@ import com.bracketcove.rides.RideService
 
 class FakeRideService : RideService {
     override suspend fun getRideIfInProgress(): ServiceResult<Ride?> {
-        return ServiceResult.Success(testRide().copy(
-            status = RideStatus.PASSENGER_PICK_UP.value,
-            driverId = "654321",
-            passengerId = "123456",
-            destinationLatitude = 51.0543,
-            destinationLongitude = -114.20,
-            destinationAddress = "101 9 Avenue SW " +
-                    "Calgary, Alberta " +
-                    "T2P 1J9"
-        ))
+//        return ServiceResult.Success(testRide().copy(
+//            status = RideStatus.PASSENGER_PICK_UP.value,
+//            driverId = "654321",
+//            passengerId = "123456",
+//            destinationLatitude = 51.0543,
+//            destinationLongitude = -114.20,
+//            destinationAddress = "101 9 Avenue SW " +
+//                    "Calgary, Alberta " +
+//                    "T2P 1J9"
+//        ))
 
-     //   return ServiceResult.Success(null)
+        return ServiceResult.Success(null)
     }
 
     override suspend fun updateRide(ride: Ride): ServiceResult<Ride?> {
