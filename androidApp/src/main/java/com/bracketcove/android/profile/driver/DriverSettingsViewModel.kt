@@ -1,15 +1,12 @@
 package com.bracketcove.android.profile.driver
 
 import android.net.Uri
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.bracketcove.ServiceResult
 import com.bracketcove.android.navigation.LoginKey
 import com.bracketcove.android.navigation.ProfileSettingsKey
 import com.bracketcove.android.uicommon.ToastMessages
 import com.bracketcove.authorization.UserService
-import com.bracketcove.domain.User
+import com.bracketcove.domain.UnterUser
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices
@@ -28,8 +25,8 @@ class DriverSettingsViewModel(
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
-    private val _userModel = MutableStateFlow<User?>(null)
-    val userModel: StateFlow<User?> get() = _userModel
+    private val _userModel = MutableStateFlow<UnterUser?>(null)
+    val userModel: StateFlow<UnterUser?> get() = _userModel
 
     fun updateVehicleDescription(input: String) {
         _userModel.value = _userModel.value!!.copy(

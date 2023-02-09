@@ -2,7 +2,6 @@ package com.bracketcove.rides
 
 import com.bracketcove.ServiceResult
 import com.bracketcove.domain.Ride
-import com.bracketcove.domain.User
 
 interface RideService {
     suspend fun getRideIfInProgress(): ServiceResult<Ride?>

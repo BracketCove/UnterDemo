@@ -1,6 +1,6 @@
 package com.bracketcove.domain
 
-data class User(
+data class UnterUser(
     val userId: String = "",
     val username: String = "",
     val email: String = "",

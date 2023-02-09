@@ -1,7 +1,10 @@
-package com.bracketcove.authorization
+package com.bracketcove.usecase
 
 import com.bracketcove.ServiceResult
-import com.bracketcove.domain.User
+import com.bracketcove.authorization.AuthorizationService
+import com.bracketcove.authorization.SignUpResult
+import com.bracketcove.authorization.UserService
+import com.bracketcove.domain.UnterUser
 
 class SignUpUser(
     val authService: AuthorizationService,
@@ -26,7 +29,7 @@ class SignUpUser(
         uid: String
     ): ServiceResult<SignUpResult> {
         return userService.updateUser(
-            User(
+            UnterUser(
                 email = email,
                 userId = uid,
                 username = username

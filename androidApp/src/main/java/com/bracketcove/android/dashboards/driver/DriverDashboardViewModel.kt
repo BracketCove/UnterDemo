@@ -10,7 +10,7 @@ import com.bracketcove.android.uicommon.combineTuple
 import com.bracketcove.authorization.UserService
 import com.bracketcove.domain.Ride
 import com.bracketcove.domain.RideStatus
-import com.bracketcove.domain.User
+import com.bracketcove.domain.UnterUser
 import com.bracketcove.rides.RideService
 import com.google.maps.model.LatLng
 import com.zhuinden.simplestack.Backstack
@@ -33,8 +33,8 @@ class DriverDashboardViewModel(
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
-    private val _passengerModel = MutableStateFlow<User?>(null)
-    private val _driverModel = MutableStateFlow<User?>(null)
+    private val _passengerModel = MutableStateFlow<UnterUser?>(null)
+    private val _driverModel = MutableStateFlow<UnterUser?>(null)
     private val _rideModel = MutableStateFlow<Ride?>(null)
     private val _mapIsReady = MutableStateFlow(false)
 
@@ -103,14 +103,14 @@ class DriverDashboardViewModel(
     //999 represents an impossible value, indicating we don't know the driver's location
     private val DEFAULT_LAT_OR_LON = 999.0
     private val _driverLocation = MutableStateFlow(LatLng(DEFAULT_LAT_OR_LON, DEFAULT_LAT_OR_LON))
-    private val _passengerList = MutableStateFlow<List<User>?>(null)
+    private val _passengerList = MutableStateFlow<List<UnterUser>?>(null)
 
     val locationAwarePassengerList = combineTuple(_driverLocation, _passengerList).map {
         if (it.first.lat == DEFAULT_LAT_OR_LON
             || it.first.lng == DEFAULT_LAT_OR_LON
             || it.second.isNullOrEmpty()
 
-        ) emptyList<Pair<User, String>>()
+        ) emptyList<Pair<UnterUser, String>>()
         else {
             it.second!!.map { user ->
                 val passengerLatLng = LatLng(user.latitude, user.longitude)
@@ -166,7 +166,7 @@ class DriverDashboardViewModel(
      * setting the other models first, we avoid the UI rapidly switching between different states
      * in a disorganized way.
      */
-    private suspend fun getRideIfOneExists(driver: User) {
+    private suspend fun getRideIfOneExists(driver: UnterUser) {
         val getRide = rideService.getRideIfInProgress()
         when (getRide) {
             is ServiceResult.Failure -> {
@@ -203,7 +203,7 @@ class DriverDashboardViewModel(
         }
     }
 
-    fun getPassenger(driver: User, ride: Ride) = launch(Dispatchers.Main) {
+    fun getPassenger(driver: UnterUser, ride: Ride) = launch(Dispatchers.Main) {
         val getPassenger = userService.getUserById(ride.passengerId!!)
         when (getPassenger) {
             is ServiceResult.Failure -> {
@@ -224,7 +224,7 @@ class DriverDashboardViewModel(
         }
     }
 
-    fun handlePassengerItemClick(passenger: User) = launch(Dispatchers.Main) {
+    fun handlePassengerItemClick(passenger: UnterUser) = launch(Dispatchers.Main) {
         val getRideByPassengerId = rideService.getRideByPassengerId(passenger.userId)
 
         when (getRideByPassengerId) {

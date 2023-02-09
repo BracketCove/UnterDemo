@@ -4,9 +4,7 @@ import com.bracketcove.ServiceResult
 import com.bracketcove.authorization.AuthorizationService
 import com.bracketcove.authorization.LogInResult
 import com.bracketcove.authorization.SignUpResult
-import com.bracketcove.authorization.UserService
-import com.bracketcove.domain.User
-import com.bracketcove.domain.UserType
+import com.bracketcove.domain.UnterUser
 
 class FakeAuthService : AuthorizationService {
     override suspend fun signUp(email: String, password: String): ServiceResult<SignUpResult> {
@@ -18,6 +16,10 @@ class FakeAuthService : AuthorizationService {
     }
 
     override suspend fun logout(): ServiceResult<Unit> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getSession(): ServiceResult<UnterUser?> {
         TODO("Not yet implemented")
     }
 

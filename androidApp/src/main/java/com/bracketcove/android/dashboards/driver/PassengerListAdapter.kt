@@ -11,23 +11,23 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bracketcove.android.R
 import com.bracketcove.android.databinding.ListItemPassengerBinding
-import com.bracketcove.domain.User
+import com.bracketcove.domain.UnterUser
 import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
 
-class PassengerListAdapter : ListAdapter<Pair<User, String>, PassengerListAdapter.PassengerViewHolder>(
-    object: DiffUtil.ItemCallback<Pair<User, String>>() {
-        override fun areItemsTheSame(oldItem: Pair<User, String>, newItem: Pair<User, String>): Boolean {
+class PassengerListAdapter : ListAdapter<Pair<UnterUser, String>, PassengerListAdapter.PassengerViewHolder>(
+    object: DiffUtil.ItemCallback<Pair<UnterUser, String>>() {
+        override fun areItemsTheSame(oldItem: Pair<UnterUser, String>, newItem: Pair<UnterUser, String>): Boolean {
             return oldItem.first.userId == newItem.first.userId
         }
 
-        override fun areContentsTheSame(oldItem: Pair<User, String>, newItem: Pair<User, String>): Boolean {
+        override fun areContentsTheSame(oldItem: Pair<UnterUser, String>, newItem: Pair<UnterUser, String>): Boolean {
             return oldItem.first == newItem.first
         }
     }
 ) {
 
-    var handleItemClick: ((User) -> Unit)? = null
+    var handleItemClick: ((UnterUser) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PassengerViewHolder {
         return PassengerViewHolder(

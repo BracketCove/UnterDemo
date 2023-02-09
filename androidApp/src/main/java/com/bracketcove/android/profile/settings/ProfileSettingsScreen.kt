@@ -38,7 +38,7 @@ import com.bracketcove.android.style.color_black
 import com.bracketcove.android.style.color_primary
 import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
-import com.bracketcove.domain.User
+import com.bracketcove.domain.UnterUser
 import com.bracketcove.domain.UserType
 import com.bracketcove.fakes.FakeAuthService
 import com.bracketcove.fakes.FakeUserService
@@ -147,7 +147,7 @@ fun ProfileHeader(
 fun NameAndDriverState(
     modifier: Modifier,
     viewModel: ProfileSettingsViewModel,
-    user: User
+    user: UnterUser
 ) {
 
     ConstraintLayout(modifier = modifier) {
@@ -196,7 +196,7 @@ fun NameAndDriverState(
 fun ProfileAvatar(
     modifier: Modifier,
     viewModel: ProfileSettingsViewModel,
-    user: User
+    user: UnterUser
 ) {
     Box(
         modifier = Modifier

@@ -7,9 +7,8 @@ import com.bracketcove.ServiceResult
 import com.bracketcove.android.navigation.LoginKey
 import com.bracketcove.android.navigation.PassengerDashboardKey
 import com.bracketcove.android.uicommon.ToastMessages
-import com.bracketcove.authorization.UserService
 import com.bracketcove.authorization.SignUpResult
-import com.bracketcove.authorization.SignUpUser
+import com.bracketcove.usecase.SignUpUser
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices

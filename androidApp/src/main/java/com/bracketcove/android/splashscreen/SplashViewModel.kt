@@ -4,8 +4,8 @@ import com.bracketcove.ServiceResult
 import com.bracketcove.android.navigation.DriverDashboardKey
 import com.bracketcove.android.navigation.LoginKey
 import com.bracketcove.android.navigation.PassengerDashboardKey
-import com.bracketcove.authorization.UserService
-import com.bracketcove.domain.User
+import com.bracketcove.domain.UnterUser
+import com.bracketcove.usecase.GetUser
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices
@@ -19,7 +19,7 @@ import kotlin.coroutines.CoroutineContext
 
 class SplashViewModel(
     val backstack: Backstack,
-    val userService: UserService
+    val getUser: GetUser
 ) : ScopedServices.Activated, CoroutineScope {
 
     private fun sendToLogin() {
@@ -33,7 +33,7 @@ class SplashViewModel(
     }
 
     fun checkAuthState() = launch {
-        val getUser = userService.getUser()
+        val getUser = getUser.getUser()
 
         when (getUser) {
             //there's nothing else to do but send to the login page
@@ -45,7 +45,7 @@ class SplashViewModel(
         }
     }
 
-    private fun sendToDashboard(user: User) {
+    private fun sendToDashboard(user: UnterUser) {
         when (user.type) {
             "PASSENGER" -> backstack.setHistory(
                 History.of((PassengerDashboardKey())),

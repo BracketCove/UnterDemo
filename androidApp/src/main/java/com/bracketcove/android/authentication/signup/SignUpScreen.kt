@@ -20,7 +20,7 @@ import com.bracketcove.android.style.color_primary
 import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
 import com.bracketcove.android.uicommon.UnterHeader
-import com.bracketcove.authorization.SignUpUser
+import com.bracketcove.usecase.SignUpUser
 import com.bracketcove.fakes.FakeAuthService
 import com.bracketcove.fakes.FakeUserService
 import com.zhuinden.simplestack.Backstack

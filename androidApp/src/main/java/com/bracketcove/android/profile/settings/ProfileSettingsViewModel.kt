@@ -8,9 +8,8 @@ import com.bracketcove.android.navigation.LoginKey
 import com.bracketcove.android.navigation.PassengerDashboardKey
 import com.bracketcove.android.uicommon.ToastMessages
 import com.bracketcove.authorization.AuthorizationService
-import com.bracketcove.authorization.FirebaseAuthService
 import com.bracketcove.authorization.UserService
-import com.bracketcove.domain.User
+import com.bracketcove.domain.UnterUser
 import com.bracketcove.domain.UserType
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
@@ -28,8 +27,8 @@ class ProfileSettingsViewModel(
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
-    private val _userModel = MutableStateFlow<User?>(null)
-    val userModel: StateFlow<User?> get() = _userModel
+    private val _userModel = MutableStateFlow<UnterUser?>(null)
+    val userModel: StateFlow<UnterUser?> get() = _userModel
     fun handleLogOut() = launch(Dispatchers.Main) {
         val logout = authService.logout()
 
@@ -97,7 +96,7 @@ class ProfileSettingsViewModel(
         }
     }
 
-    private suspend fun updateUser(user: User) {
+    private suspend fun updateUser(user: UnterUser) {
         val updateAttempt = userService.updateUser(user)
 
         when (updateAttempt) {

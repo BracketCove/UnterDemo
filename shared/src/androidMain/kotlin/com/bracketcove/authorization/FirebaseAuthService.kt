@@ -1,7 +1,7 @@
 package com.bracketcove.authorization
 
 import com.bracketcove.ServiceResult
-import com.google.android.gms.tasks.Task
+import com.bracketcove.domain.UnterUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -9,9 +9,6 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 class FirebaseAuthService(
     val auth: FirebaseAuth
@@ -45,5 +42,18 @@ class FirebaseAuthService(
 
     override suspend fun logout(): ServiceResult<Unit> {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun getSession(): ServiceResult<UnterUser?> {
+        val firebaseUser = auth.currentUser
+        return if (firebaseUser == null) ServiceResult.Value(null)
+        else ServiceResult.Value(
+            firebaseUser.let {
+                UnterUser(
+                    userId = it.uid
+                )
+            }
+        )
+
     }
 }

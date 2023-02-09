@@ -10,8 +10,7 @@ import com.bracketcove.android.uicommon.combineTuple
 import com.bracketcove.authorization.UserService
 import com.bracketcove.domain.Ride
 import com.bracketcove.domain.RideStatus
-import com.bracketcove.domain.User
-import com.bracketcove.domain.UserStatus
+import com.bracketcove.domain.UnterUser
 import com.bracketcove.rides.RideService
 import com.google.android.libraries.places.api.net.FetchPlaceResponse
 import com.google.maps.model.LatLng
@@ -37,8 +36,8 @@ class PassengerDashboardViewModel(
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
-    private val _passengerModel = MutableStateFlow<User?>(null)
-    private val _driverModel = MutableStateFlow<User?>(null)
+    private val _passengerModel = MutableStateFlow<UnterUser?>(null)
+    private val _driverModel = MutableStateFlow<UnterUser?>(null)
     private val _rideModel = MutableStateFlow<Ride?>(null)
     private val _mapIsReady = MutableStateFlow(false)
 
@@ -140,7 +139,7 @@ class PassengerDashboardViewModel(
      * setting the other models first, we avoid the UI rapidly switching between different states
      * in a disorganized way.
      */
-    private suspend fun getRideIfOneExists(passenger: User) {
+    private suspend fun getRideIfOneExists(passenger: UnterUser) {
         val getRide = rideService.getRideIfInProgress()
         when (getRide) {
             is ServiceResult.Failure -> {
@@ -166,7 +165,7 @@ class PassengerDashboardViewModel(
         }
     }
 
-    fun getDriver(passenger: User, ride: Ride) = launch(Dispatchers.Main) {
+    fun getDriver(passenger: UnterUser, ride: Ride) = launch(Dispatchers.Main) {
         val getDriver = userService.getUserById(ride.driverId!!)
         when (getDriver) {
             is ServiceResult.Failure -> {

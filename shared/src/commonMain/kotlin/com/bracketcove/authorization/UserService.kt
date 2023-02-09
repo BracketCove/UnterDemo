@@ -1,7 +1,7 @@
 package com.bracketcove.authorization
 
 import com.bracketcove.ServiceResult
-import com.bracketcove.domain.User
+import com.bracketcove.domain.UnterUser
 
 interface UserService {
 
@@ -13,15 +13,15 @@ interface UserService {
      *
      * @return true if a session exists; else false
      */
-    suspend fun getUser(): ServiceResult<User?>
+    suspend fun getUser(): ServiceResult<UnterUser?>
 
-    suspend fun getUserById(userId: String): ServiceResult<User?>
-    suspend fun updateUser(user: User): ServiceResult<User?>
+    suspend fun getUserById(userId: String): ServiceResult<UnterUser?>
+    suspend fun updateUser(user: UnterUser): ServiceResult<UnterUser?>
 
-    suspend fun attemptUserAvatarUpdate(user: User, url: String): ServiceResult<String?>
+    suspend fun attemptUserAvatarUpdate(user: UnterUser, url: String): ServiceResult<String?>
 
-    suspend fun attemptVehicleAvatarUpdate(user: User, url: String): ServiceResult<String?>
-    suspend fun getPassengersLookingForRide(): ServiceResult<List<User>?>
+    suspend fun attemptVehicleAvatarUpdate(user: UnterUser, url: String): ServiceResult<String?>
+    suspend fun getPassengersLookingForRide(): ServiceResult<List<UnterUser>?>
 }
 
 sealed interface SignUpResult {
