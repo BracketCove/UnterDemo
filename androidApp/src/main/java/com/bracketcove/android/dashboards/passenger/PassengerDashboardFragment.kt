@@ -83,6 +83,9 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
         //This button is reused in most states so we add the listener here
         binding.mapLayout.cancelButton.setOnClickListener { viewModel.cancelRide() }
+        binding.chatButton.setOnClickListener {
+            viewModel.openChat()
+        }
     }
 
     private fun updateUi(uiState: PassengerDashboardUiState) {

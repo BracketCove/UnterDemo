@@ -318,6 +318,10 @@ class DriverDashboardViewModel(
         }
     }
 
+    fun openChat() {
+
+    }
+
     private val canceller = Job()
 
     override val coroutineContext: CoroutineContext

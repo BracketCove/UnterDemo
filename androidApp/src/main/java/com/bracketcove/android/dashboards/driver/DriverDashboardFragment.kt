@@ -77,6 +77,9 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 
         //This button is reused in most states so we add the listener here
         binding.mapLayout.cancelButton.setOnClickListener { viewModel.cancelRide() }
+        binding.chatButton.setOnClickListener {
+            viewModel.openChat()
+        }
     }
 
     private fun updateUi(uiState: DriverDashboardUiState) {

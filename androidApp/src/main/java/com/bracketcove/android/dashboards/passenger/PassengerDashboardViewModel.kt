@@ -305,6 +305,10 @@ class PassengerDashboardViewModel(
         }
     }
 
+    fun openChat() {
+            TODO("Not yet implemented")
+    }
+
     private val canceller = Job()
 
     override val coroutineContext: CoroutineContext
