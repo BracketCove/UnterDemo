@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.scripting.definitions.StandardScriptDefinition.platform
+
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
@@ -29,6 +31,8 @@ kotlin {
                 implementation("io.getstream:stream-chat-android-ui-components:$stream_version")
                 implementation("io.getstream:stream-chat-android-offline:$stream_version")
                 implementation("io.getstream:stream-chat-android-client:$stream_version")
+
+                implementation("com.google.firebase:firebase-auth-ktx:21.1.0")
             }
         }
         val androidTest by getting

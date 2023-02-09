@@ -58,4 +58,6 @@
     <string name="destination_is">"Destination is "</string>
     <string name="contact_passenger">Contact Passenger</string>
     <string name="contact_driver">Contact Driver</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
 </resources>

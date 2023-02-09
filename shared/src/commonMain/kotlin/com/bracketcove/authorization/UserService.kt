@@ -4,8 +4,7 @@ import com.bracketcove.ServiceResult
 import com.bracketcove.domain.User
 
 interface UserService {
-    suspend fun attemptSignUp(phoneNumber: String, userName: String): ServiceResult<SignUpResult>
-    suspend fun attemptLogin(phoneNumber: String): ServiceResult<LogInResult>
+
 
     /**
      * A session is the period during which a user still has an authenticated connection to
@@ -17,7 +16,6 @@ interface UserService {
     suspend fun getUser(): ServiceResult<User?>
 
     suspend fun getUserById(userId: String): ServiceResult<User?>
-    suspend fun attemptLogout(): ServiceResult<Unit>
     suspend fun updateUser(user: User): ServiceResult<User?>
 
     suspend fun attemptUserAvatarUpdate(user: User, url: String): ServiceResult<String?>
@@ -26,10 +24,10 @@ interface UserService {
     suspend fun getPassengersLookingForRide(): ServiceResult<List<User>?>
 }
 
-enum class SignUpResult {
-    SUCCESS,
-    ALREADY_SIGNED_UP,
-    INVALID_CREDENTIALS
+sealed interface SignUpResult {
+    data class Success(val uid: String) : SignUpResult
+    object AlreadySignedUp : SignUpResult
+    object InvalidCredentials : SignUpResult
 }
 
 enum class LogInResult {

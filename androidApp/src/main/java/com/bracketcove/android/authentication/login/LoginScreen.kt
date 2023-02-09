@@ -24,6 +24,7 @@ import com.bracketcove.android.style.color_primary
 import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
 import com.bracketcove.android.uicommon.UnterHeader
+import com.bracketcove.fakes.FakeAuthService
 import com.bracketcove.fakes.FakeUserService
 import com.zhuinden.simplestack.Backstack
 
@@ -44,7 +45,12 @@ fun LoginScreen(
             subtitleText = stringResource(id = R.string.need_a_ride)
         )
 
-        LoginInputField(
+        EmailInputField(
+            modifier = Modifier.padding(top = 16.dp),
+            viewModel = viewModel
+        )
+
+        PasswordInputField(
             modifier = Modifier.padding(top = 16.dp),
             viewModel = viewModel
         )
@@ -62,19 +68,36 @@ fun LoginScreen(
 }
 
 @Composable
-fun LoginInputField(
+fun EmailInputField(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel
 ) {
 
     OutlinedTextField(
         modifier = modifier,
-        value = viewModel.mobileNumber,
+        value = viewModel.email,
         onValueChange = {
-            viewModel.updateMobileNumber(it)
+            viewModel.updateEmail(it)
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-        label = { Text(text = stringResource(id = R.string.mobile_number)) }
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        label = { Text(text = stringResource(id = R.string.email)) }
+    )
+}
+
+@Composable
+fun PasswordInputField(
+    modifier: Modifier = Modifier,
+    viewModel: LoginViewModel
+) {
+
+    OutlinedTextField(
+        modifier = modifier,
+        value = viewModel.password,
+        onValueChange = {
+            viewModel.updatePassword(it)
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        label = { Text(text = stringResource(id = R.string.password)) }
     )
 }
 
@@ -129,5 +152,5 @@ fun SignupText(
 @Preview(showBackground = true, device = Devices.PIXEL_4_XL)
 @Composable
 fun PreviewLoginScreen() {
-    LoginScreen(viewModel = LoginViewModel(Backstack(), FakeUserService()))
+    LoginScreen(viewModel = LoginViewModel(Backstack(), FakeUserService(), FakeAuthService()))
 }

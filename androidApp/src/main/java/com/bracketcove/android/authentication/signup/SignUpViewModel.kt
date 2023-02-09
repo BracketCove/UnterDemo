@@ -9,6 +9,7 @@ import com.bracketcove.android.navigation.PassengerDashboardKey
 import com.bracketcove.android.uicommon.ToastMessages
 import com.bracketcove.authorization.UserService
 import com.bracketcove.authorization.SignUpResult
+import com.bracketcove.authorization.SignUpUser
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices
@@ -21,7 +22,7 @@ import kotlin.coroutines.CoroutineContext
 
 class SignUpViewModel(
     private val backstack: Backstack,
-    private val userService: UserService
+    private val signUp: SignUpUser,
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
@@ -39,21 +40,29 @@ class SignUpViewModel(
         name = input
     }
 
+    var password by mutableStateOf("")
+        private set
+
+    fun updatePassword(input: String) {
+        password = input
+    }
+
+
     fun handleSignUp() = launch(Dispatchers.Main) {
-        val signupAttempt = userService.attemptSignUp(mobileNumber, name)
+        val signupAttempt = signUp.signUpUser(mobileNumber, name, password)
         when (signupAttempt) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 when (signupAttempt.value) {
-                    SignUpResult.SUCCESS -> {
+                    is SignUpResult.Success -> {
                         backstack.setHistory(
                             History.of(PassengerDashboardKey()),
                             //Direction of navigation which is used for animation
                             StateChange.FORWARD
                         )
                     }
-                    SignUpResult.INVALID_CREDENTIALS -> toastHandler?.invoke(ToastMessages.INVALID_CREDENTIALS)
-                    SignUpResult.ALREADY_SIGNED_UP -> toastHandler?.invoke(ToastMessages.ACCOUNT_EXISTS)
+                    SignUpResult.InvalidCredentials -> toastHandler?.invoke(ToastMessages.INVALID_CREDENTIALS)
+                    SignUpResult.AlreadySignedUp -> toastHandler?.invoke(ToastMessages.ACCOUNT_EXISTS)
                 }
             }
         }

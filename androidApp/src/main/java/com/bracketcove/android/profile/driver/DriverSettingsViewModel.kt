@@ -51,7 +51,7 @@ class DriverSettingsViewModel(
             when (updateAttempt) {
                 is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
 
-                is ServiceResult.Success -> {
+                is ServiceResult.Value -> {
                     _vehiclePhotoUrl.value = imageUri.toString()
                     toastHandler?.invoke(ToastMessages.UPDATE_SUCCESSFUL)
                 }
@@ -68,7 +68,7 @@ class DriverSettingsViewModel(
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
                 sendBack()
             }
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 if (getUser.value == null) sendBack()
                 else {
                     _userModel.value = getUser.value
@@ -89,7 +89,7 @@ class DriverSettingsViewModel(
 
         when (updateAttempt) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 if (updateAttempt.value == null) sendToLogin()
                 else sendBack()
             }

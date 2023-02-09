@@ -8,6 +8,8 @@ import com.bracketcove.android.navigation.DriverDashboardKey
 import com.bracketcove.android.navigation.PassengerDashboardKey
 import com.bracketcove.android.navigation.SignUpKey
 import com.bracketcove.android.uicommon.ToastMessages
+import com.bracketcove.authorization.AuthorizationService
+import com.bracketcove.authorization.FirebaseAuthService
 import com.bracketcove.authorization.UserService
 import com.bracketcove.authorization.LogInResult
 import com.zhuinden.simplestack.Backstack
@@ -23,21 +25,28 @@ import kotlin.coroutines.CoroutineContext
 
 class LoginViewModel(
     private val backstack: Backstack,
-    private val userService: UserService
+    private val userService: UserService,
+    private val authService: AuthorizationService
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
-    var mobileNumber by mutableStateOf("")
+    var email by mutableStateOf("")
         private set
-    fun updateMobileNumber(input: String) {
-        mobileNumber = input
+    fun updateEmail(input: String) {
+        email = input
+    }
+
+    var password by mutableStateOf("")
+        private set
+    fun updatePassword(input: String) {
+        password = input
     }
 
     fun handleLogin() = launch(Dispatchers.Main) {
-        val loginAttempt = userService.attemptLogin(mobileNumber)
+        val loginAttempt = authService.login(email, password)
         when (loginAttempt) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 when (loginAttempt.value) {
                     LogInResult.SUCCESS -> sendToDashboard()
                     LogInResult.INVALID_CREDENTIALS -> toastHandler?.invoke(ToastMessages.INVALID_CREDENTIALS)
@@ -50,7 +59,7 @@ class LoginViewModel(
         val getUser = userService.getUser()
 
         when {
-            getUser is ServiceResult.Success && getUser.value != null -> {
+            getUser is ServiceResult.Value && getUser.value != null -> {
                 when (getUser.value!!.type) {
                     "PASSENGER" -> backstack.setHistory(
                         History.of(PassengerDashboardKey()),

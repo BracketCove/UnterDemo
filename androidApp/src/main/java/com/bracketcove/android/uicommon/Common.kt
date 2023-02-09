@@ -84,26 +84,6 @@ fun Fragment.handleToast(code: ToastMessages) {
 }
 
 @Composable
-fun MobileInputField(
-    modifier: Modifier = Modifier,
-    textFieldValue: String,
-    validationError: Boolean,
-    updateIsError: (Boolean) -> Unit
-) {
-    OutlinedTextField(
-        modifier = modifier,
-        value = textFieldValue,
-        onValueChange = { newNumber ->
-            if (isValidPhoneNumber(newNumber) || newNumber == "") updateIsError(false)
-            else updateIsError(true)
-        },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-        isError = validationError,
-        label = { Text(text = stringResource(id = R.string.mobile_number)) }
-    )
-}
-
-@Composable
 fun UnterHeader(
     modifier: Modifier = Modifier,
     subtitleText: String = "Sign up for free"

@@ -20,6 +20,8 @@ import com.bracketcove.android.style.color_primary
 import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
 import com.bracketcove.android.uicommon.UnterHeader
+import com.bracketcove.authorization.SignUpUser
+import com.bracketcove.fakes.FakeAuthService
 import com.bracketcove.fakes.FakeUserService
 import com.zhuinden.simplestack.Backstack
 
@@ -126,5 +128,11 @@ fun PhoneInputField(
 @Preview(showBackground = true, device = Devices.PIXEL_4_XL)
 @Composable
 fun PreviewSignUpScreen() {
-    SignUpScreen(viewModel = SignUpViewModel(Backstack(), FakeUserService()))
+    SignUpScreen(
+        viewModel = SignUpViewModel(
+            Backstack(),
+            SignUpUser(FakeAuthService(), FakeUserService()
+            )
+        )
+    )
 }

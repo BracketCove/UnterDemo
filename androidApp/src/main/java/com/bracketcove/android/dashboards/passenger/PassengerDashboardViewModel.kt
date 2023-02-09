@@ -126,7 +126,7 @@ class PassengerDashboardViewModel(
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
                 sendToLogin()
             }
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 if (getUser.value == null) sendToLogin()
                 else {
                     getRideIfOneExists(getUser.value!!)
@@ -147,7 +147,7 @@ class PassengerDashboardViewModel(
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
                 sendToLogin()
             }
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 when {
                     getRide.value == null -> {
                         _passengerModel.value = passenger
@@ -173,7 +173,7 @@ class PassengerDashboardViewModel(
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
                 sendToLogin()
             }
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 if (getDriver.value == null) {
                     toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
                     sendToLogin()
@@ -192,7 +192,7 @@ class PassengerDashboardViewModel(
 
         when (getCoordinates) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 if (getCoordinates.value != null &&
                     getCoordinates.value!!.place.latLng != null
                 ) {
@@ -212,7 +212,7 @@ class PassengerDashboardViewModel(
 
         when (createRide) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 _rideModel.value = createRide.value
             }
         }
@@ -224,7 +224,7 @@ class PassengerDashboardViewModel(
             is ServiceResult.Failure -> {
                 toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
             }
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 _autoCompleteList.value = autocompleteRequest.value.map { prediction ->
                     AutoCompleteModel(
                         address = prediction.getFullText(null).toString(),
@@ -242,7 +242,7 @@ class PassengerDashboardViewModel(
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
                 sendToSplash()
             }
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 sendToSplash()
             }
         }
@@ -282,7 +282,7 @@ class PassengerDashboardViewModel(
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
                 sendToSplash()
             }
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 sendToSplash()
             }
         }
@@ -298,7 +298,7 @@ class PassengerDashboardViewModel(
 
         when (updateAttempt) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 if (updateAttempt.value == null) toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
                 else _passengerModel.value = updateAttempt.value
             }

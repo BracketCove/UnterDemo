@@ -131,7 +131,7 @@ class DriverDashboardViewModel(
 
         when (updateAttempt) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 if (updateAttempt.value == null) toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
                 else{
                     _driverModel.value = updateAttempt.value
@@ -152,7 +152,7 @@ class DriverDashboardViewModel(
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
                 sendToLogin()
             }
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 if (getUser.value == null) sendToLogin()
                 else {
                     getRideIfOneExists(getUser.value!!)
@@ -173,7 +173,7 @@ class DriverDashboardViewModel(
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
                 sendToLogin()
             }
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 when {
                     getRide.value == null -> {
                         _driverModel.value = driver
@@ -197,7 +197,7 @@ class DriverDashboardViewModel(
                 toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
                 sendToLogin()
             }
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 _passengerList.value = getPassengersList.value ?: emptyList()
             }
         }
@@ -210,7 +210,7 @@ class DriverDashboardViewModel(
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
                 sendToLogin()
             }
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 if (getPassenger.value == null) {
                     toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
                     sendToLogin()
@@ -229,7 +229,7 @@ class DriverDashboardViewModel(
 
         when (getRideByPassengerId) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 _passengerModel.value = passenger
                 _rideModel.value = getRideByPassengerId.value
             }
@@ -243,7 +243,7 @@ class DriverDashboardViewModel(
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
                 sendToSplash()
             }
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 sendToSplash()
             }
         }
@@ -283,7 +283,7 @@ class DriverDashboardViewModel(
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
                 sendToSplash()
             }
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 sendToSplash()
             }
         }
@@ -303,7 +303,7 @@ class DriverDashboardViewModel(
                 toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
                 sendToSplash()
             }
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 _rideModel.value = updateRide.value!!
             }
         }

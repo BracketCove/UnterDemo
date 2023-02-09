@@ -22,7 +22,7 @@ data class ProfileSettingsKey(private val noArgsPlaceholder: String = ""): Defau
     //How to create a scoped service
     override fun bindServices(serviceBinder: ServiceBinder) {
         with(serviceBinder) {
-            add(ProfileSettingsViewModel(backstack, lookup()))
+            add(ProfileSettingsViewModel(backstack, lookup(), lookup()))
         }
     }
 }

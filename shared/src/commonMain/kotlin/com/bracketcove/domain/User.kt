@@ -3,6 +3,7 @@ package com.bracketcove.domain
 data class User(
     val userId: String = "",
     val username: String = "",
+    val email: String = "",
     val type: String = "PASSENGER",
     val status: String = "",
     val avatarPhotoUrl: String = "",

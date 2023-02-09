@@ -3,12 +3,11 @@ package com.bracketcove.fakes
 import com.bracketcove.ServiceResult
 import com.bracketcove.domain.Ride
 import com.bracketcove.domain.RideStatus
-import com.bracketcove.domain.User
 import com.bracketcove.rides.RideService
 
 class FakeRideService : RideService {
     override suspend fun getRideIfInProgress(): ServiceResult<Ride?> {
-        return ServiceResult.Success(testRide().copy(
+        return ServiceResult.Value(testRide().copy(
             status = RideStatus.PASSENGER_PICK_UP.value,
             driverId = "654321",
             passengerId = "123456",
@@ -19,11 +18,11 @@ class FakeRideService : RideService {
                     "T2P 1J9"
         ))
 
-     //   return ServiceResult.Success(null)
+     //   return ServiceResult.Value(null)
     }
 
     override suspend fun updateRide(ride: Ride): ServiceResult<Ride?> {
-        return ServiceResult.Success(ride)
+        return ServiceResult.Value(ride)
     }
 
     override suspend fun createRide(
@@ -32,7 +31,7 @@ class FakeRideService : RideService {
         longitude: Double,
         address: String
     ): ServiceResult<Ride> {
-        return ServiceResult.Success(testRide().copy(
+        return ServiceResult.Value(testRide().copy(
             passengerId = passengerId,
             destinationLatitude = latitude,
             destinationLongitude = longitude,
@@ -41,15 +40,15 @@ class FakeRideService : RideService {
     }
 
     override suspend fun cancelRide(ride: Ride): ServiceResult<Unit> {
-        return ServiceResult.Success(Unit)
+        return ServiceResult.Value(Unit)
     }
 
     override suspend fun completeRide(value: Ride): ServiceResult<Unit> {
-        return ServiceResult.Success(Unit)
+        return ServiceResult.Value(Unit)
     }
 
     override suspend fun getRideByPassengerId(passengerId: String): ServiceResult<Ride?> {
-        return ServiceResult.Success(testRide().copy(
+        return ServiceResult.Value(testRide().copy(
             status = RideStatus.PASSENGER_PICK_UP.value,
             driverId = "654321",
             passengerId = "123456",
