@@ -23,7 +23,6 @@ class SplashViewModel(
 ) : ScopedServices.Activated, CoroutineScope {
 
     private fun sendToLogin() {
-
         //clear backstack and replace with what we enter
         backstack.setHistory(
             History.of(LoginKey()),

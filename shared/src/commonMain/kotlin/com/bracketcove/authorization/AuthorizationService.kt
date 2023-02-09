@@ -18,3 +18,14 @@ interface AuthorizationService {
     suspend fun getSession(): ServiceResult<UnterUser?>
 
 }
+
+sealed interface SignUpResult {
+    data class Success(val uid: String) : SignUpResult
+    object AlreadySignedUp : SignUpResult
+    object InvalidCredentials : SignUpResult
+}
+
+sealed interface LogInResult {
+    data class Success(val user: UnterUser) : LogInResult
+    object InvalidCredentials : LogInResult
+}

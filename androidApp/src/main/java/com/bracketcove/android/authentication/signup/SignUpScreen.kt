@@ -121,7 +121,7 @@ fun PhoneInputField(
             viewModel.updateMobileNumber(it)
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-        label = { Text(text = stringResource(id = R.string.mobile_number)) }
+        label = { Text(text = stringResource(id = R.string.password)) }
     )
 }
 

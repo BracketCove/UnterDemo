@@ -23,16 +23,3 @@ interface UserService {
     suspend fun attemptVehicleAvatarUpdate(user: UnterUser, url: String): ServiceResult<String?>
     suspend fun getPassengersLookingForRide(): ServiceResult<List<UnterUser>?>
 }
-
-sealed interface SignUpResult {
-    data class Success(val uid: String) : SignUpResult
-    object AlreadySignedUp : SignUpResult
-    object InvalidCredentials : SignUpResult
-}
-
-enum class LogInResult {
-    SUCCESS,
-    INVALID_CREDENTIALS
-}
-
-

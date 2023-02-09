@@ -21,7 +21,7 @@ data class LoginKey(private val noArgsPlaceholder: String = ""): DefaultFragment
     override fun bindServices(serviceBinder: ServiceBinder) {
         with(serviceBinder) {
             //add(SplashViewModel(lookup(), backstack))
-            add(LoginViewModel(backstack, lookup(), lookup()))
+            add(LoginViewModel(backstack, lookup()))
         }
     }
 }
