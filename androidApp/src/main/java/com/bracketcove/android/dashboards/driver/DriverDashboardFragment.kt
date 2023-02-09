@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.libraries.places.api.Places
 import com.google.maps.DirectionsApi
+import com.google.maps.android.PolyUtil
 import com.google.maps.model.TravelMode
 import com.zhuinden.simplestackextensions.fragmentsktx.lookup
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -321,44 +322,28 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                             dirResult.routes.first().legs.isNotEmpty()
                         ) {
                             dirResult.routes.first().let { route ->
+                                googleMap!!.addPolyline(
+                                    PolylineOptions().apply {
+                                        clickable(false)
+                                        addAll(
+                                            PolyUtil.decode(
+                                                route.overviewPolyline.encodedPath
+                                            )
+                                        )
+                                        color(
+                                            ContextCompat.getColor(
+                                                requireContext(),
+                                                R.color.color_primary
+                                            )
+                                        )
+                                    }
+                                )
+
                                 route.legs.first().let { leg ->
                                     binding.tripDistance.text = buildString {
                                         append(getString(R.string.passenger_is))
                                         append(leg.distance.humanReadable)
                                         append(getString(R.string.away))
-                                    }
-
-                                    leg.steps.forEach { step ->
-                                        googleMap!!.addPolyline(
-                                            PolylineOptions().apply {
-                                                clickable(false)
-                                                /*
-                                                Unfortunately the Directions API uses a different
-                                                LatLng from the Android Maps SDK, so we have to
-                                                convert it here.
-                                                 */
-                                                add(
-                                                    LatLng(
-                                                        step.startLocation.lat,
-                                                        step.startLocation.lng
-                                                    )
-                                                )
-
-                                                add(
-                                                    LatLng(
-                                                        step.endLocation.lat,
-                                                        step.endLocation.lng
-                                                    )
-                                                )
-
-                                                color(
-                                                    ContextCompat.getColor(
-                                                        requireContext(),
-                                                        R.color.color_primary
-                                                    )
-                                                )
-                                            }
-                                        )
                                     }
                                 }
                             }
@@ -419,44 +404,30 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                             dirResult.routes.first().legs.isNotEmpty()
                         ) {
                             dirResult.routes.first().let { route ->
-                                route.legs.first().let { leg ->
-                                    binding.tripDistance.text = buildString {
-                                        append(getString(R.string.destination_is))
-                                        append(leg.distance.humanReadable)
-                                        append(getString(R.string.away))
-                                    }
-
-                                    leg.steps.forEach { step ->
-                                        googleMap!!.addPolyline(
-                                            PolylineOptions().apply {
-                                                clickable(false)
-                                                /*
-                                                Unfortunately the Directions API uses a different
-                                                LatLng from the Android Maps SDK, so we have to
-                                                convert it here.
-                                                 */
-                                                add(
-                                                    LatLng(
-                                                        step.startLocation.lat,
-                                                        step.startLocation.lng
-                                                    )
+                                dirResult.routes.first().let { route ->
+                                    googleMap!!.addPolyline(
+                                        PolylineOptions().apply {
+                                            clickable(false)
+                                            addAll(
+                                                PolyUtil.decode(
+                                                    route.overviewPolyline.encodedPath
                                                 )
-
-                                                add(
-                                                    LatLng(
-                                                        step.endLocation.lat,
-                                                        step.endLocation.lng
-                                                    )
+                                            )
+                                            color(
+                                                ContextCompat.getColor(
+                                                    requireContext(),
+                                                    R.color.color_primary
                                                 )
+                                            )
+                                        }
+                                    )
 
-                                                color(
-                                                    ContextCompat.getColor(
-                                                        requireContext(),
-                                                        R.color.color_primary
-                                                    )
-                                                )
-                                            }
-                                        )
+                                    route.legs.first().let { leg ->
+                                        binding.tripDistance.text = buildString {
+                                            append(getString(R.string.destination_is))
+                                            append(leg.distance.humanReadable)
+                                            append(getString(R.string.away))
+                                        }
                                     }
                                 }
                             }

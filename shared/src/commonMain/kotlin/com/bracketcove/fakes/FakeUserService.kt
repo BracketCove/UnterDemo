@@ -21,7 +21,7 @@ class FakeUserService : UserService {
     }
 
     override suspend fun getUser(): ServiceResult<User?> {
-        return ServiceResult.Success(testUser)
+        return ServiceResult.Success(testUser.copy(type = UserType.PASSENGER.value))
     }
 
     override suspend fun getUserById(userId: String): ServiceResult<User?> {
