@@ -14,9 +14,13 @@ class SignUpUser(
     suspend fun signUpUser(email: String, password: String, username: String): ServiceResult<SignUpResult> {
         val authAttempt = authService.signUp(email, password)
 
-       return if (authAttempt is ServiceResult.Value) {
+        return if (authAttempt is ServiceResult.Value) {
             when (authAttempt.value) {
-                is SignUpResult.Success -> updateUserDetails(email, username, authAttempt.value.uid)
+                is SignUpResult.Success -> updateUserDetails(
+                    email,
+                    username,
+                    authAttempt.value.uid
+                )
                 else -> authAttempt
             }
         } else authAttempt

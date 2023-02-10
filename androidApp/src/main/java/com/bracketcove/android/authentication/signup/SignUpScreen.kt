@@ -7,15 +7,24 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bracketcove.android.R
+import com.bracketcove.android.authentication.login.LoginViewModel
 import com.bracketcove.android.style.color_primary
 import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
@@ -61,7 +70,12 @@ fun SignUpScreen(
             viewModel = viewModel
         )
 
-        PhoneInputField(
+        EmailInputField(
+            modifier = Modifier.padding(top = 16.dp),
+            viewModel = viewModel
+        )
+
+        PasswordInputField(
             modifier = Modifier.padding(top = 16.dp),
             viewModel = viewModel
         )
@@ -110,18 +124,48 @@ fun UsernameInputField(
 }
 
 @Composable
-fun PhoneInputField(
+fun EmailInputField(
     modifier: Modifier = Modifier,
     viewModel: SignUpViewModel
 ) {
     OutlinedTextField(
         modifier = modifier,
-        value = viewModel.mobileNumber,
+        value = viewModel.email,
         onValueChange = {
-            viewModel.updateMobileNumber(it)
+            viewModel.updateEmail(it)
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-        label = { Text(text = stringResource(id = R.string.password)) }
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        label = { Text(text = stringResource(id = R.string.email)) }
+    )
+}
+
+@Composable
+fun PasswordInputField(
+    modifier: Modifier = Modifier,
+    viewModel: SignUpViewModel
+) {
+
+    var showPassword by rememberSaveable { mutableStateOf(false) }
+
+    OutlinedTextField(
+        modifier = modifier,
+        value = viewModel.password,
+        onValueChange = {
+            viewModel.updatePassword(it)
+        },
+        visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        label = { Text(text = stringResource(id = R.string.password)) },
+        trailingIcon = {
+            val image = if (showPassword)
+                Icons.Filled.Visibility
+            else Icons.Filled.VisibilityOff
+
+            val description = if (showPassword) stringResource(id = R.string.hide_password) else stringResource(id = R.string.show_password)
+            IconButton(onClick = { showPassword = !showPassword}){
+                Icon(imageVector  = image, description)
+            }
+        }
     )
 }
 
