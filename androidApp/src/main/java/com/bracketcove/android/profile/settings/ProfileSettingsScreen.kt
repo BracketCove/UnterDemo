@@ -40,8 +40,6 @@ import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
 import com.bracketcove.domain.UnterUser
 import com.bracketcove.domain.UserType
-import com.bracketcove.fakes.FakeAuthService
-import com.bracketcove.fakes.FakeUserService
 import com.skydoves.landscapist.glide.GlideImage
 import com.zhuinden.simplestack.Backstack
 
@@ -72,19 +70,16 @@ fun ProfileSettingsScreen(
             modifier = Modifier
                 .wrapContentHeight()
                 .fillMaxWidth(),
-            viewModel = viewModel,
-            showDriverSwitch = showDriverSwitch,
-            driverSwitchState = driverSwitchState,
-            checkedChanged = { driverSwitchState = it }
-        )
-
-        if (unregisteredUserView) DriverRegistryPrompt(viewModel = viewModel)
-        else DriverInfo(
-            modifier = Modifier
-                .wrapContentHeight()
-                .fillMaxWidth(),
             viewModel = viewModel
         )
+
+//        if (unregisteredUserView) DriverRegistryPrompt(viewModel = viewModel)
+//        else DriverInfo(
+//            modifier = Modifier
+//                .wrapContentHeight()
+//                .fillMaxWidth(),
+//            viewModel = viewModel
+//        )
     }
 }
 
@@ -124,10 +119,7 @@ fun ProfileToolbar(
 @Composable
 fun ProfileHeader(
     modifier: Modifier,
-    viewModel: ProfileSettingsViewModel,
-    showDriverSwitch: Boolean,
-    driverSwitchState: Boolean,
-    checkedChanged: (Boolean) -> Unit
+    viewModel: ProfileSettingsViewModel
 ) {
 
     val user by viewModel.userModel.collectAsState()
@@ -238,156 +230,4 @@ fun ProfileAvatar(
             tint = Color.Unspecified
         )
     }
-}
-
-
-@Composable
-fun DriverInfo(
-    modifier: Modifier,
-    viewModel: ProfileSettingsViewModel
-) {
-    val user by viewModel.userModel.collectAsState()
-
-    if (user != null) BoxWithConstraints(
-        Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(start = 16.dp, end = 16.dp, top = 32.dp)
-
-    ) {
-        ConstraintLayout(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .border(
-                    width = 1.dp,
-                    color = color_black.copy(alpha = 0.12f),
-                    shape = RoundedCornerShape(4.dp)
-                )
-                .padding(16.dp)
-        ) {
-            val (avatar, title, editButton, description) = createRefs()
-
-
-            Box(
-                Modifier
-                    .background(color_black.copy(alpha = 0.16f), shape = RoundedCornerShape(4.dp))
-                    .size(88.dp)
-                    .constrainAs(avatar) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        bottom.linkTo(parent.bottom)
-                    }
-            ) {
-                if (user!!.vehiclePhotoUrl != "") GlideImage(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .clip(RoundedCornerShape(4.dp)),
-                    imageModel = { user!!.vehiclePhotoUrl },
-                )
-            }
-
-            Text(
-                modifier = Modifier
-                    .wrapContentHeight()
-                    .constrainAs(title) {
-                        top.linkTo(editButton.top)
-                        bottom.linkTo(editButton.bottom)
-                        start.linkTo(avatar.end)
-                        end.linkTo(editButton.start)
-                        width = Dimension.fillToConstraints
-                    }
-                    .padding(start = 16.dp),
-                text = stringResource(id = R.string.vehicle_description),
-                style = typography.subtitle2,
-                textAlign = TextAlign.Start
-            )
-
-            Text(
-                modifier = Modifier
-                    .wrapContentHeight(align = Alignment.Top)
-                    .constrainAs(description) {
-                        top.linkTo(title.bottom)
-                        start.linkTo(avatar.end)
-                        end.linkTo(parent.end)
-                        width = Dimension.fillToConstraints
-
-                    }
-                    .padding(start = 16.dp),
-                text = user!!.vehicleDescription ?: "",
-                style = typography.button.copy(color = color_black, fontSize = 14.sp),
-                maxLines = 3
-            )
-
-            TextButton(
-                modifier = Modifier.constrainAs(editButton) {
-                    top.linkTo(parent.top)
-                    end.linkTo(parent.end)
-                },
-                onClick = { viewModel.handleDriverDetailEdit() }) {
-                Text(
-                    text = stringResource(id = R.string.edit),
-                    style = typography.button.copy(color = color_primary)
-                )
-            }
-
-        }
-    }
-}
-
-@Composable
-fun DriverRegistryPrompt(
-    viewModel: ProfileSettingsViewModel
-) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(64.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = stringResource(id = R.string.register_to_become_driver),
-            style = typography.h3,
-            textAlign = TextAlign.Center
-        )
-
-        Button(
-            modifier = Modifier.padding(16.dp),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = color_primary,
-                contentColor = color_white
-            ),
-            onClick = { viewModel.handleDriverDetailEdit() },
-        ) {
-            Icon(
-                imageVector = Icons.Filled.DriveEta,
-                contentDescription = stringResource(id = R.string.register)
-            )
-
-            Text(
-                modifier = Modifier.padding(start = 4.dp),
-                text = stringResource(id = R.string.register),
-                style = typography.button
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, device = Devices.PIXEL_4_XL)
-@Composable
-fun PreviewProfileSettingsScreen() {
-    ProfileSettingsScreen(
-        viewModel = ProfileSettingsViewModel(Backstack(), FakeUserService(), FakeAuthService()),
-        unregisteredUserView = true
-    )
-}
-
-@Preview(showBackground = true, device = Devices.PIXEL_4_XL)
-@Composable
-fun PreviewProfileSettingsScreenRegistered() {
-    ProfileSettingsScreen(
-        viewModel = ProfileSettingsViewModel(Backstack(), FakeUserService(), FakeAuthService()),
-        unregisteredUserView = false
-    )
 }

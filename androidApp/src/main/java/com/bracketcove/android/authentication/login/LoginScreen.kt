@@ -10,8 +10,11 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -22,18 +25,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bracketcove.android.R
 import com.bracketcove.android.style.color_primary
 import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
 import com.bracketcove.android.uicommon.UnterHeader
-import com.bracketcove.fakes.FakeAuthService
-import com.bracketcove.fakes.FakeUserService
-import com.bracketcove.usecase.LogInUser
-import com.zhuinden.simplestack.Backstack
 
 @Composable
 fun LoginScreen(
@@ -169,13 +166,3 @@ fun SignupText(
     }
 }
 
-@Preview(showBackground = true, device = Devices.PIXEL_4_XL)
-@Composable
-fun PreviewLoginScreen() {
-    LoginScreen(
-        viewModel = LoginViewModel(
-            Backstack(),
-            LogInUser(FakeAuthService(), FakeUserService())
-        )
-    )
-}

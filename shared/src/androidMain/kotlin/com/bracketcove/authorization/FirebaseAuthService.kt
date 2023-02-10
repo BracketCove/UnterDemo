@@ -63,7 +63,6 @@ class FirebaseAuthService(
 
     override suspend fun getSession(): ServiceResult<UnterUser?> {
         val firebaseUser = auth.currentUser
-        auth.signOut()
         return if (firebaseUser == null) ServiceResult.Value(null)
         else ServiceResult.Value(
             firebaseUser.let {

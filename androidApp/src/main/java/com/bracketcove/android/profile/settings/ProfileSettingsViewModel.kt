@@ -3,7 +3,6 @@ package com.bracketcove.android.profile.settings
 import android.net.Uri
 import com.bracketcove.ServiceResult
 import com.bracketcove.android.navigation.DriverDashboardKey
-import com.bracketcove.android.navigation.DriverSettingsKey
 import com.bracketcove.android.navigation.LoginKey
 import com.bracketcove.android.navigation.PassengerDashboardKey
 import com.bracketcove.android.uicommon.ToastMessages
@@ -36,13 +35,6 @@ class ProfileSettingsViewModel(
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
             is ServiceResult.Value -> sendToLogin()
         }
-    }
-
-    fun handleDriverDetailEdit() {
-        backstack.setHistory(
-            History.of(DriverSettingsKey()),
-            StateChange.FORWARD
-        )
     }
 
     fun isUserRegistered(): Boolean {

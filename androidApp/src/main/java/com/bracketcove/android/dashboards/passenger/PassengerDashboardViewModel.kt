@@ -4,6 +4,7 @@ import android.util.Log
 import com.bracketcove.ServiceResult
 import com.bracketcove.android.google.GoogleService
 import com.bracketcove.android.navigation.LoginKey
+import com.bracketcove.android.navigation.ProfileSettingsKey
 import com.bracketcove.android.navigation.SplashKey
 import com.bracketcove.android.uicommon.ToastMessages
 import com.bracketcove.android.uicommon.combineTuple
@@ -77,31 +78,28 @@ class PassengerDashboardViewModel(
                     destinationLon = ride.destinationLongitude,
                     destinationAddress = ride.destinationAddress,
                     driverName = driver.username,
-                    vehicleDescription = driver.vehicleDescription ?: "",
-                    vehicleAvatar = driver.avatarPhotoUrl,
+                    driverAvatar = driver.avatarPhotoUrl
                 )
 
                 driver != null && ride.status == RideStatus.EN_ROUTE.value -> PassengerDashboardUiState.EnRoute(
                     passengerLat = passenger.latitude,
                     passengerLon = passenger.longitude,
                     driverName = driver.username,
-                    vehicleDescription = driver.vehicleDescription ?: "",
                     destinationAddress = ride.destinationAddress,
-                    vehicleAvatar = driver.avatarPhotoUrl,
                     destinationLat = ride.destinationLatitude,
-                    destinationLon = ride.destinationLongitude
+                    destinationLon = ride.destinationLongitude,
+                    driverAvatar = driver.avatarPhotoUrl
                 )
 
                 driver != null && ride.status == RideStatus.ARRIVED.value -> PassengerDashboardUiState.Arrived(
                     passengerLat = passenger.latitude,
                     passengerLon = passenger.longitude,
                     driverName = driver.username,
-                    vehicleDescription = driver.vehicleDescription ?: "",
-                    vehicleAvatar = driver.avatarPhotoUrl,
                     destinationLat = ride.destinationLatitude,
                     destinationLon = ride.destinationLongitude,
                     destinationAddress = ride.destinationAddress,
-                    )
+                    driverAvatar = driver.avatarPhotoUrl
+                )
 
                 else -> {
                     Log.d("ELSE", "${passenger}, ${driver}, ${ride}")
@@ -119,19 +117,20 @@ class PassengerDashboardViewModel(
     }
 
     fun getPassenger() = launch(Dispatchers.Main) {
-        val getUser = userService.getUser()
-        when (getUser) {
-            is ServiceResult.Failure -> {
-                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-                sendToLogin()
-            }
-            is ServiceResult.Value -> {
-                if (getUser.value == null) sendToLogin()
-                else {
-                    getRideIfOneExists(getUser.value!!)
-                }
-            }
-        }
+        goToProfile()
+//        val getUser = userService.getUser()
+//        when (getUser) {
+//            is ServiceResult.Failure -> {
+//                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
+//                sendToLogin()
+//            }
+//            is ServiceResult.Value -> {
+//                if (getUser.value == null) sendToLogin()
+//                else {
+//                    getRideIfOneExists(getUser.value!!)
+//                }
+//            }
+//        }
     }
 
     /**
@@ -306,6 +305,13 @@ class PassengerDashboardViewModel(
 
     fun openChat() {
             TODO("Not yet implemented")
+    }
+
+    fun goToProfile() {
+        backstack.setHistory(
+            History.of(ProfileSettingsKey()),
+            StateChange.REPLACE
+        )
     }
 
     private val canceller = Job()

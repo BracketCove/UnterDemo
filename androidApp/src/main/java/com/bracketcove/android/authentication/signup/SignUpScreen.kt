@@ -20,19 +20,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bracketcove.android.R
-import com.bracketcove.android.authentication.login.LoginViewModel
 import com.bracketcove.android.style.color_primary
 import com.bracketcove.android.style.color_white
 import com.bracketcove.android.style.typography
 import com.bracketcove.android.uicommon.UnterHeader
-import com.bracketcove.usecase.SignUpUser
-import com.bracketcove.fakes.FakeAuthService
-import com.bracketcove.fakes.FakeUserService
-import com.zhuinden.simplestack.Backstack
 
 @Composable
 fun SignUpScreen(
@@ -166,17 +159,5 @@ fun PasswordInputField(
                 Icon(imageVector  = image, description)
             }
         }
-    )
-}
-
-@Preview(showBackground = true, device = Devices.PIXEL_4_XL)
-@Composable
-fun PreviewSignUpScreen() {
-    SignUpScreen(
-        viewModel = SignUpViewModel(
-            Backstack(),
-            SignUpUser(FakeAuthService(), FakeUserService()
-            )
-        )
     )
 }

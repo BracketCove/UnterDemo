@@ -87,6 +87,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
         binding.chatButton.setOnClickListener {
             viewModel.openChat()
         }
+        binding.toolbar.profileIcon.setOnClickListener { viewModel.goToProfile() }
     }
 
     private fun updateUi(uiState: PassengerDashboardUiState) {
@@ -125,7 +126,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
             driverName.text = uiState.driverName
             Glide.with(requireContext())
-                .load(uiState.vehicleAvatar)
+                .load(uiState.driverAvatar)
                 .fitCenter()
                 .placeholder(
                     CircularProgressDrawable(requireContext()).apply {
@@ -159,7 +160,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
             driverName.text = uiState.driverName
             Glide.with(requireContext())
-                .load(uiState.vehicleAvatar)
+                .load(uiState.driverAvatar)
                 .fitCenter()
                 .placeholder(
                     CircularProgressDrawable(requireContext()).apply {
@@ -193,7 +194,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
             driverName.text = uiState.driverName
             Glide.with(requireContext())
-                .load(uiState.vehicleAvatar)
+                .load(uiState.driverAvatar)
                 .fitCenter()
                 .placeholder(
                     CircularProgressDrawable(requireContext()).apply {

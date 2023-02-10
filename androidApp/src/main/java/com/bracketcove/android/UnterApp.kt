@@ -6,8 +6,6 @@ import com.bracketcove.authorization.AuthorizationService
 import com.bracketcove.authorization.FirebaseAuthService
 import com.bracketcove.authorization.StreamUserService
 import com.bracketcove.authorization.UserService
-import com.bracketcove.fakes.FakeRideService
-import com.bracketcove.rides.RideService
 import com.bracketcove.usecase.GetUser
 import com.bracketcove.usecase.LogInUser
 import com.bracketcove.usecase.SignUpUser
@@ -34,7 +32,6 @@ class UnterApp: Application() {
         val firebaseAuthService = FirebaseAuthService(FirebaseAuth.getInstance())
         val streamUserService = StreamUserService(streamClient)
 
-        val fakeRideService = FakeRideService()
         val googleService = GoogleService(this, geoContext)
 
         /*
@@ -50,8 +47,6 @@ class UnterApp: Application() {
         globalServices = GlobalServices.builder()
             .add(streamUserService)
             .rebind<UserService>(streamUserService)
-            .add(fakeRideService)
-            .rebind<RideService>(fakeRideService)
             .add(firebaseAuthService)
             .rebind<AuthorizationService>(firebaseAuthService)
             .add(googleService)
