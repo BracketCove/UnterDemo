@@ -26,6 +26,7 @@ class StreamUserService(
 
             ServiceResult.Value(
                 UnterUser(
+                    userId = user.id,
                     username = user.name,
                     avatarPhotoUrl = user.image,
                     createdAt = user.createdAt.toString(),
@@ -56,6 +57,7 @@ class StreamUserService(
 
                 ServiceResult.Value(
                     UnterUser(
+                        userId = userId,
                         username = user.name,
                         avatarPhotoUrl = user.image,
                         createdAt = user.createdAt.toString(),

@@ -9,8 +9,7 @@ import android.os.Build
 import android.provider.MediaStore
 
 
-object RealPathUtil {
-    @SuppressLint("Range")
+object BitmapUtil {
     fun getBitmap(context: Context, fileUri: Uri?): Bitmap? {
         if (fileUri == null) return fileUri
 
