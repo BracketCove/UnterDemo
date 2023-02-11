@@ -58,10 +58,13 @@ class FirebaseAuthService(
     }
 
     override suspend fun logout(): ServiceResult<Unit> {
-        TODO("Not yet implemented")
+        auth.signOut()
+        return ServiceResult.Value(Unit)
     }
 
     override suspend fun getSession(): ServiceResult<UnterUser?> {
+//        logout()
+//        return ServiceResult.Value(null)
         val firebaseUser = auth.currentUser
         return if (firebaseUser == null) ServiceResult.Value(null)
         else ServiceResult.Value(
@@ -71,6 +74,5 @@ class FirebaseAuthService(
                 )
             }
         )
-
     }
 }

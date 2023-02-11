@@ -106,4 +106,11 @@ class StreamUserService(
     override suspend fun getPassengersLookingForRide(): ServiceResult<List<UnterUser>?> {
         TODO("Not yet implemented")
     }
+
+    override suspend fun logOutUser(user: UnterUser) =
+        withContext(Dispatchers.IO) {
+        val result = client.disconnect(flushPersistence = true).await()
+        if (result.isError) Log.d("STREAM_USER_SERVICE", result.error().message ?: "Error logging out")
+        Unit
+    }
 }

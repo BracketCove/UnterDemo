@@ -4,10 +4,7 @@ import android.app.Application
 import com.bracketcove.android.google.GoogleService
 import com.bracketcove.authorization.*
 import com.bracketcove.rides.RideService
-import com.bracketcove.usecase.GetUser
-import com.bracketcove.usecase.LogInUser
-import com.bracketcove.usecase.SignUpUser
-import com.bracketcove.usecase.UpdateUserAvatar
+import com.bracketcove.usecase.*
 import com.google.android.gms.maps.MapsInitializer
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
@@ -46,6 +43,7 @@ class UnterApp: Application() {
         val getUser = GetUser(firebaseAuthService, streamUserService)
         val signUpUser = SignUpUser(firebaseAuthService, streamUserService)
         val logInUser = LogInUser(firebaseAuthService, streamUserService)
+        val logOutUser = LogOutUser(firebaseAuthService, streamUserService)
         val updateUserAvatar = UpdateUserAvatar(firebaseStorageService, streamUserService)
 
         globalServices = GlobalServices.builder()
@@ -59,6 +57,7 @@ class UnterApp: Application() {
             .add(getUser)
             .add(signUpUser)
             .add(logInUser)
+            .add(logOutUser)
             .add(updateUserAvatar)
             .build()
     }

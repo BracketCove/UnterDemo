@@ -10,6 +10,7 @@ import com.bracketcove.authorization.AuthorizationService
 import com.bracketcove.authorization.UserService
 import com.bracketcove.domain.UnterUser
 import com.bracketcove.domain.UserType
+import com.bracketcove.usecase.LogOutUser
 import com.bracketcove.usecase.UpdateUserAvatar
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
@@ -23,6 +24,7 @@ import kotlin.coroutines.CoroutineContext
 class ProfileSettingsViewModel(
     private val backstack: Backstack,
     private val updateUserAvatar: UpdateUserAvatar,
+    private val logUserOut: LogOutUser,
     private val userService: UserService,
     private val authService: AuthorizationService
 ) : ScopedServices.Activated, CoroutineScope {
@@ -31,12 +33,8 @@ class ProfileSettingsViewModel(
     private val _userModel = MutableStateFlow<UnterUser?>(null)
     val userModel: StateFlow<UnterUser?> get() = _userModel
     fun handleLogOut() = launch(Dispatchers.Main) {
-        val logout = authService.logout()
-
-        when (logout) {
-            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-            is ServiceResult.Value -> sendToLogin()
-        }
+        logUserOut.logout(_userModel.value!!)
+        sendToLogin()
     }
 
     fun isUserRegistered(): Boolean {
