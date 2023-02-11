@@ -15,6 +15,7 @@ val color_primary = Color(0xFF00BCD4)
 val color_black = Color(0xFF000000)
 val color_white = Color(0xFFFFFFFF)
 val color_red = Color(0xFFFF1300)
+val color_light_grey = Color(0xFF616161)
 
 private val Poppins = FontFamily(
     Font(R.font.poppins_regular, FontWeight.Normal),

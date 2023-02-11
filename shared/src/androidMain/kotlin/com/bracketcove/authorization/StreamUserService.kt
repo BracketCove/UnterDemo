@@ -90,8 +90,8 @@ class StreamUserService(
                     )
                 )
             }
-            val token = client.devToken(user.userId)
-            val result = client.connectUser(streamUser, token).await()
+
+            val result = client.updateUser(streamUser).await()
 
             if (result.isSuccess) {
                 ServiceResult.Value(user)

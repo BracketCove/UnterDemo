@@ -1,8 +1,6 @@
 package com.bracketcove.android.profile.settings
 
 import android.content.Intent
-import android.graphics.Bitmap
-import android.net.Uri
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,27 +13,22 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DriveEta
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import com.bracketcove.android.R
 import com.bracketcove.android.style.color_black
 import com.bracketcove.android.style.color_primary
@@ -44,8 +37,6 @@ import com.bracketcove.android.style.typography
 import com.bracketcove.domain.UnterUser
 import com.bracketcove.domain.UserType
 import com.skydoves.landscapist.glide.GlideImage
-import com.zhuinden.simplestack.Backstack
-import java.io.ByteArrayOutputStream
 
 @Composable
 fun ProfileSettingsScreen(
@@ -61,29 +52,33 @@ fun ProfileSettingsScreen(
     ) {
         ProfileToolbar(viewModel = viewModel)
 
-        var showDriverSwitch by rememberSaveable {
-            mutableStateOf(false)
-        }
-
         var driverSwitchState by rememberSaveable {
             mutableStateOf(false)
         }
 
+        val user by viewModel.userModel.collectAsState()
 
         ProfileHeader(
             modifier = Modifier
                 .wrapContentHeight()
-                .fillMaxWidth(),
-            viewModel = viewModel
+                .fillMaxWidth()
+                .padding(bottom = 64.dp),
+            viewModel = viewModel,
+            user = user
         )
 
-//        if (unregisteredUserView) DriverRegistryPrompt(viewModel = viewModel)
-//        else DriverInfo(
-//            modifier = Modifier
-//                .wrapContentHeight()
-//                .fillMaxWidth(),
-//            viewModel = viewModel
-//        )
+        UserTypeState(
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .wrapContentHeight()
+                .border(
+                    width = 1.dp,
+                    color_black.copy(alpha = 0.12f),
+                    RoundedCornerShape(4.dp)
+                ),
+            viewModel = viewModel,
+            user = user
+        )
     }
 }
 
@@ -123,69 +118,23 @@ fun ProfileToolbar(
 @Composable
 fun ProfileHeader(
     modifier: Modifier,
-    viewModel: ProfileSettingsViewModel
+    viewModel: ProfileSettingsViewModel,
+    user: UnterUser?
 ) {
-
-    val user by viewModel.userModel.collectAsState()
 
     //Note: You would want to do better null checking than this in a prod app
-    if (user != null) Row(modifier = modifier) {
+    if (user != null) Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         ProfileAvatar(modifier = Modifier, viewModel = viewModel, user = user!!)
-        NameAndDriverState(
-            modifier = Modifier,
-            viewModel = viewModel,
-            user = user!!
-        )
-    }
-}
-
-@Composable
-fun NameAndDriverState(
-    modifier: Modifier,
-    viewModel: ProfileSettingsViewModel,
-    user: UnterUser
-) {
-
-    ConstraintLayout(modifier = modifier) {
-        val (name, userType, switch) = createRefs()
-
         Text(
             modifier = Modifier
-                .constrainAs(name) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                }
                 .padding(start = 16.dp),
-            text = user.username,
-            style = typography.h3
-        )
-
-        Switch(
-            modifier = Modifier
-                .wrapContentHeight(align = Alignment.Top)
-                .constrainAs(switch) {
-                    top.linkTo(userType.top)
-                    start.linkTo(parent.start)
-                    bottom.linkTo(userType.bottom)
-                }
-                .padding(start = 16.dp),
-            checked = user.type != UserType.PASSENGER.value,
-            onCheckedChange = { viewModel.handleToggleUserType() }
-        )
-
-        Text(
-            modifier = Modifier
-                .wrapContentHeight(align = Alignment.Top)
-                .constrainAs(userType) {
-                    top.linkTo(name.bottom)
-                    start.linkTo(switch.end)
-                },
-            text = if (user.type != UserType.PASSENGER.value) stringResource(id = R.string.driver)
-            else stringResource(id = R.string.passenger),
-            style = typography.subtitle2
+            text = user!!.username,
+            style = typography.h2
         )
     }
-
 }
 
 @Composable
@@ -204,10 +153,12 @@ fun ProfileAvatar(
         if (user.avatarPhotoUrl == "") Image(
             modifier = Modifier
                 .size(88.dp)
-                .clip(CircleShape),
+                .clip(CircleShape)
+                .alpha(0.86f),
             imageVector = ImageVector.vectorResource(id = R.drawable.baseline_account_circle_24),
             contentDescription = stringResource(id = R.string.user_avatar),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            colorFilter = ColorFilter.tint(color_primary)
         ) else GlideImage(
             modifier = Modifier
                 .size(88.dp)
@@ -218,7 +169,7 @@ fun ProfileAvatar(
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult(),
             onResult = {
-                    viewModel.handleThumbnailUpdate(it.data?.data)
+                viewModel.handleThumbnailUpdate(it.data?.data)
             }
         )
 
@@ -232,5 +183,42 @@ fun ProfileAvatar(
             contentDescription = stringResource(id = R.string.edit_avatar),
             tint = Color.Unspecified
         )
+    }
+}
+
+@Composable
+fun UserTypeState(
+    modifier: Modifier,
+    viewModel: ProfileSettingsViewModel,
+    user: UnterUser?
+) {
+    if (user != null) {
+        Column(
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                modifier = Modifier
+                    .wrapContentHeight(align = Alignment.Top)
+                    .padding(top = 16.dp),
+                text = if (user.type != UserType.PASSENGER.value) stringResource(id = R.string.driver)
+                else stringResource(id = R.string.passenger),
+                style = typography.h3
+            )
+
+            Switch(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(bottom = 16.dp)
+                    .scale(1.5f),
+                checked = user.type != UserType.PASSENGER.value,
+                onCheckedChange = { viewModel.handleToggleUserType() },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = color_primary,
+                    checkedTrackColor = color_primary
+                )
+            )
+        }
+
     }
 }

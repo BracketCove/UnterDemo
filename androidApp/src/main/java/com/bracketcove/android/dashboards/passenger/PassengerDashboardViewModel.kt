@@ -25,6 +25,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -37,9 +38,8 @@ class PassengerDashboardViewModel(
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
-    private val _passengerModel = MutableStateFlow<UnterUser?>(null)
-    private val _driverModel = MutableStateFlow<UnterUser?>(null)
-    private val _rideModel = MutableStateFlow<Ride?>(null)
+    private var _passengerModel = MutableStateFlow<UnterUser?>(null)
+    private var _rideModel: StateFlow<Ride?> = MutableStateFlow<Ride?>(null)
     private val _mapIsReady = MutableStateFlow(false)
 
     /*
@@ -52,11 +52,10 @@ class PassengerDashboardViewModel(
         - EN_ROUTE
         - ARRIVED
      */
-    val uiState = combineTuple(_passengerModel, _driverModel, _rideModel, _mapIsReady).map {
+    val uiState = combineTuple(_passengerModel, _rideModel, _mapIsReady).map {
         val passenger = it.first
-        val driver = it.second
-        val ride = it.third
-        val isMapReady = it.fourth
+        val ride = it.second
+        val isMapReady = it.third
 
         //only publish state updates whe map is ready!
         if (passenger == null || !isMapReady) PassengerDashboardUiState.Loading
@@ -69,40 +68,40 @@ class PassengerDashboardViewModel(
                     passenger.latitude, passenger.longitude, ride.destinationAddress
                 )
 
-                driver != null && ride.status == RideStatus.PASSENGER_PICK_UP.value -> PassengerDashboardUiState.PassengerPickUp(
+                ride.status == RideStatus.PASSENGER_PICK_UP.value -> PassengerDashboardUiState.PassengerPickUp(
                     passengerLat = passenger.latitude,
                     passengerLon = passenger.longitude,
-                    driverLat = driver.latitude,
-                    driverLon = driver.longitude,
+                    driverLat = ride.driverLatitude,
+                    driverLon = ride.driverLongitude,
                     destinationLat = ride.destinationLatitude,
                     destinationLon = ride.destinationLongitude,
                     destinationAddress = ride.destinationAddress,
-                    driverName = driver.username,
-                    driverAvatar = driver.avatarPhotoUrl
+                    driverName = ride.driverName,
+                    driverAvatar = ride.driverAvatarUrl
                 )
 
-                driver != null && ride.status == RideStatus.EN_ROUTE.value -> PassengerDashboardUiState.EnRoute(
+                ride.status == RideStatus.EN_ROUTE.value -> PassengerDashboardUiState.EnRoute(
                     passengerLat = passenger.latitude,
                     passengerLon = passenger.longitude,
-                    driverName = driver.username,
+                    driverName = ride.driverName,
                     destinationAddress = ride.destinationAddress,
                     destinationLat = ride.destinationLatitude,
                     destinationLon = ride.destinationLongitude,
-                    driverAvatar = driver.avatarPhotoUrl
+                    driverAvatar = ride.driverAvatarUrl
                 )
 
-                driver != null && ride.status == RideStatus.ARRIVED.value -> PassengerDashboardUiState.Arrived(
+                ride.status == RideStatus.ARRIVED.value -> PassengerDashboardUiState.Arrived(
                     passengerLat = passenger.latitude,
                     passengerLon = passenger.longitude,
-                    driverName = driver.username,
+                    driverName = ride.driverName,
                     destinationLat = ride.destinationLatitude,
                     destinationLon = ride.destinationLongitude,
                     destinationAddress = ride.destinationAddress,
-                    driverAvatar = driver.avatarPhotoUrl
+                    driverAvatar = ride.driverAvatarUrl
                 )
 
                 else -> {
-                    Log.d("ELSE", "${passenger}, ${driver}, ${ride}")
+                    Log.d("ELSE", "${passenger}, ${ride}")
                     PassengerDashboardUiState.Error
                 }
             }
@@ -116,21 +115,20 @@ class PassengerDashboardViewModel(
         _mapIsReady.value = true
     }
 
-    fun getPassenger() = launch(Dispatchers.Main) {
-        goToProfile()
-//        val getUser = userService.getUser()
-//        when (getUser) {
-//            is ServiceResult.Failure -> {
-//                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-//                sendToLogin()
-//            }
-//            is ServiceResult.Value -> {
-//                if (getUser.value == null) sendToLogin()
-//                else {
-//                    getRideIfOneExists(getUser.value!!)
-//                }
-//            }
-//        }
+    private fun getPassenger() = launch(Dispatchers.Main) {
+        val getUser = userService.getUser()
+        when (getUser) {
+            is ServiceResult.Failure -> {
+                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
+                sendToLogin()
+            }
+            is ServiceResult.Value -> {
+                if (getUser.value == null) sendToLogin()
+                else {
+                    observeRideModel(getUser.value!!)
+                }
+            }
+        }
     }
 
     /**
@@ -138,7 +136,7 @@ class PassengerDashboardViewModel(
      * setting the other models first, we avoid the UI rapidly switching between different states
      * in a disorganized way.
      */
-    private suspend fun getRideIfOneExists(passenger: UnterUser) {
+    private suspend fun observeRideModel(passenger: UnterUser) {
         val getRide = rideService.getRideIfInProgress()
         when (getRide) {
             is ServiceResult.Failure -> {
@@ -146,41 +144,8 @@ class PassengerDashboardViewModel(
                 sendToLogin()
             }
             is ServiceResult.Value -> {
-                when {
-                    getRide.value == null -> {
-                        _passengerModel.value = passenger
-                    }
-
-                    getRide.value!!.driverId == null -> {
-                        _rideModel.value = getRide.value
-                        _passengerModel.value = passenger
-                    }
-                    else -> {
-                        //driver is already present
-                        getDriver(passenger, getRide.value!!)
-                    }
-                }
-            }
-        }
-    }
-
-    fun getDriver(passenger: UnterUser, ride: Ride) = launch(Dispatchers.Main) {
-        val getDriver = userService.getUserById(ride.driverId!!)
-        when (getDriver) {
-            is ServiceResult.Failure -> {
-                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-                sendToLogin()
-            }
-            is ServiceResult.Value -> {
-                if (getDriver.value == null) {
-                    toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-                    sendToLogin()
-                } else {
-                    //The order here is important
-                    _driverModel.value = getDriver.value
-                    _rideModel.value = ride
-                    _passengerModel.value = passenger
-                }
+                _rideModel = getRide.value.stateIn(this)
+                _passengerModel.value = passenger
             }
         }
     }
@@ -205,7 +170,8 @@ class PassengerDashboardViewModel(
             passengerId = _passengerModel.value!!.userId,
             latitude = response.place.latLng!!.latitude,
             longitude = response.place.latLng!!.longitude,
-            address = address
+            destinationAddress = address,
+            avatarUrl = _passengerModel.value!!.avatarPhotoUrl
         )
 
         when (createRide) {
@@ -286,7 +252,7 @@ class PassengerDashboardViewModel(
         }
     }
 
-    fun updatePassengerLocation(latLng: LatLng) = launch (Dispatchers.Main){
+    fun updatePassengerLocation(latLng: LatLng) = launch(Dispatchers.Main) {
         val updateAttempt = userService.updateUser(
             _passengerModel.value!!.copy(
                 latitude = latLng.lat,
@@ -304,7 +270,7 @@ class PassengerDashboardViewModel(
     }
 
     fun openChat() {
-            TODO("Not yet implemented")
+        TODO("Not yet implemented")
     }
 
     fun goToProfile() {
