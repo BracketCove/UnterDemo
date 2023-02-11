@@ -1,6 +1,8 @@
 package com.bracketcove.android.profile.settings
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -42,6 +45,7 @@ import com.bracketcove.domain.UnterUser
 import com.bracketcove.domain.UserType
 import com.skydoves.landscapist.glide.GlideImage
 import com.zhuinden.simplestack.Backstack
+import java.io.ByteArrayOutputStream
 
 @Composable
 fun ProfileSettingsScreen(
@@ -214,8 +218,7 @@ fun ProfileAvatar(
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult(),
             onResult = {
-
-                viewModel.handleThumbnailUpdate(it.data?.data)
+                    viewModel.handleThumbnailUpdate(it.data?.data)
             }
         )
 

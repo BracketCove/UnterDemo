@@ -78,6 +78,7 @@ class StreamUserService(
                 User(
                     id = user.userId,
                     name = user.username,
+                    image = user.avatarPhotoUrl,
                     extraData = mutableMapOf(
                         KEY_LAT to user.latitude,
                         KEY_LON to user.longitude,
@@ -100,21 +101,6 @@ class StreamUserService(
                 ServiceResult.Failure(Exception(result.error().cause))
             }
         }
-
-    override suspend fun attemptUserAvatarUpdate(
-        user: UnterUser,
-        url: String
-    ): ServiceResult<String?> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun attemptVehicleAvatarUpdate(
-        user: UnterUser,
-        url: String
-    ): ServiceResult<String?> {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun getPassengersLookingForRide(): ServiceResult<List<UnterUser>?> {
         TODO("Not yet implemented")
     }

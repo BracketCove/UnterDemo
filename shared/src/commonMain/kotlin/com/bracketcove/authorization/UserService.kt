@@ -18,8 +18,5 @@ interface UserService {
     suspend fun getUserById(userId: String): ServiceResult<UnterUser?>
     suspend fun updateUser(user: UnterUser): ServiceResult<UnterUser?>
 
-    suspend fun attemptUserAvatarUpdate(user: UnterUser, url: String): ServiceResult<String?>
-
-    suspend fun attemptVehicleAvatarUpdate(user: UnterUser, url: String): ServiceResult<String?>
     suspend fun getPassengersLookingForRide(): ServiceResult<List<UnterUser>?>
 }

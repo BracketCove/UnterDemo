@@ -33,6 +33,9 @@ kotlin {
                 implementation("io.getstream:stream-chat-android-client:$stream_version")
 
                 implementation("com.google.firebase:firebase-auth-ktx:21.1.0")
+                implementation("com.google.firebase:firebase-storage-ktx:20.1.0")
+                implementation("com.github.bumptech.glide:glide:4.14.2")
+
             }
         }
         val androidTest by getting

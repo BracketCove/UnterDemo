@@ -27,7 +27,7 @@ class GetUser(
     ): ServiceResult<UnterUser?> {
         return userService.getUserById(uid).let { getDetailsResult ->
             when (getDetailsResult) {
-                is ServiceResult.Failure -> ServiceResult.Failure(getDetailsResult.exception)
+                    is ServiceResult.Failure -> ServiceResult.Failure(getDetailsResult.exception)
                 is ServiceResult.Value -> ServiceResult.Value(getDetailsResult.value)
             }
         }

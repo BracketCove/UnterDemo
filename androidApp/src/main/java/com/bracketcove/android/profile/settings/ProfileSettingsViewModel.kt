@@ -10,6 +10,7 @@ import com.bracketcove.authorization.AuthorizationService
 import com.bracketcove.authorization.UserService
 import com.bracketcove.domain.UnterUser
 import com.bracketcove.domain.UserType
+import com.bracketcove.usecase.UpdateUserAvatar
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices
@@ -21,6 +22,7 @@ import kotlin.coroutines.CoroutineContext
 
 class ProfileSettingsViewModel(
     private val backstack: Backstack,
+    private val updateUserAvatar: UpdateUserAvatar,
     private val userService: UserService,
     private val authService: AuthorizationService
 ) : ScopedServices.Activated, CoroutineScope {
@@ -74,12 +76,15 @@ class ProfileSettingsViewModel(
     fun handleThumbnailUpdate(imageUri: Uri?) = launch(Dispatchers.Main) {
         if (imageUri != null) {
             val updateAttempt =
-                userService.attemptUserAvatarUpdate(_userModel.value!!, imageUri.toString())
+                updateUserAvatar.updateAvatar(_userModel.value!!, imageUri.toString())
 
             when (updateAttempt) {
                 is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
 
                 is ServiceResult.Value -> {
+                    _userModel.value = _userModel.value!!.copy(
+                        avatarPhotoUrl = updateAttempt.value
+                    )
                     toastHandler?.invoke(ToastMessages.UPDATE_SUCCESSFUL)
                 }
             }

@@ -47,6 +47,7 @@ dependencies {
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("com.google.firebase:firebase-storage-ktx:20.1.0")
 
     val simplestack_version = "2.2.5"
 
@@ -90,7 +91,6 @@ dependencies {
     implementation("com.google.maps.android:android-maps-utils:3.3.0")
     implementation("org.slf4j:slf4j-simple:1.7.25")
 
-    implementation(platform("com.google.firebase:firebase-bom:31.2.0"))
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.firebase:firebase-database-ktx")
+    implementation("com.google.firebase:firebase-auth-ktx:21.1.0")
+    implementation("com.google.firebase:firebase-database-ktx:20.1.0")
 }
