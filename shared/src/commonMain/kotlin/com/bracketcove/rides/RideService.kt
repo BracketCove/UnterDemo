@@ -6,14 +6,19 @@ import com.bracketcove.domain.UnterUser
 import kotlinx.coroutines.flow.Flow
 
 interface RideService {
-    suspend fun getRideIfInProgress(): Flow<ServiceResult<Ride?>>
+
+    fun rideFlow(): Flow<ServiceResult<Ride?>>
+    suspend fun getRideIfInProgress() : ServiceResult<Unit>
     suspend fun updateRide(ride: Ride): ServiceResult<Unit>
     suspend fun createRide(
         passengerId: String,
-        latitude: Double,
-        longitude: Double,
+        passengerName: String,
+        passengerLat: Double,
+        passengerLon: Double,
+        passengerAvatarUrl: String,
         destinationAddress: String,
-        avatarUrl: String
+        destLat: Double,
+        destLon: Double,
     ): Flow<ServiceResult<Ride?>>
 
     suspend fun cancelRide(ride: Ride): ServiceResult<Unit>

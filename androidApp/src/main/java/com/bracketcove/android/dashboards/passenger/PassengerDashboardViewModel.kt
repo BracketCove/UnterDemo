@@ -35,8 +35,8 @@ class PassengerDashboardViewModel(
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
-    private var _passengerModel = MutableStateFlow<UnterUser?> (null)
-    private var _rideModel: StateFlow<ServiceResult<Ride?>> = MutableStateFlow<ServiceResult<Ride?>>(ServiceResult.Value(null))
+    private var _passengerModel = MutableStateFlow<UnterUser?>(null)
+    private var _rideModel: Flow<ServiceResult<Ride?>> = rideService.rideFlow()
     private val _mapIsReady = MutableStateFlow(false)
 
     /*
@@ -96,7 +96,7 @@ class PassengerDashboardViewModel(
 
                 ride.status == RideStatus.ARRIVED.value
                         && ride.driverLatitude != null
-                        && ride.driverLongitude != null-> PassengerDashboardUiState.Arrived(
+                        && ride.driverLongitude != null -> PassengerDashboardUiState.Arrived(
                     passengerLat = ride.passengerLatitude,
                     passengerLon = ride.passengerLongitude,
                     driverName = ride.driverName ?: "Error",
@@ -116,6 +116,8 @@ class PassengerDashboardViewModel(
 
     private val _autoCompleteList = MutableStateFlow<List<AutoCompleteModel>>(emptyList())
     val autoCompleteList: StateFlow<List<AutoCompleteModel>> get() = _autoCompleteList
+
+    private var passengerLatLng = LatLng()
 
     fun mapIsReady() {
         _mapIsReady.value = true
@@ -143,8 +145,16 @@ class PassengerDashboardViewModel(
      * in a disorganized way.
      */
     private suspend fun observeRideModel(passenger: UnterUser) {
-        _rideModel = rideService.getRideIfInProgress().stateIn(this)
-        _passengerModel.value = passenger
+        val result = rideService.getRideIfInProgress()
+
+        when (result) {
+            is ServiceResult.Failure -> handleError()
+            is ServiceResult.Value -> _passengerModel.value = passenger
+        }
+
+//        _rideModel = rideService.getRideIfInProgress()
+//            .stateIn(scope = this, started = SharingStarted.WhileSubscribed(5000L), initialValue = ServiceResult.Value(null))
+
         //passenger model is kept null until ride model is set to avoid state issues
     }
 
@@ -165,11 +175,14 @@ class PassengerDashboardViewModel(
 
     private suspend fun attemptToCreateNewRide(response: FetchPlaceResponse, address: String) {
         _rideModel = rideService.createRide(
-            passengerId = _passengerModel.value!!.userId,
-            latitude = response.place.latLng!!.latitude,
-            longitude = response.place.latLng!!.longitude,
+            destLat = response.place.latLng!!.latitude,
+            destLon = response.place.latLng!!.longitude,
             destinationAddress = address,
-            avatarUrl = _passengerModel.value!!.avatarPhotoUrl
+            passengerId = _passengerModel.value!!.userId,
+            passengerAvatarUrl = _passengerModel.value!!.avatarPhotoUrl,
+            passengerName = _passengerModel.value!!.username,
+            passengerLat = passengerLatLng.lat,
+            passengerLon = passengerLatLng.lng
         ).stateIn(this)
     }
 
@@ -192,19 +205,19 @@ class PassengerDashboardViewModel(
 
     fun cancelRide() = launch(Dispatchers.Main) {
         //we might not need to do send user to splash
-        val model = _rideModel.value
-        if (model is ServiceResult.Value && model.value != null) {
-            val cancelRide = rideService.cancelRide(model.value!!)
-            when (cancelRide) {
-                is ServiceResult.Failure -> {
-                    toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-                    sendToSplash()
-                }
-                is ServiceResult.Value -> {
-                    sendToSplash()
-                }
-            }
-        }
+//        val model = _rideModel.value
+//        if (model is ServiceResult.Value && model.value != null) {
+//            val cancelRide = rideService.cancelRide(model.value!!)
+//            when (cancelRide) {
+//                is ServiceResult.Failure -> {
+//                    toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
+//                    sendToSplash()
+//                }
+//                is ServiceResult.Value -> {
+//                    sendToSplash()
+//                }
+//            }
+//        }
     }
 
     private fun sendToLogin() {
@@ -239,15 +252,17 @@ class PassengerDashboardViewModel(
     }
 
     fun updatePassengerLocation(latLng: LatLng) = launch(Dispatchers.Main) {
-        val model = _rideModel.value
-        if (model is ServiceResult.Value && model.value != null) {
-            rideService.updateRide(
-                model.value!!.copy(
-                    passengerLatitude = latLng.lat,
-                    passengerLongitude = latLng.lng
-                )
-            )
-        }
+        passengerLatLng = latLng
+        //TODO have this update the ride
+//        val model = _rideModel.value
+//        if (model is ServiceResult.Value && model.value != null) {
+//            rideService.updateRide(
+//                model.value!!.copy(
+//                    passengerLatitude = latLng.lat,
+//                    passengerLongitude = latLng.lng
+//                )
+//            )
+//        }
     }
 
     fun openChat() {

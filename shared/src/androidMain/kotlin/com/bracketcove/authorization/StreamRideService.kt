@@ -13,15 +13,19 @@ import io.getstream.chat.android.client.models.Filters
 import io.getstream.chat.android.client.utils.onErrorSuspend
 import io.getstream.chat.android.client.utils.onSuccessSuspend
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 
 class StreamRideService(
     private val client: ChatClient
 ) : RideService {
-    override suspend fun getRideIfInProgress(): Flow<ServiceResult<Ride?>> = flow {
+
+    private val _rideModelUpdates: MutableStateFlow<ServiceResult<Ride?>> =
+        MutableStateFlow(ServiceResult.Value(null))
+    val rideModelUpdates: Flow<ServiceResult<Ride?>> = _rideModelUpdates
+    override fun rideFlow(): Flow<ServiceResult<Ride?>> = rideModelUpdates
+
+    override suspend fun getRideIfInProgress(): ServiceResult<Unit> = withContext(Dispatchers.IO) {
         val request = QueryChannelsRequest(
             filter = Filters.and(
                 Filters.eq(STREAM_USER_ID, client.getCurrentUser()?.id ?: ""),
@@ -29,16 +33,14 @@ class StreamRideService(
             querySort = QuerySortByField.descByName(FILTER_UPDATED_AT),
             limit = 1
         ).apply {
-            watch = true
             state = true
         }
 
         val result = client.queryChannels(request).await()
 
         result.onSuccessSuspend { channels ->
-            if (channels.isEmpty()) emit(
-                ServiceResult.Value(null)
-            ) else {
+            if (channels.isEmpty()) _rideModelUpdates.value = ServiceResult.Value(null)
+            else {
                 channels.first().let { channel ->
                     val extraData = channel.extraData
                     val destAddress: String? = extraData[KEY_DEST_ADDRESS] as String?
@@ -56,43 +58,33 @@ class StreamRideService(
                     val passengerLon: Double? = extraData[KEY_PASSENGER_LON] as Double?
                     val passengerAvatar: String? = extraData[KEY_PASSENGER_AVATAR_URL] as String?
                     val passengerName: String? = extraData[KEY_PASSENGER_NAME] as String?
-                    val passengerAddress: String? = extraData[KEY_PASSENGER_ADDRESS] as String?
-
                     val status: String? = extraData[KEY_STATUS] as String?
 
-                    emit(
-                        ServiceResult.Value(
-                            Ride(
-                                rideId = channel.id,
-                                status = status ?: RideStatus.SEARCHING_FOR_DRIVER.value,
-                                destinationLatitude = destLat ?: 999.0,
-                                destinationLongitude = destLon ?: 999.0,
-                                destinationAddress = destAddress ?: "",
-                                driverId = driverId,
-                                driverLatitude = driverLat,
-                                driverLongitude = driverLon,
-                                driverName = driverName,
-                                driverAvatarUrl = driverAvatar,
-                                passengerId = passengerId ?: "",
-                                passengerLatitude = passengerLat ?: 999.0,
-                                passengerLongitude = passengerLon ?: 999.0,
-                                passengerName = passengerName ?: "",
-                                passengerAddress = passengerAddress ?: "",
-                                passengerAvatarUrl = passengerAvatar ?: ""
-                            )
+                    _rideModelUpdates.value = ServiceResult.Value(
+                        Ride(
+                            rideId = channel.id,
+                            status = status ?: RideStatus.SEARCHING_FOR_DRIVER.value,
+                            destinationLatitude = destLat ?: 999.0,
+                            destinationLongitude = destLon ?: 999.0,
+                            destinationAddress = destAddress ?: "",
+                            driverId = driverId,
+                            driverLatitude = driverLat,
+                            driverLongitude = driverLon,
+                            driverName = driverName,
+                            driverAvatarUrl = driverAvatar,
+                            passengerId = passengerId ?: "",
+                            passengerLatitude = passengerLat ?: 999.0,
+                            passengerLongitude = passengerLon ?: 999.0,
+                            passengerName = passengerName ?: "",
+                            passengerAvatarUrl = passengerAvatar ?: ""
                         )
                     )
                 }
             }
         }
 
-        result.onErrorSuspend {
-            emit(
-                ServiceResult.Failure<Ride?>(Exception(it.cause))
-            )
-        }
-
-    }.flowOn(Dispatchers.IO)
+        ServiceResult.Value(Unit)
+    }
 
     /**
      * Get a channel, if one exists, which possess uid of user, and is not in state arrived
@@ -106,13 +98,57 @@ class StreamRideService(
 
     override suspend fun createRide(
         passengerId: String,
-        latitude: Double,
-        longitude: Double,
+        passengerName: String,
+        passengerLat: Double,
+        passengerLon: Double,
+        passengerAvatarUrl: String,
         destinationAddress: String,
-        avatarUrl: String
-    ): Flow<ServiceResult<Ride?>> {
-        TODO("Not yet implemented")
-    }
+        destLat: Double,
+        destLon: Double,
+    ): Flow<ServiceResult<Ride?>> = flow<ServiceResult<Ride?>> {
+
+        val channelResult = client.createChannel(
+            channelType = "messaging",
+            channelId = passengerId,
+            memberIds = listOf(passengerId),
+            extraData = mutableMapOf(
+                KEY_STATUS to RideStatus.SEARCHING_FOR_DRIVER,
+                KEY_PASSENGER_ID to passengerId,
+                KEY_PASSENGER_NAME to passengerName,
+                KEY_PASSENGER_LAT to passengerLat,
+                KEY_PASSENGER_LON to passengerLon,
+                KEY_PASSENGER_AVATAR_URL to passengerAvatarUrl,
+                KEY_DEST_ADDRESS to destinationAddress,
+                KEY_DEST_LAT to destLat,
+                KEY_DEST_LON to destLon
+            )
+        ).await()
+
+        channelResult.onSuccessSuspend {
+            emit(
+                ServiceResult.Value(
+                    channelResult.data().let {
+                        val extraData = it.extraData
+
+                        Ride(
+                            status = extraData[KEY_STATUS] as String? ?: "",
+                            passengerId = extraData[KEY_PASSENGER_ID] as String? ?: "",
+                            passengerName = extraData[KEY_PASSENGER_NAME] as String? ?: "",
+                            passengerLatitude = extraData[KEY_PASSENGER_LAT] as Double? ?: 999.0,
+                            passengerLongitude = extraData[KEY_PASSENGER_LON] as Double? ?: 999.0,
+                            passengerAvatarUrl = extraData[KEY_PASSENGER_AVATAR_URL] as String?
+                                ?: "",
+                            destinationAddress = extraData[KEY_DEST_ADDRESS] as String? ?: "",
+                            destinationLatitude = extraData[KEY_DEST_LAT] as Double? ?: 999.0,
+                            destinationLongitude = extraData[KEY_DEST_LON] as Double? ?: 999.0,
+                        )
+                    }
+                )
+            )
+        }
+
+
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun cancelRide(ride: Ride): ServiceResult<Unit> {
         TODO("Not yet implemented")

@@ -10,7 +10,6 @@ data class Ride(
     val passengerLatitude: Double = 0.0,
     val passengerLongitude: Double = 0.0,
     val passengerName: String = "",
-    val passengerAddress: String = "",
     val passengerAvatarUrl: String = "",
     val driverId: String? = null,
     val driverLatitude: Double? = null,
