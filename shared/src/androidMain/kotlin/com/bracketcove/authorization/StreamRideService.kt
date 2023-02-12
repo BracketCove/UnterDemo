@@ -15,31 +15,30 @@ import io.getstream.chat.android.client.utils.onSuccessSuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
 class StreamRideService(
     private val client: ChatClient
 ) : RideService {
     override suspend fun getRideIfInProgress(): Flow<ServiceResult<Ride?>> = flow {
-        withContext(Dispatchers.IO) {
-            val request = QueryChannelsRequest(
-                filter = Filters.and(
-                    Filters.eq(STREAM_USER_ID, client.getCurrentUser() ?: ""),
-                    Filters.ne(KEY_STATUS, RideStatus.ARRIVED.value)
-                ),
-                querySort = QuerySortByField.descByName(FILTER_UPDATED_AT),
-                limit = 1
-            ).apply {
-                watch = true
-                state = true
-            }
+        val request = QueryChannelsRequest(
+            filter = Filters.and(
+                Filters.eq(STREAM_USER_ID, client.getCurrentUser()?.id ?: ""),
+            ),
+            querySort = QuerySortByField.descByName(FILTER_UPDATED_AT),
+            limit = 1
+        ).apply {
+            watch = true
+            state = true
+        }
 
-            val result = client.queryChannels(request).await()
+        val result = client.queryChannels(request).await()
 
-            result.onSuccessSuspend { channels ->
-                if (channels.isEmpty()) emit(
-                    ServiceResult.Value(null)
-                )
+        result.onSuccessSuspend { channels ->
+            if (channels.isEmpty()) emit(
+                ServiceResult.Value(null)
+            ) else {
                 channels.first().let { channel ->
                     val extraData = channel.extraData
                     val destAddress: String? = extraData[KEY_DEST_ADDRESS] as String?
@@ -83,17 +82,17 @@ class StreamRideService(
                             )
                         )
                     )
-
                 }
             }
-
-            result.onErrorSuspend {
-                emit(
-                    ServiceResult.Failure(Exception(it.cause))
-                )
-            }
         }
-    }
+
+        result.onErrorSuspend {
+            emit(
+                ServiceResult.Failure<Ride?>(Exception(it.cause))
+            )
+        }
+
+    }.flowOn(Dispatchers.IO)
 
     /**
      * Get a channel, if one exists, which possess uid of user, and is not in state arrived

@@ -35,8 +35,8 @@ class PassengerDashboardViewModel(
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
-    private var _passengerModel = MutableStateFlow<UnterUser?>(null)
-    private lateinit var _rideModel: StateFlow<ServiceResult<Ride?>>
+    private var _passengerModel = MutableStateFlow<UnterUser?> (null)
+    private var _rideModel: StateFlow<ServiceResult<Ride?>> = MutableStateFlow<ServiceResult<Ride?>>(ServiceResult.Value(null))
     private val _mapIsReady = MutableStateFlow(false)
 
     /*
@@ -144,9 +144,8 @@ class PassengerDashboardViewModel(
      */
     private suspend fun observeRideModel(passenger: UnterUser) {
         _rideModel = rideService.getRideIfInProgress().stateIn(this)
-
-        //passenger model is kept null until ride model is set to avoid state issues
         _passengerModel.value = passenger
+        //passenger model is kept null until ride model is set to avoid state issues
     }
 
     fun handleSearchItemClick(selectedPlace: AutoCompleteModel) = launch(Dispatchers.Main) {
