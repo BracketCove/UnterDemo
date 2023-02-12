@@ -2,10 +2,11 @@ package com.bracketcove.rides
 
 import com.bracketcove.ServiceResult
 import com.bracketcove.domain.Ride
+import com.bracketcove.domain.UnterUser
 import kotlinx.coroutines.flow.Flow
 
 interface RideService {
-    suspend fun getRideIfInProgress(): ServiceResult<Flow<Ride?>>
+    suspend fun getRideIfInProgress(): Flow<ServiceResult<Ride?>>
     suspend fun updateRide(ride: Ride): ServiceResult<Unit>
     suspend fun createRide(
         passengerId: String,
@@ -13,7 +14,7 @@ interface RideService {
         longitude: Double,
         destinationAddress: String,
         avatarUrl: String
-    ): ServiceResult<Ride>
+    ): Flow<ServiceResult<Ride?>>
 
     suspend fun cancelRide(ride: Ride): ServiceResult<Unit>
     suspend fun completeRide(value: Ride): ServiceResult<Unit>

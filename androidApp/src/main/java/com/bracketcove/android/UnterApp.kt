@@ -30,7 +30,7 @@ class UnterApp: Application() {
         val firebaseStorageService = FirebasePhotoService(FirebaseStorage.getInstance(), this)
 
         val streamUserService = StreamUserService(streamClient)
-        val streamRideService = StreamRideService()
+        val streamRideService = StreamRideService(streamClient)
 
         val googleService = GoogleService(this, geoContext)
 

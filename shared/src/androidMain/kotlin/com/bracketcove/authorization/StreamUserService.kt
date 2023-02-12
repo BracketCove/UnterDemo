@@ -2,10 +2,10 @@ package com.bracketcove.authorization
 
 import android.util.Log
 import com.bracketcove.ServiceResult
-import com.bracketcove.constants.*
+import com.bracketcove.constants.KEY_STATUS
+import com.bracketcove.constants.KEY_TYPE
 import com.bracketcove.domain.UnterUser
 import io.getstream.chat.android.client.ChatClient
-import io.getstream.chat.android.client.call.enqueue
 import io.getstream.chat.android.client.models.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,10 +18,7 @@ class StreamUserService(
         if (user == null) ServiceResult.Value(user)
         else {
             val extraData = user.extraData
-            val lat: Double? = extraData[KEY_LAT] as Double?
-            val lon: Double? = extraData[KEY_LON] as Double?
             val type: String? = extraData[KEY_TYPE] as String?
-            val address: String? = extraData[KEY_ADDRESS] as String?
             val status: String? = extraData[KEY_STATUS] as String?
 
             ServiceResult.Value(
@@ -31,10 +28,7 @@ class StreamUserService(
                     avatarPhotoUrl = user.image,
                     createdAt = user.createdAt.toString(),
                     updatedAt = user.updatedAt.toString(),
-                    latitude = lat ?: 999.0,
-                    longitude = lon ?: 999.0,
                     type = type ?: "",
-                    address = address ?: "",
                     status = status ?: ""
                 )
             )
@@ -49,10 +43,7 @@ class StreamUserService(
         if (getUserResult.isSuccess) {
             val user = getUserResult.data().user
                 val extraData = user.extraData
-                val lat: Double? = extraData[KEY_LAT] as Double?
-                val lon: Double? = extraData[KEY_LON] as Double?
                 val type: String? = extraData[KEY_TYPE] as String?
-                val address: String? = extraData[KEY_ADDRESS] as String?
                 val status: String? = extraData[KEY_STATUS] as String?
 
                 ServiceResult.Value(
@@ -62,10 +53,6 @@ class StreamUserService(
                         avatarPhotoUrl = user.image,
                         createdAt = user.createdAt.toString(),
                         updatedAt = user.updatedAt.toString(),
-                        latitude = lat ?: 999.0,
-                        longitude = lon ?: 999.0,
-                        type = type ?: "",
-                        address = address ?: "",
                         status = status ?: ""
                     )
                 )
@@ -82,10 +69,7 @@ class StreamUserService(
                     name = user.username,
                     image = user.avatarPhotoUrl,
                     extraData = mutableMapOf(
-                        KEY_LAT to user.latitude,
-                        KEY_LON to user.longitude,
                         KEY_TYPE to user.type,
-                        KEY_ADDRESS to user.address,
                         KEY_STATUS to user.status
                     )
                 )

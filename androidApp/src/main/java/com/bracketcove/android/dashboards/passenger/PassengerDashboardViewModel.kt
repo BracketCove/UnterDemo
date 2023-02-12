@@ -22,10 +22,7 @@ import com.zhuinden.simplestack.StateChange
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -39,7 +36,7 @@ class PassengerDashboardViewModel(
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
     private var _passengerModel = MutableStateFlow<UnterUser?>(null)
-    private var _rideModel: StateFlow<Ride?> = MutableStateFlow<Ride?>(null)
+    private lateinit var _rideModel: StateFlow<ServiceResult<Ride?>>
     private val _mapIsReady = MutableStateFlow(false)
 
     /*
@@ -53,51 +50,60 @@ class PassengerDashboardViewModel(
         - ARRIVED
      */
     val uiState = combineTuple(_passengerModel, _rideModel, _mapIsReady).map {
+        if (it.second is ServiceResult.Failure) return@map PassengerDashboardUiState.Error
+
         val passenger = it.first
-        val ride = it.second
+        val ride = (it.second as ServiceResult.Value).value
         val isMapReady = it.third
 
         //only publish state updates whe map is ready!
         if (passenger == null || !isMapReady) PassengerDashboardUiState.Loading
         else {
-
             when {
                 ride == null -> PassengerDashboardUiState.RideInactive
 
                 ride.driverId == null -> PassengerDashboardUiState.SearchingForDriver(
-                    passenger.latitude, passenger.longitude, ride.destinationAddress
+                    ride.passengerLatitude,
+                    ride.passengerLongitude,
+                    ride.destinationAddress
                 )
 
-                ride.status == RideStatus.PASSENGER_PICK_UP.value -> PassengerDashboardUiState.PassengerPickUp(
-                    passengerLat = passenger.latitude,
-                    passengerLon = passenger.longitude,
-                    driverLat = ride.driverLatitude,
-                    driverLon = ride.driverLongitude,
+                ride.status == RideStatus.PASSENGER_PICK_UP.value
+                        && ride.driverLatitude != null
+                        && ride.driverLongitude != null -> PassengerDashboardUiState.PassengerPickUp(
+                    passengerLat = ride.passengerLatitude,
+                    passengerLon = ride.passengerLongitude,
+                    driverLat = ride.driverLatitude!!,
+                    driverLon = ride.driverLongitude!!,
                     destinationLat = ride.destinationLatitude,
                     destinationLon = ride.destinationLongitude,
                     destinationAddress = ride.destinationAddress,
-                    driverName = ride.driverName,
-                    driverAvatar = ride.driverAvatarUrl
+                    driverName = ride.driverName ?: "Error",
+                    driverAvatar = ride.driverAvatarUrl ?: ""
                 )
 
-                ride.status == RideStatus.EN_ROUTE.value -> PassengerDashboardUiState.EnRoute(
-                    passengerLat = passenger.latitude,
-                    passengerLon = passenger.longitude,
-                    driverName = ride.driverName,
+                ride.status == RideStatus.EN_ROUTE.value
+                        && ride.driverLatitude != null
+                        && ride.driverLongitude != null -> PassengerDashboardUiState.EnRoute(
+                    passengerLat = ride.passengerLatitude,
+                    passengerLon = ride.passengerLongitude,
+                    driverName = ride.driverName ?: "Error",
                     destinationAddress = ride.destinationAddress,
                     destinationLat = ride.destinationLatitude,
                     destinationLon = ride.destinationLongitude,
-                    driverAvatar = ride.driverAvatarUrl
+                    driverAvatar = ride.driverAvatarUrl ?: ""
                 )
 
-                ride.status == RideStatus.ARRIVED.value -> PassengerDashboardUiState.Arrived(
-                    passengerLat = passenger.latitude,
-                    passengerLon = passenger.longitude,
-                    driverName = ride.driverName,
+                ride.status == RideStatus.ARRIVED.value
+                        && ride.driverLatitude != null
+                        && ride.driverLongitude != null-> PassengerDashboardUiState.Arrived(
+                    passengerLat = ride.passengerLatitude,
+                    passengerLon = ride.passengerLongitude,
+                    driverName = ride.driverName ?: "Error",
                     destinationLat = ride.destinationLatitude,
                     destinationLon = ride.destinationLongitude,
                     destinationAddress = ride.destinationAddress,
-                    driverAvatar = ride.driverAvatarUrl
+                    driverAvatar = ride.driverAvatarUrl ?: ""
                 )
 
                 else -> {
@@ -137,17 +143,10 @@ class PassengerDashboardViewModel(
      * in a disorganized way.
      */
     private suspend fun observeRideModel(passenger: UnterUser) {
-        val getRide = rideService.getRideIfInProgress()
-        when (getRide) {
-            is ServiceResult.Failure -> {
-                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-                sendToLogin()
-            }
-            is ServiceResult.Value -> {
-                _rideModel = getRide.value.stateIn(this)
-                _passengerModel.value = passenger
-            }
-        }
+        _rideModel = rideService.getRideIfInProgress().stateIn(this)
+
+        //passenger model is kept null until ride model is set to avoid state issues
+        _passengerModel.value = passenger
     }
 
     fun handleSearchItemClick(selectedPlace: AutoCompleteModel) = launch(Dispatchers.Main) {
@@ -166,20 +165,13 @@ class PassengerDashboardViewModel(
     }
 
     private suspend fun attemptToCreateNewRide(response: FetchPlaceResponse, address: String) {
-        val createRide = rideService.createRide(
+        _rideModel = rideService.createRide(
             passengerId = _passengerModel.value!!.userId,
             latitude = response.place.latLng!!.latitude,
             longitude = response.place.latLng!!.longitude,
             destinationAddress = address,
             avatarUrl = _passengerModel.value!!.avatarPhotoUrl
-        )
-
-        when (createRide) {
-            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-            is ServiceResult.Value -> {
-                _rideModel.value = createRide.value
-            }
-        }
+        ).stateIn(this)
     }
 
     fun requestAutocompleteResults(query: String) = launch(Dispatchers.Main) {
@@ -200,14 +192,18 @@ class PassengerDashboardViewModel(
     }
 
     fun cancelRide() = launch(Dispatchers.Main) {
-        val cancelRide = rideService.cancelRide(_rideModel.value!!)
-        when (cancelRide) {
-            is ServiceResult.Failure -> {
-                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-                sendToSplash()
-            }
-            is ServiceResult.Value -> {
-                sendToSplash()
+        //we might not need to do send user to splash
+        val model = _rideModel.value
+        if (model is ServiceResult.Value && model.value != null) {
+            val cancelRide = rideService.cancelRide(model.value!!)
+            when (cancelRide) {
+                is ServiceResult.Failure -> {
+                    toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
+                    sendToSplash()
+                }
+                is ServiceResult.Value -> {
+                    sendToSplash()
+                }
             }
         }
     }
@@ -239,33 +235,19 @@ class PassengerDashboardViewModel(
         sendToLogin()
     }
 
-    fun completeRide() = launch(Dispatchers.Main) {
-        val completeRide = rideService.completeRide(_rideModel.value!!)
-        when (completeRide) {
-            is ServiceResult.Failure -> {
-                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-                sendToSplash()
-            }
-            is ServiceResult.Value -> {
-                sendToSplash()
-            }
-        }
+    fun completeRide() {
+        sendToSplash()
     }
 
     fun updatePassengerLocation(latLng: LatLng) = launch(Dispatchers.Main) {
-        val updateAttempt = userService.updateUser(
-            _passengerModel.value!!.copy(
-                latitude = latLng.lat,
-                longitude = latLng.lng
+        val model = _rideModel.value
+        if (model is ServiceResult.Value && model.value != null) {
+            rideService.updateRide(
+                model.value!!.copy(
+                    passengerLatitude = latLng.lat,
+                    passengerLongitude = latLng.lng
+                )
             )
-        )
-
-        when (updateAttempt) {
-            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-            is ServiceResult.Value -> {
-                if (updateAttempt.value == null) toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-                else _passengerModel.value = updateAttempt.value
-            }
         }
     }
 

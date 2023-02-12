@@ -254,8 +254,9 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                             passengerList.visibility = View.VISIBLE
                             passengersLoadingLayout.visibility = View.GONE
 
-                            (passengerList.adapter as PassengerListAdapter)
-                                .submitList(models)
+                            //TODO FIXIT
+//                            (passengerList.adapter as PassengerListAdapter)
+//                                .submitList(models)
                         }
                     }
             }

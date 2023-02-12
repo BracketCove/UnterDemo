@@ -33,7 +33,6 @@ class DriverDashboardViewModel(
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
-    private val _passengerModel = MutableStateFlow<UnterUser?>(null)
     private val _driverModel = MutableStateFlow<UnterUser?>(null)
     private val _rideModel = MutableStateFlow<Ride?>(null)
     private val _mapIsReady = MutableStateFlow(false)
@@ -48,52 +47,57 @@ class DriverDashboardViewModel(
         - EN_ROUTE
         - ARRIVED
      */
-    val uiState = combineTuple(_driverModel, _passengerModel, _rideModel, _mapIsReady).map {
+    val uiState = combineTuple(_driverModel, _rideModel, _mapIsReady).map {
         //only publish state updates whe map is ready!
         val driver = it.first
-        val passenger = it.second
-        val ride = it.third
-        val isMapReady = it.fourth
+        val ride = it.second
+        val isMapReady = it.third
 
         if (driver == null || !isMapReady) DriverDashboardUiState.Loading
         else {
             when {
                 ride == null -> DriverDashboardUiState.SearchingForPassengers
 
-                passenger != null && ride.status == RideStatus.PASSENGER_PICK_UP.value -> DriverDashboardUiState.PassengerPickUp(
-                    passengerLat = passenger.latitude,
-                    passengerLon = passenger.longitude,
-                    driverLat = driver.latitude,
-                    driverLon = driver.longitude,
+                ride.status == RideStatus.PASSENGER_PICK_UP.value
+                        && ride.driverLatitude != null
+                        && ride.driverLongitude != null -> DriverDashboardUiState.PassengerPickUp(
+                    passengerLat = ride.passengerLatitude,
+                    passengerLon = ride.passengerLongitude,
+                    driverLat = ride.driverLatitude!!,
+                    driverLon = ride.driverLongitude!!,
                     destinationLat = ride.destinationLatitude,
                     destinationLon = ride.destinationLongitude,
                     destinationAddress = ride.destinationAddress,
-                    passengerName = passenger.username,
-                    passengerAvatar = passenger.avatarPhotoUrl
+                    passengerName = ride.passengerName,
+                    passengerAvatar = ride.passengerAvatarUrl
                 )
 
-                passenger != null && ride.status == RideStatus.EN_ROUTE.value -> DriverDashboardUiState.EnRoute(
-                    driverLat = driver.latitude,
-                    driverLon = driver.longitude,
+                ride.status == RideStatus.EN_ROUTE.value
+                        && ride.driverLatitude != null
+                        && ride.driverLongitude != null  -> DriverDashboardUiState.EnRoute(
+                    driverLat = ride.driverLatitude!!,
+                    driverLon = ride.driverLongitude!!,
                     destinationLat = ride.destinationLatitude,
                     destinationLon = ride.destinationLongitude,
                     destinationAddress = ride.destinationAddress,
-                    passengerName = passenger.username,
-                    passengerAvatar = passenger.avatarPhotoUrl
+                    passengerName = ride.passengerName,
+                    passengerAvatar = ride.passengerAvatarUrl
                 )
 
-                passenger != null && ride.status == RideStatus.ARRIVED.value -> DriverDashboardUiState.Arrived(
-                    driverLat = driver.latitude,
-                    driverLon = driver.longitude,
+                ride.status == RideStatus.ARRIVED.value
+                        && ride.driverLatitude != null
+                        && ride.driverLongitude != null -> DriverDashboardUiState.Arrived(
+                    driverLat = ride.driverLatitude!!,
+                    driverLon = ride.driverLongitude!!,
                     destinationLat = ride.destinationLatitude,
                     destinationLon = ride.destinationLongitude,
                     destinationAddress = ride.destinationAddress,
-                    passengerName = passenger.username,
-                    passengerAvatar = passenger.avatarPhotoUrl
+                    passengerName = ride.passengerName,
+                    passengerAvatar = ride.passengerAvatarUrl
                 )
 
                 else -> {
-                    Log.d("ELSE", "${passenger}, ${driver}, ${ride}")
+                    Log.d("ELSE", "${driver}, ${ride}")
                     DriverDashboardUiState.Error
                 }
             }
@@ -113,32 +117,33 @@ class DriverDashboardViewModel(
         ) emptyList<Pair<UnterUser, String>>()
         else {
             it.second!!.map { user ->
-                val passengerLatLng = LatLng(user.latitude, user.longitude)
-                val getDistance = googleService.getDistanceBetween(it.first, passengerLatLng)
+                //TODO FIXIT
+               // val passengerLatLng = LatLng(user.latitude, user.longitude)
+              //  val getDistance = googleService.getDistanceBetween(it.first, passengerLatLng)
 
-                Pair(user, getDistance)
+               // Pair(user, getDistance)
             }
         }
     }
 
     fun updateDriverLocation(latLng: LatLng) = launch(Dispatchers.Main) {
-        val updateAttempt = userService.updateUser(
-            _passengerModel.value!!.copy(
-                latitude = latLng.lat,
-                longitude = latLng.lng
-            )
-        )
-
-        when (updateAttempt) {
-            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-            is ServiceResult.Value -> {
-                if (updateAttempt.value == null) toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-                else{
-                    _driverModel.value = updateAttempt.value
-                    _driverLocation.value = latLng
-                }
-            }
-        }
+//        val updateAttempt = userService.updateUser(
+//            _driverModel.value!!.copy(
+//                latitude = latLng.lat,
+//                longitude = latLng.lng
+//            )
+//        )
+//
+//        when (updateAttempt) {
+//            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+//            is ServiceResult.Value -> {
+//                if (updateAttempt.value == null) toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+//                else{
+//                    _driverModel.value = updateAttempt.value
+//                    _driverLocation.value = latLng
+//                }
+//            }
+//        }
     }
 
     fun mapIsReady() {
@@ -167,26 +172,21 @@ class DriverDashboardViewModel(
      * in a disorganized way.
      */
     private suspend fun getRideIfOneExists(driver: UnterUser) {
-        val getRide = rideService.getRideIfInProgress()
-        when (getRide) {
-            is ServiceResult.Failure -> {
-                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-                sendToLogin()
-            }
-            is ServiceResult.Value -> {
-                when {
-                    getRide.value == null -> {
-                        _driverModel.value = driver
-                        getPassengerList()
-                    }
-
-                    else -> {
-                        //driver is already present
-                        getPassenger(driver, getRide.value!!)
-                    }
-                }
-            }
-        }
+//        val getRide = rideService.getRideIfInProgress()
+//        when (getRide) {
+//            is ServiceResult.Failure -> {
+//                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
+//                sendToLogin()
+//            }
+//            is ServiceResult.Value -> {
+//                when {
+//                    getRide.value == null -> {
+//                        _driverModel.value = driver
+//                        getPassengerList()
+//                    }
+//                }
+//            }
+//        }
     }
 
     private suspend fun getPassengerList() {
@@ -202,35 +202,13 @@ class DriverDashboardViewModel(
             }
         }
     }
-
-    fun getPassenger(driver: UnterUser, ride: Ride) = launch(Dispatchers.Main) {
-        val getPassenger = userService.getUserById(ride.passengerId!!)
-        when (getPassenger) {
-            is ServiceResult.Failure -> {
-                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-                sendToLogin()
-            }
-            is ServiceResult.Value -> {
-                if (getPassenger.value == null) {
-                    toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-                    sendToLogin()
-                } else {
-                    //The order here is important
-                    _rideModel.value = ride
-                    _passengerModel.value = getPassenger.value
-                    _driverModel.value = driver
-                }
-            }
-        }
-    }
-
     fun handlePassengerItemClick(passenger: UnterUser) = launch(Dispatchers.Main) {
         val getRideByPassengerId = rideService.getRideByPassengerId(passenger.userId)
 
         when (getRideByPassengerId) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
             is ServiceResult.Value -> {
-                _passengerModel.value = passenger
+              //  _passengerModel.value = passenger
                 _rideModel.value = getRideByPassengerId.value
             }
         }
@@ -304,7 +282,7 @@ class DriverDashboardViewModel(
                 sendToSplash()
             }
             is ServiceResult.Value -> {
-                _rideModel.value = updateRide.value!!
+               // _rideModel.value = updateRide.value!!
             }
         }
 
