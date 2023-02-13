@@ -32,7 +32,7 @@ class SignUpUser(
         username: String,
         uid: String
     ): ServiceResult<SignUpResult> {
-        return userService.updateUser(
+        return userService.initializeNewUser(
             UnterUser(
                 email = email,
                 userId = uid,

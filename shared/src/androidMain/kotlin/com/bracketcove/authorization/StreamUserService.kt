@@ -14,7 +14,7 @@ class StreamUserService(
     private val client: ChatClient
 ) : UserService {
     override suspend fun getUser(): ServiceResult<UnterUser?> = withContext(Dispatchers.IO) {
-        val user = client.clientState.user.value
+        val user = client.getCurrentUser()
         if (user == null) ServiceResult.Value(user)
         else {
             val extraData = user.extraData
@@ -34,14 +34,16 @@ class StreamUserService(
             )
         }
     }
-    override suspend fun getUserById(userId: String): ServiceResult<UnterUser?> = withContext(Dispatchers.IO) {
-        val streamUser = User(id = userId)
-        val devToken = client.devToken(userId)
 
-        val getUserResult = client.connectUser(streamUser, devToken).await()
+    override suspend fun getUserById(userId: String): ServiceResult<UnterUser?> =
+        withContext(Dispatchers.IO) {
+            val streamUser = User(id = userId)
+            val devToken = client.devToken(userId)
 
-        if (getUserResult.isSuccess) {
-            val user = getUserResult.data().user
+            val getUserResult = client.connectUser(streamUser, devToken).await()
+
+            if (getUserResult.isSuccess) {
+                val user = getUserResult.data().user
                 val extraData = user.extraData
                 val type: String? = extraData[KEY_TYPE] as String?
                 val status: String? = extraData[KEY_STATUS] as String?
@@ -53,13 +55,15 @@ class StreamUserService(
                         avatarPhotoUrl = user.image,
                         createdAt = user.createdAt.toString(),
                         updatedAt = user.updatedAt.toString(),
-                        status = status ?: ""
+                        status = status ?: "",
+                        type = type ?: ""
                     )
                 )
-        } else {
-            ServiceResult.Failure(Exception(getUserResult.error().message))
+            } else {
+                ServiceResult.Failure(Exception(getUserResult.error().message))
+            }
         }
-    }
+
 
     override suspend fun updateUser(user: UnterUser): ServiceResult<UnterUser?> =
         withContext(Dispatchers.IO) {
@@ -87,14 +91,47 @@ class StreamUserService(
                 ServiceResult.Failure(Exception(result.error().cause))
             }
         }
+
+    override suspend fun initializeNewUser(user: UnterUser): ServiceResult<UnterUser?> =
+        withContext(Dispatchers.IO) {
+            val streamUser = user.let {
+                User(
+                    id = user.userId,
+                    name = user.username,
+                    image = user.avatarPhotoUrl,
+                    extraData = mutableMapOf(
+                        KEY_TYPE to user.type,
+                        KEY_STATUS to user.status
+                    )
+                )
+            }
+
+            val token = client.devToken(user.userId)
+            val result = client.connectUser(streamUser, token).await()
+
+            if (result.isSuccess) {
+                ServiceResult.Value(user)
+            } else {
+                Log.d(
+                    "STREAM_API",
+                    result.error().message ?: "Stream error occurred for update user"
+                )
+                ServiceResult.Failure(Exception(result.error().cause))
+            }
+        }
+
+
     override suspend fun getPassengersLookingForRide(): ServiceResult<List<UnterUser>?> {
         TODO("Not yet implemented")
     }
 
     override suspend fun logOutUser(user: UnterUser) =
         withContext(Dispatchers.IO) {
-        val result = client.disconnect(flushPersistence = true).await()
-        if (result.isError) Log.d("STREAM_USER_SERVICE", result.error().message ?: "Error logging out")
-        Unit
-    }
+            val result = client.disconnect(flushPersistence = true).await()
+            if (result.isError) Log.d(
+                "STREAM_USER_SERVICE",
+                result.error().message ?: "Error logging out"
+            )
+            Unit
+        }
 }
