@@ -127,35 +127,43 @@ class PassengerDashboardViewModel(
         val getUser = userService.getUser()
         when (getUser) {
             is ServiceResult.Failure -> {
-                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
+                toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
                 sendToLogin()
             }
             is ServiceResult.Value -> {
                 if (getUser.value == null) sendToLogin()
-                else {
-                    observeRideModel(getUser.value!!)
-                }
+                else getActiveRideIfItExists(getUser.value!!)
+
             }
         }
     }
+
+    private suspend fun getActiveRideIfItExists(user: UnterUser) {
+        val result = rideService.getRideIfInProgress()
+
+        when (result) {
+            is ServiceResult.Failure -> {
+                toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+                sendToLogin()
+            }
+            is ServiceResult.Value -> {
+                //if null, no active ride exists
+                if (result.value == null) _passengerModel.value = user
+                else observeRideModel(result.value!!, user)
+            }
+        }
+    }
+
 
     /**
      * The Passenger model must always be the last model which is mutated from a null state. By
      * setting the other models first, we avoid the UI rapidly switching between different states
      * in a disorganized way.
      */
-    private suspend fun observeRideModel(passenger: UnterUser) {
-        val result = rideService.getRideIfInProgress()
-
-        when (result) {
-            is ServiceResult.Failure -> handleError()
-            is ServiceResult.Value -> _passengerModel.value = passenger
-        }
-
-//        _rideModel = rideService.getRideIfInProgress()
-//            .stateIn(scope = this, started = SharingStarted.WhileSubscribed(5000L), initialValue = ServiceResult.Value(null))
-
-        //passenger model is kept null until ride model is set to avoid state issues
+    private suspend fun observeRideModel(rideId: String, user: UnterUser) {
+        //The result of this call is handled inside the flowable assigned to _rideModel
+        rideService.observeRideById(rideId, user.userId)
+        _passengerModel.value = user
     }
 
     fun handleSearchItemClick(selectedPlace: AutoCompleteModel) = launch(Dispatchers.Main) {

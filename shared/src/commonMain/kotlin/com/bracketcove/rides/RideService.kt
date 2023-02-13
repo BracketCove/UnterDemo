@@ -3,12 +3,14 @@ package com.bracketcove.rides
 import com.bracketcove.ServiceResult
 import com.bracketcove.domain.Ride
 import com.bracketcove.domain.UnterUser
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
 interface RideService {
 
     fun rideFlow(): Flow<ServiceResult<Ride?>>
-    suspend fun getRideIfInProgress() : ServiceResult<Unit>
+    suspend fun getRideIfInProgress() : ServiceResult<String?>
+    suspend fun observeRideById(rideId: String, userId: String)
     suspend fun updateRide(ride: Ride): ServiceResult<Unit>
     suspend fun createRide(
         passengerId: String,

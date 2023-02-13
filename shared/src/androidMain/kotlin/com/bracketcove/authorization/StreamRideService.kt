@@ -12,6 +12,8 @@ import io.getstream.chat.android.client.api.models.querysort.QuerySortByField
 import io.getstream.chat.android.client.models.Filters
 import io.getstream.chat.android.client.utils.onErrorSuspend
 import io.getstream.chat.android.client.utils.onSuccessSuspend
+import io.getstream.chat.android.offline.extensions.watchChannelAsState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
@@ -22,26 +24,20 @@ class StreamRideService(
 
     private val _rideModelUpdates: MutableStateFlow<ServiceResult<Ride?>> =
         MutableStateFlow(ServiceResult.Value(null))
-    val rideModelUpdates: Flow<ServiceResult<Ride?>> = _rideModelUpdates
+    private val rideModelUpdates: Flow<ServiceResult<Ride?>> = _rideModelUpdates
     override fun rideFlow(): Flow<ServiceResult<Ride?>> = rideModelUpdates
 
-    override suspend fun getRideIfInProgress(): ServiceResult<Unit> = withContext(Dispatchers.IO) {
-        val request = QueryChannelsRequest(
-            filter = Filters.and(
-                Filters.eq(STREAM_USER_ID, client.getCurrentUser()?.id ?: ""),
-            ),
-            querySort = QuerySortByField.descByName(FILTER_UPDATED_AT),
-            limit = 1
-        ).apply {
-            state = true
-        }
+    override suspend fun observeRideById(rideId: String, userId: String) {
+        val channelClient = client.channel(
+            channelType = "messaging",
+            channelId = rideId
+        )
 
-        val result = client.queryChannels(request).await()
+        val result = channelClient.addMembers(listOf(userId)).await()
 
-        result.onSuccessSuspend { channels ->
-            if (channels.isEmpty()) _rideModelUpdates.value = ServiceResult.Value(null)
-            else {
-                channels.first().let { channel ->
+        if (result.isSuccess) {
+            _rideModelUpdates.emit(
+                result.data().let { channel ->
                     val extraData = channel.extraData
                     val destAddress: String? = extraData[KEY_DEST_ADDRESS] as String?
                     val destLat: Double? = extraData[KEY_DEST_LAT] as Double?
@@ -60,7 +56,7 @@ class StreamRideService(
                     val passengerName: String? = extraData[KEY_PASSENGER_NAME] as String?
                     val status: String? = extraData[KEY_STATUS] as String?
 
-                    _rideModelUpdates.value = ServiceResult.Value(
+                    ServiceResult.Value(
                         Ride(
                             rideId = channel.id,
                             status = status ?: RideStatus.SEARCHING_FOR_DRIVER.value,
@@ -80,11 +76,41 @@ class StreamRideService(
                         )
                     )
                 }
+            )
+        } else {
+            _rideModelUpdates.emit(
+                result.error().let {
+                    ServiceResult.Failure(Exception(it.cause))
+                }
+            )
+        }
+    }
+
+
+    override suspend fun getRideIfInProgress(): ServiceResult<String?> =
+        withContext(Dispatchers.IO) {
+            val request = QueryChannelsRequest(
+                filter = Filters.and(
+                    Filters.eq(STREAM_USER_ID, client.getCurrentUser()?.id ?: "")
+                ),
+                querySort = QuerySortByField.descByName(FILTER_UPDATED_AT),
+                limit = 1
+            )
+
+            val result = client.queryChannels(request).await()
+
+            if (result.isSuccess) {
+                if (result.data().isEmpty()) ServiceResult.Value(null)
+                else {
+                    result.data().first().let { channel ->
+                        ServiceResult.Value(channel.id)
+                    }
+                }
+            } else {
+                ServiceResult.Failure(Exception(result.error().cause))
             }
         }
 
-        ServiceResult.Value(Unit)
-    }
 
     /**
      * Get a channel, if one exists, which possess uid of user, and is not in state arrived
@@ -104,7 +130,7 @@ class StreamRideService(
         passengerAvatarUrl: String,
         destinationAddress: String,
         destLat: Double,
-        destLon: Double,
+        destLon: Double
     ): Flow<ServiceResult<Ride?>> = flow<ServiceResult<Ride?>> {
 
         val channelResult = client.createChannel(
