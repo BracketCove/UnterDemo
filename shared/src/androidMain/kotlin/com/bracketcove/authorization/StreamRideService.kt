@@ -89,9 +89,11 @@ class StreamRideService(
 
     override suspend fun getRideIfInProgress(): ServiceResult<String?> =
         withContext(Dispatchers.IO) {
+
+            val currentUserId = client.getCurrentUser()?.id ?: ""
             val request = QueryChannelsRequest(
                 filter = Filters.and(
-                    Filters.eq(STREAM_USER_ID, client.getCurrentUser()?.id ?: "")
+                    Filters.`in`("members", currentUserId)
                 ),
                 querySort = QuerySortByField.descByName(FILTER_UPDATED_AT),
                 limit = 1

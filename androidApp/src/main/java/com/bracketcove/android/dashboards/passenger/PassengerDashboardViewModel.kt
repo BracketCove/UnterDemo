@@ -199,7 +199,6 @@ class PassengerDashboardViewModel(
                 observeRideModel(result.value, _passengerModel.value!!)
             }
         }
-
     }
 
     fun requestAutocompleteResults(query: String) = launch(Dispatchers.Main) {
