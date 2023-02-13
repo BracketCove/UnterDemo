@@ -21,6 +21,7 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bracketcove.android.BuildConfig
 import com.bracketcove.android.R
 import com.bracketcove.android.UnterApp
+import com.bracketcove.android.dashboards.passenger.PassengerDashboardUiState
 import com.bracketcove.android.databinding.FragmentDriverDashboardBinding
 import com.bracketcove.android.uicommon.LOCATION_REQUEST_INTERVAL
 import com.bracketcove.android.uicommon.handleToast
@@ -84,7 +85,9 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
     }
 
     private fun updateUi(uiState: DriverDashboardUiState) {
-        Log.d("UI_STATE", uiState.toString())
+        if (uiState != DriverDashboardUiState.SearchingForPassengers) binding.toolbar.profileIcon.visibility = View.GONE
+        else binding.toolbar.profileIcon.visibility = View.VISIBLE
+
         when (uiState) {
             DriverDashboardUiState.Error -> viewModel.handleError()
             DriverDashboardUiState.Loading -> {

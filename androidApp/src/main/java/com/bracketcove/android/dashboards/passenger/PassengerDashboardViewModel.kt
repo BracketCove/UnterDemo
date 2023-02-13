@@ -219,20 +219,16 @@ class PassengerDashboardViewModel(
     }
 
     fun cancelRide() = launch(Dispatchers.Main) {
-        //we might not need to do send user to splash
-//        val model = _rideModel.value
-//        if (model is ServiceResult.Value && model.value != null) {
-//            val cancelRide = rideService.cancelRide(model.value!!)
-//            when (cancelRide) {
-//                is ServiceResult.Failure -> {
-//                    toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-//                    sendToSplash()
-//                }
-//                is ServiceResult.Value -> {
-//                    sendToSplash()
-//                }
-//            }
-//        }
+        val cancelRide = rideService.cancelRide()
+        when (cancelRide) {
+            is ServiceResult.Failure -> {
+                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
+                sendToSplash()
+            }
+
+            //State should automatically be handled by the flow
+            is ServiceResult.Value -> Unit
+        }
     }
 
     private fun sendToLogin() {

@@ -91,6 +91,10 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
     }
 
     private fun updateUi(uiState: PassengerDashboardUiState) {
+        //only make profile accessible when not in a ride
+        if (uiState != PassengerDashboardUiState.RideInactive) binding.toolbar.profileIcon.visibility = View.GONE
+        else binding.toolbar.profileIcon.visibility = View.VISIBLE
+
         when (uiState) {
             PassengerDashboardUiState.Error -> viewModel.handleError()
             PassengerDashboardUiState.Loading -> {
@@ -220,14 +224,14 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
             searchingLayout.visibility = View.GONE
 
             driverInfoLayout.visibility = View.GONE
+            rideComplete.rideCompleteLayout.visibility = View.GONE
+
             searchingForDriver.searchingForDriverLayout.visibility = View.VISIBLE
             //unbind recyclerview from adapter
             autocompleteResults.adapter = null
 
             mapLayout.subtitle.text = getString(R.string.destination)
             mapLayout.address.text = uiState.destinationAddress
-
-
         }
     }
 

@@ -2,6 +2,7 @@ package com.bracketcove.android.dashboards.driver
 
 import android.util.Log
 import com.bracketcove.ServiceResult
+import com.bracketcove.android.dashboards.passenger.PassengerDashboardUiState
 import com.bracketcove.android.google.GoogleService
 import com.bracketcove.android.navigation.LoginKey
 import com.bracketcove.android.navigation.SplashKey
@@ -20,6 +21,7 @@ import com.zhuinden.simplestack.StateChange
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -34,7 +36,7 @@ class DriverDashboardViewModel(
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
     private val _driverModel = MutableStateFlow<UnterUser?>(null)
-    private val _rideModel = MutableStateFlow<Ride?>(null)
+    private val _rideModel: Flow<ServiceResult<Ride?>> = rideService.rideFlow()
     private val _mapIsReady = MutableStateFlow(false)
 
     /*
@@ -48,9 +50,10 @@ class DriverDashboardViewModel(
         - ARRIVED
      */
     val uiState = combineTuple(_driverModel, _rideModel, _mapIsReady).map {
-        //only publish state updates whe map is ready!
+        if (it.second is ServiceResult.Failure) return@map DriverDashboardUiState.Error
+
         val driver = it.first
-        val ride = it.second
+        val ride = (it.second as ServiceResult.Value).value
         val isMapReady = it.third
 
         if (driver == null || !isMapReady) DriverDashboardUiState.Loading
@@ -126,26 +129,6 @@ class DriverDashboardViewModel(
         }
     }
 
-    fun updateDriverLocation(latLng: LatLng) = launch(Dispatchers.Main) {
-//        val updateAttempt = userService.updateUser(
-//            _driverModel.value!!.copy(
-//                latitude = latLng.lat,
-//                longitude = latLng.lng
-//            )
-//        )
-//
-//        when (updateAttempt) {
-//            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-//            is ServiceResult.Value -> {
-//                if (updateAttempt.value == null) toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-//                else{
-//                    _driverModel.value = updateAttempt.value
-//                    _driverLocation.value = latLng
-//                }
-//            }
-//        }
-    }
-
     fun mapIsReady() {
         _mapIsReady.value = true
     }
@@ -160,7 +143,7 @@ class DriverDashboardViewModel(
             is ServiceResult.Value -> {
                 if (getUser.value == null) sendToLogin()
                 else {
-                    getRideIfOneExists(getUser.value!!)
+                    getActiveRideIfItExists(getUser.value!!)
                 }
             }
         }
@@ -171,22 +154,29 @@ class DriverDashboardViewModel(
      * setting the other models first, we avoid the UI rapidly switching between different states
      * in a disorganized way.
      */
-    private suspend fun getRideIfOneExists(driver: UnterUser) {
-//        val getRide = rideService.getRideIfInProgress()
-//        when (getRide) {
-//            is ServiceResult.Failure -> {
-//                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-//                sendToLogin()
-//            }
-//            is ServiceResult.Value -> {
-//                when {
-//                    getRide.value == null -> {
-//                        _driverModel.value = driver
-//                        getPassengerList()
-//                    }
-//                }
-//            }
-//        }
+    private suspend fun getActiveRideIfItExists(user: UnterUser) {
+        val result = rideService.getRideIfInProgress()
+
+        when (result) {
+            is ServiceResult.Failure -> {
+                toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+                sendToLogin()
+            }
+            is ServiceResult.Value -> {
+                //if null, no active ride exists
+                if (result.value == null) {
+                    _driverModel.value = user
+                    getPassengerList()
+                }
+                else observeRideModel(result.value!!, user)
+            }
+        }
+    }
+
+    private suspend fun observeRideModel(rideId: String, user: UnterUser) {
+        //The result of this call is handled inside the flowable assigned to _rideModel
+        rideService.observeRideById(rideId)
+        _driverModel.value = user
     }
 
     private suspend fun getPassengerList() {
@@ -209,22 +199,43 @@ class DriverDashboardViewModel(
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
             is ServiceResult.Value -> {
               //  _passengerModel.value = passenger
-                _rideModel.value = getRideByPassengerId.value
+              //  _rideModel.value = getRideByPassengerId.value
+                //TODO update the ride status and driver details
             }
         }
     }
 
+    fun updateDriverLocation(latLng: LatLng) = launch(Dispatchers.Main) {
+//        val updateAttempt = userService.updateUser(
+//            _driverModel.value!!.copy(
+//                latitude = latLng.lat,
+//                longitude = latLng.lng
+//            )
+//        )
+//
+//        when (updateAttempt) {
+//            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+//            is ServiceResult.Value -> {
+//                if (updateAttempt.value == null) toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+//                else{
+//                    _driverModel.value = updateAttempt.value
+//                    _driverLocation.value = latLng
+//                }
+//            }
+//        }
+    }
+
     fun cancelRide() = launch(Dispatchers.Main) {
-        val cancelRide = rideService.cancelRide(_rideModel.value!!)
-        when (cancelRide) {
-            is ServiceResult.Failure -> {
-                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-                sendToSplash()
-            }
-            is ServiceResult.Value -> {
-                sendToSplash()
-            }
-        }
+//        val cancelRide = rideService.cancelRide(_rideModel.value!!)
+//        when (cancelRide) {
+//            is ServiceResult.Failure -> {
+//                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
+//                sendToSplash()
+//            }
+//            is ServiceResult.Value -> {
+//                sendToSplash()
+//            }
+//        }
     }
 
     private fun sendToLogin() {
@@ -255,37 +266,36 @@ class DriverDashboardViewModel(
     }
 
     fun completeRide() = launch(Dispatchers.Main) {
-        val completeRide = rideService.completeRide(_rideModel.value!!)
-        when (completeRide) {
-            is ServiceResult.Failure -> {
-                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-                sendToSplash()
-            }
-            is ServiceResult.Value -> {
-                sendToSplash()
-            }
-        }
+//        val completeRide = rideService.completeRide(_rideModel.value!!)
+//        when (completeRide) {
+//            is ServiceResult.Failure -> {
+//                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
+//                sendToSplash()
+//            }
+//            is ServiceResult.Value -> {
+//                sendToSplash()
+//            }
+//        }
     }
 
     fun advanceRide() = launch {
-        val oldRideState = _rideModel.value!!
-
-        val updateRide = rideService.updateRide(
-            oldRideState.copy(
-                status = advanceRideState(oldRideState.status)
-            )
-        )
-
-        when (updateRide) {
-            is ServiceResult.Failure -> {
-                toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-                sendToSplash()
-            }
-            is ServiceResult.Value -> {
-               // _rideModel.value = updateRide.value!!
-            }
-        }
-
+//        val oldRideState = _rideModel.value!!
+//
+//        val updateRide = rideService.updateRide(
+//            oldRideState.copy(
+//                status = advanceRideState(oldRideState.status)
+//            )
+//        )
+//
+//        when (updateRide) {
+//            is ServiceResult.Failure -> {
+//                toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+//                sendToSplash()
+//            }
+//            is ServiceResult.Value -> {
+//               // _rideModel.value = updateRide.value!!
+//            }
+//        }
     }
 
     private fun advanceRideState(status: String) : String {

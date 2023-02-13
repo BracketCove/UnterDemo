@@ -154,7 +154,7 @@ class StreamRideService(
         ).await()
 
         if (result.isSuccess) {
-                ServiceResult.Value(channelId)
+            ServiceResult.Value(channelId)
         } else {
             ServiceResult.Failure(Exception(result.error().cause))
         }
@@ -167,8 +167,36 @@ class StreamRideService(
             .joinToString("")
     }
 
-    override suspend fun cancelRide(ride: Ride): ServiceResult<Unit> {
-        TODO("Not yet implemented")
+    override suspend fun cancelRide(): ServiceResult<Unit> = withContext(Dispatchers.IO) {
+        //get ride in progress
+        val currentUserId = client.getCurrentUser()?.id ?: ""
+        val request = QueryChannelsRequest(
+            filter = Filters.and(
+                Filters.`in`("members", currentUserId)
+            ),
+            querySort = QuerySortByField.descByName(FILTER_UPDATED_AT),
+            limit = 1
+        )
+
+        val result = client.queryChannels(request).await()
+
+        if (result.isSuccess) {
+            if (result.data()
+                    .isEmpty()
+            ) ServiceResult.Failure(Exception("Failed to retrieve channel for cancellation"))
+            else {
+                val channelClient = client.channel(result.data().first().cid)
+                val deleteResult = channelClient.delete().await()
+
+                if (deleteResult.isSuccess) {
+                    _rideModelUpdates.emit(ServiceResult.Value(null))
+                    ServiceResult.Value(Unit)
+                }
+                else ServiceResult.Failure(Exception(result.error().cause))
+            }
+        } else {
+            ServiceResult.Failure(Exception(result.error().cause))
+        }
     }
 
     override suspend fun completeRide(value: Ride): ServiceResult<Unit> {

@@ -23,7 +23,7 @@ interface RideService {
         destLon: Double,
     ): ServiceResult<String>
 
-    suspend fun cancelRide(ride: Ride): ServiceResult<Unit>
+    suspend fun cancelRide(): ServiceResult<Unit>
     suspend fun completeRide(value: Ride): ServiceResult<Unit>
     suspend fun getRideByPassengerId(passengerId: String): ServiceResult<Ride?>
     suspend fun getRideByDriverId(driverId: String): ServiceResult<Ride?>
