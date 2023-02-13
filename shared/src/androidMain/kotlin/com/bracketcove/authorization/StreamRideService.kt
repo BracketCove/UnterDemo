@@ -38,43 +38,49 @@ class StreamRideService(
         if (result.isSuccess) {
             _rideModelUpdates.emit(
                 result.data().let { channel ->
-                    val extraData = channel.extraData
-                    val destAddress: String? = extraData[KEY_DEST_ADDRESS] as String?
-                    val destLat: Double? = extraData[KEY_DEST_LAT] as Double?
-                    val destLon: Double? = extraData[KEY_DEST_LON] as Double?
 
-                    val driverId: String? = extraData[KEY_DRIVER_ID] as String?
-                    val driverLat: Double? = extraData[KEY_DRIVER_LAT] as Double?
-                    val driverLon: Double? = extraData[KEY_DRIVER_LON] as Double?
-                    val driverAvatar: String? = extraData[KEY_DRIVER_AVATAR_URL] as String?
-                    val driverName: String? = extraData[KEY_DRIVER_NAME] as String?
+                    if (channel.hidden != null && channel.hidden!!) {
+                        ServiceResult.Value(null)
+                    } else {
+                        val extraData = channel.extraData
+                        val destAddress: String? = extraData[KEY_DEST_ADDRESS] as String?
+                        val destLat: Double? = extraData[KEY_DEST_LAT] as Double?
+                        val destLon: Double? = extraData[KEY_DEST_LON] as Double?
 
-                    val passengerId: String? = extraData[KEY_PASSENGER_ID] as String?
-                    val passengerLat: Double? = extraData[KEY_PASSENGER_LAT] as Double?
-                    val passengerLon: Double? = extraData[KEY_PASSENGER_LON] as Double?
-                    val passengerAvatar: String? = extraData[KEY_PASSENGER_AVATAR_URL] as String?
-                    val passengerName: String? = extraData[KEY_PASSENGER_NAME] as String?
-                    val status: String? = extraData[KEY_STATUS] as String?
+                        val driverId: String? = extraData[KEY_DRIVER_ID] as String?
+                        val driverLat: Double? = extraData[KEY_DRIVER_LAT] as Double?
+                        val driverLon: Double? = extraData[KEY_DRIVER_LON] as Double?
+                        val driverAvatar: String? = extraData[KEY_DRIVER_AVATAR_URL] as String?
+                        val driverName: String? = extraData[KEY_DRIVER_NAME] as String?
 
-                    ServiceResult.Value(
-                        Ride(
-                            rideId = channel.id,
-                            status = status ?: RideStatus.SEARCHING_FOR_DRIVER.value,
-                            destinationLatitude = destLat ?: 999.0,
-                            destinationLongitude = destLon ?: 999.0,
-                            destinationAddress = destAddress ?: "",
-                            driverId = driverId,
-                            driverLatitude = driverLat,
-                            driverLongitude = driverLon,
-                            driverName = driverName,
-                            driverAvatarUrl = driverAvatar,
-                            passengerId = passengerId ?: "",
-                            passengerLatitude = passengerLat ?: 999.0,
-                            passengerLongitude = passengerLon ?: 999.0,
-                            passengerName = passengerName ?: "",
-                            passengerAvatarUrl = passengerAvatar ?: ""
+                        val passengerId: String? = extraData[KEY_PASSENGER_ID] as String?
+                        val passengerLat: Double? = extraData[KEY_PASSENGER_LAT] as Double?
+                        val passengerLon: Double? = extraData[KEY_PASSENGER_LON] as Double?
+                        val passengerAvatar: String? = extraData[KEY_PASSENGER_AVATAR_URL] as String?
+                        val passengerName: String? = extraData[KEY_PASSENGER_NAME] as String?
+                        val status: String? = extraData[KEY_STATUS] as String?
+
+                        ServiceResult.Value(
+                            Ride(
+                                rideId = channel.id,
+                                status = status ?: RideStatus.SEARCHING_FOR_DRIVER.value,
+                                destinationLatitude = destLat ?: 999.0,
+                                destinationLongitude = destLon ?: 999.0,
+                                destinationAddress = destAddress ?: "",
+                                driverId = driverId,
+                                driverLatitude = driverLat,
+                                driverLongitude = driverLon,
+                                driverName = driverName,
+                                driverAvatarUrl = driverAvatar,
+                                passengerId = passengerId ?: "",
+                                passengerLatitude = passengerLat ?: 999.0,
+                                passengerLongitude = passengerLon ?: 999.0,
+                                passengerName = passengerName ?: "",
+                                passengerAvatarUrl = passengerAvatar ?: ""
+                            )
                         )
-                    )
+                    }
+
                 }
             )
         } else {
@@ -186,13 +192,21 @@ class StreamRideService(
             ) ServiceResult.Failure(Exception("Failed to retrieve channel for cancellation"))
             else {
                 val channelClient = client.channel(result.data().first().cid)
-                val deleteResult = channelClient.delete().await()
 
-                if (deleteResult.isSuccess) {
-                    _rideModelUpdates.emit(ServiceResult.Value(null))
-                    ServiceResult.Value(Unit)
+
+                if (channelClient.hide().await().isSuccess) {
+                    val deleteResult = channelClient.delete().await()
+
+                    if (deleteResult.isSuccess) {
+                        _rideModelUpdates.emit(ServiceResult.Value(null))
+                        ServiceResult.Value(Unit)
+                    }
+                    else ServiceResult.Failure(Exception(result.error().cause))
+                } else {
+                    ServiceResult.Failure(Exception("Unable to hide channel"))
                 }
-                else ServiceResult.Failure(Exception(result.error().cause))
+
+
             }
         } else {
             ServiceResult.Failure(Exception(result.error().cause))
