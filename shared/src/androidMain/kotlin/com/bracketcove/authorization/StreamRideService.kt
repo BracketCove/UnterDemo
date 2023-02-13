@@ -27,13 +27,13 @@ class StreamRideService(
     private val rideModelUpdates: Flow<ServiceResult<Ride?>> = _rideModelUpdates
     override fun rideFlow(): Flow<ServiceResult<Ride?>> = rideModelUpdates
 
-    override suspend fun observeRideById(rideId: String, userId: String) {
+    override suspend fun observeRideById(rideId: String) {
         val channelClient = client.channel(
             channelType = "messaging",
             channelId = rideId
         )
 
-        val result = channelClient.addMembers(listOf(userId)).await()
+        val result = channelClient.addMembers(listOf(client.getCurrentUser()?.id ?: "")).await()
 
         if (result.isSuccess) {
             _rideModelUpdates.emit(
@@ -131,11 +131,12 @@ class StreamRideService(
         destinationAddress: String,
         destLat: Double,
         destLon: Double
-    ): Flow<ServiceResult<Ride?>> = flow<ServiceResult<Ride?>> {
+    ): ServiceResult<String> = withContext(Dispatchers.IO) {
 
-        val channelResult = client.createChannel(
+        val channelId = generateUniqueId(6, ('A'..'Z') + ('0'..'9'))
+        val result = client.createChannel(
             channelType = "messaging",
-            channelId = passengerId,
+            channelId = channelId,
             memberIds = listOf(passengerId),
             extraData = mutableMapOf(
                 KEY_STATUS to RideStatus.SEARCHING_FOR_DRIVER,
@@ -150,31 +151,19 @@ class StreamRideService(
             )
         ).await()
 
-        channelResult.onSuccessSuspend {
-            emit(
-                ServiceResult.Value(
-                    channelResult.data().let {
-                        val extraData = it.extraData
-
-                        Ride(
-                            status = extraData[KEY_STATUS] as String? ?: "",
-                            passengerId = extraData[KEY_PASSENGER_ID] as String? ?: "",
-                            passengerName = extraData[KEY_PASSENGER_NAME] as String? ?: "",
-                            passengerLatitude = extraData[KEY_PASSENGER_LAT] as Double? ?: 999.0,
-                            passengerLongitude = extraData[KEY_PASSENGER_LON] as Double? ?: 999.0,
-                            passengerAvatarUrl = extraData[KEY_PASSENGER_AVATAR_URL] as String?
-                                ?: "",
-                            destinationAddress = extraData[KEY_DEST_ADDRESS] as String? ?: "",
-                            destinationLatitude = extraData[KEY_DEST_LAT] as Double? ?: 999.0,
-                            destinationLongitude = extraData[KEY_DEST_LON] as Double? ?: 999.0,
-                        )
-                    }
-                )
-            )
+        if (result.isSuccess) {
+                ServiceResult.Value(channelId)
+        } else {
+            ServiceResult.Failure(Exception(result.error().cause))
         }
+    }
 
-
-    }.flowOn(Dispatchers.IO)
+    //Function below taken from https://github.com/GetStream/stream-draw-android
+    private fun generateUniqueId(length: Int, allowedChars: List<Char>): String {
+        return (1..length)
+            .map { allowedChars.random() }
+            .joinToString("")
+    }
 
     override suspend fun cancelRide(ride: Ride): ServiceResult<Unit> {
         TODO("Not yet implemented")

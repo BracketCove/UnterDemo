@@ -10,7 +10,7 @@ interface RideService {
 
     fun rideFlow(): Flow<ServiceResult<Ride?>>
     suspend fun getRideIfInProgress() : ServiceResult<String?>
-    suspend fun observeRideById(rideId: String, userId: String)
+    suspend fun observeRideById(rideId: String)
     suspend fun updateRide(ride: Ride): ServiceResult<Unit>
     suspend fun createRide(
         passengerId: String,
@@ -21,7 +21,7 @@ interface RideService {
         destinationAddress: String,
         destLat: Double,
         destLon: Double,
-    ): Flow<ServiceResult<Ride?>>
+    ): ServiceResult<String>
 
     suspend fun cancelRide(ride: Ride): ServiceResult<Unit>
     suspend fun completeRide(value: Ride): ServiceResult<Unit>

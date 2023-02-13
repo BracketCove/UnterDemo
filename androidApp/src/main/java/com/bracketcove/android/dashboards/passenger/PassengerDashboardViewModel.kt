@@ -162,7 +162,7 @@ class PassengerDashboardViewModel(
      */
     private suspend fun observeRideModel(rideId: String, user: UnterUser) {
         //The result of this call is handled inside the flowable assigned to _rideModel
-        rideService.observeRideById(rideId, user.userId)
+        rideService.observeRideById(rideId)
         _passengerModel.value = user
     }
 
@@ -182,7 +182,7 @@ class PassengerDashboardViewModel(
     }
 
     private suspend fun attemptToCreateNewRide(response: FetchPlaceResponse, address: String) {
-        _rideModel = rideService.createRide(
+        val result = rideService.createRide(
             destLat = response.place.latLng!!.latitude,
             destLon = response.place.latLng!!.longitude,
             destinationAddress = address,
@@ -191,7 +191,15 @@ class PassengerDashboardViewModel(
             passengerName = _passengerModel.value!!.username,
             passengerLat = passengerLatLng.lat,
             passengerLon = passengerLatLng.lng
-        ).stateIn(this)
+        )
+
+        when (result) {
+            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+            is ServiceResult.Value -> {
+                observeRideModel(result.value, _passengerModel.value!!)
+            }
+        }
+
     }
 
     fun requestAutocompleteResults(query: String) = launch(Dispatchers.Main) {
