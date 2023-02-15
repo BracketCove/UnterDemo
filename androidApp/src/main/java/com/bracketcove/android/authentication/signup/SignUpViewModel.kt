@@ -56,17 +56,17 @@ class SignUpViewModel(
         when (signupAttempt) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
             is ServiceResult.Value -> {
-//                when (signupAttempt.value) {
-//                    is SignUpResult.Success -> {
-//                        backstack.setHistory(
-//                            History.of(PassengerDashboardKey()),
-//                            //Direction of navigation which is used for animation
-//                            StateChange.REPLACE
-//                        )
-//                    }
-//                    SignUpResult.InvalidCredentials -> toastHandler?.invoke(ToastMessages.INVALID_CREDENTIALS)
-//                    SignUpResult.AlreadySignedUp -> toastHandler?.invoke(ToastMessages.ACCOUNT_EXISTS)
-//                }
+                when (signupAttempt.value) {
+                    is SignUpResult.Success -> {
+                        backstack.setHistory(
+                            History.of(SplashKey()),
+                            //Direction of navigation which is used for animation
+                            StateChange.REPLACE
+                        )
+                    }
+                    SignUpResult.InvalidCredentials -> toastHandler?.invoke(ToastMessages.INVALID_CREDENTIALS)
+                    SignUpResult.AlreadySignedUp -> toastHandler?.invoke(ToastMessages.ACCOUNT_EXISTS)
+                }
             }
         }
     }

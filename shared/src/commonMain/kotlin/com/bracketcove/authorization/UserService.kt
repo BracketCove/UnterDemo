@@ -13,7 +13,7 @@ interface UserService {
      *
      * @return true if a session exists; else false
      */
-    suspend fun getUser(): ServiceResult<UnterUser?>
+    suspend fun getUser(userId: String): ServiceResult<UnterUser?>
 
     suspend fun getUserById(userId: String): ServiceResult<UnterUser?>
     suspend fun updateUser(user: UnterUser): ServiceResult<UnterUser?>

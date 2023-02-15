@@ -14,6 +14,7 @@ import com.bracketcove.domain.Ride
 import com.bracketcove.domain.RideStatus
 import com.bracketcove.domain.UnterUser
 import com.bracketcove.rides.RideService
+import com.bracketcove.usecase.GetUser
 import com.google.maps.model.LatLng
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
@@ -30,6 +31,7 @@ import kotlin.coroutines.CoroutineContext
 
 class DriverDashboardViewModel(
     val backstack: Backstack,
+    val getUser: GetUser,
     val userService: UserService,
     val rideService: RideService,
     val googleService: GoogleService
@@ -133,7 +135,7 @@ class DriverDashboardViewModel(
     }
 
     fun getDriver() = launch(Dispatchers.Main) {
-        val getUser = userService.getUser()
+        val getUser = getUser.getUser()
         when (getUser) {
             is ServiceResult.Failure -> {
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)

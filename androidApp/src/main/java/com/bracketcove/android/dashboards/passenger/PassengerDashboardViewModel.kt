@@ -13,6 +13,7 @@ import com.bracketcove.domain.Ride
 import com.bracketcove.domain.RideStatus
 import com.bracketcove.domain.UnterUser
 import com.bracketcove.rides.RideService
+import com.bracketcove.usecase.GetUser
 import com.google.android.libraries.places.api.net.FetchPlaceResponse
 import com.google.maps.model.LatLng
 import com.zhuinden.simplestack.Backstack
@@ -29,6 +30,7 @@ import kotlin.coroutines.CoroutineContext
 
 class PassengerDashboardViewModel(
     val backstack: Backstack,
+    val getUser: GetUser,
     val userService: UserService,
     val rideService: RideService,
     val googleService: GoogleService
@@ -124,7 +126,7 @@ class PassengerDashboardViewModel(
     }
 
     private fun getPassenger() = launch(Dispatchers.Main) {
-        val getUser = userService.getUser()
+        val getUser = getUser.getUser()
         when (getUser) {
             is ServiceResult.Failure -> {
                 toastHandler?.invoke(ToastMessages.SERVICE_ERROR)

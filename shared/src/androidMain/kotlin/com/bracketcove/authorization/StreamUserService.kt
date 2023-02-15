@@ -7,7 +7,9 @@ import com.bracketcove.domain.UnterUser
 import com.bracketcove.domain.UserType
 import io.getstream.chat.android.client.ChatClient
 import io.getstream.chat.android.client.models.User
+import io.getstream.chat.android.offline.extensions.state
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
@@ -16,11 +18,19 @@ class StreamUserService(
     private val client: ChatClient
 ) : UserService {
 
-    override suspend fun getUser(): ServiceResult<UnterUser?> = withContext(Dispatchers.IO) {
+
+    //attempt to get the current user from the client. If that fails, make a new connection
+    //and add a delay
+    override suspend fun getUser(userId: String): ServiceResult<UnterUser?> {
         val user = client.getCurrentUser()
-        if (user == null) {
-            client.disconnect(true).await()
-            ServiceResult.Value(user)
+        Log.d("GET_USER", "Connecting: ${client.clientState.isConnecting}")
+        Log.d("GET_USER", "Initialized: ${client.clientState.isInitialized}")
+        Log.d("GET_USER", "Network Available: ${client.clientState.isNetworkAvailable}")
+        Log.d("GET_USER", "Offline: ${client.clientState.isOffline}")
+
+        return if (user == null) {
+            Log.d("GET_USER", client.clientState.user.value.toString())
+            ServiceResult.Value(null)
         } else {
             val extraData = user.extraData
             val type: String? = extraData[KEY_TYPE] as String?
@@ -42,36 +52,87 @@ class StreamUserService(
 
     override suspend fun getUserById(userId: String): ServiceResult<UnterUser?> =
         withContext(Dispatchers.IO) {
-            val streamUser = User(
-                id = userId
-            )
-            val devToken = client.devToken(userId)
-
-            val getUserResult = client.connectUser(streamUser, devToken).await()
-
-            if (getUserResult.isSuccess) {
-                val user = getUserResult.data().user
-                val extraData = user.extraData
+            val currentUser = client.getCurrentUser()
+            if (currentUser != null && currentUser.id == userId) {
+                val extraData = currentUser.extraData
                 val type: String? = extraData[KEY_TYPE] as String?
                 val status: String? = extraData[KEY_STATUS] as String?
 
                 ServiceResult.Value(
                     UnterUser(
                         userId = userId,
-                        username = user.name,
-                        avatarPhotoUrl = user.image,
-                        createdAt = user.createdAt.toString(),
-                        updatedAt = user.updatedAt.toString(),
+                        username = currentUser.name,
+                        avatarPhotoUrl = currentUser.image,
+                        createdAt = currentUser.createdAt.toString(),
+                        updatedAt = currentUser.updatedAt.toString(),
                         status = status ?: "",
                         type = type ?: ""
                     )
                 )
-            } else {
-                Log.d(
-                    "GET_USER_BY_ID",
-                    getUserResult.error().message ?: "Stream error occurred for update user"
+            } else if (currentUser != null && currentUser.id != userId){
+                val streamUser = User(
+                    id = userId
                 )
-                ServiceResult.Failure(Exception(getUserResult.error().message))
+
+                val devToken = client.devToken(userId)
+                val getUserResult = client.switchUser(streamUser, devToken).await()
+
+                if (getUserResult.isSuccess) {
+                    val user = getUserResult.data().user
+                    val extraData = user.extraData
+                    val type: String? = extraData[KEY_TYPE] as String?
+                    val status: String? = extraData[KEY_STATUS] as String?
+
+                    ServiceResult.Value(
+                        UnterUser(
+                            userId = userId,
+                            username = user.name,
+                            avatarPhotoUrl = user.image,
+                            createdAt = user.createdAt.toString(),
+                            updatedAt = user.updatedAt.toString(),
+                            status = status ?: "",
+                            type = type ?: ""
+                        )
+                    )
+                } else {
+                    Log.d(
+                        "GET_USER_BY_ID",
+                        getUserResult.error().message ?: "Stream error occurred for update user"
+                    )
+                    ServiceResult.Failure(Exception(getUserResult.error().message))
+                }
+            } else {
+                val streamUser = User(
+                    id = userId
+                )
+
+                val devToken = client.devToken(userId)
+                val getUserResult = client.connectUser(streamUser, devToken).await()
+
+                if (getUserResult.isSuccess) {
+                    val user = getUserResult.data().user
+                    val extraData = user.extraData
+                    val type: String? = extraData[KEY_TYPE] as String?
+                    val status: String? = extraData[KEY_STATUS] as String?
+
+                    ServiceResult.Value(
+                        UnterUser(
+                            userId = userId,
+                            username = user.name,
+                            avatarPhotoUrl = user.image,
+                            createdAt = user.createdAt.toString(),
+                            updatedAt = user.updatedAt.toString(),
+                            status = status ?: "",
+                            type = type ?: ""
+                        )
+                    )
+                } else {
+                    Log.d(
+                        "GET_USER_BY_ID",
+                        getUserResult.error().message ?: "Stream error occurred for update user"
+                    )
+                    ServiceResult.Failure(Exception(getUserResult.error().message))
+                }
             }
         }
 
@@ -105,8 +166,9 @@ class StreamUserService(
 
     override suspend fun initializeNewUser(user: UnterUser): ServiceResult<UnterUser?> =
         withContext(Dispatchers.IO) {
-            disconnectUser(user)
+            disconnectUser(user.userId)
 
+            delay(4000L)
             val streamUser = user.let {
                 User(
                     id = user.userId,
@@ -118,8 +180,8 @@ class StreamUserService(
                 )
             }
 
-            val token = client.devToken(user.userId)
-            val result = client.connectUser(streamUser, token).await()
+            val devToken = client.devToken(user.userId)
+            val result = client.connectUser(streamUser, devToken).await()
 
             if (result.isSuccess) {
                 ServiceResult.Value(
@@ -130,10 +192,10 @@ class StreamUserService(
             }
         }
 
-    private fun disconnectUser(user: UnterUser) {
+    private suspend fun disconnectUser(userId: String) {
         val currentUser = client.getCurrentUser()
-        if (currentUser != null && user.userId == currentUser.id) {
-            client.disconnect(false).enqueue()
+        if (currentUser != null && userId == currentUser.id) {
+            client.disconnect(false).await()
         }
     }
 
