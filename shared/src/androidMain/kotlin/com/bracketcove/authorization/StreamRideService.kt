@@ -242,7 +242,7 @@ class StreamRideService(
         ).await()
 
         if (result.isSuccess) {
-            ServiceResult.Value(channelId)
+            ServiceResult.Value(result.data().cid)
         } else {
             ServiceResult.Failure(Exception(result.error().cause))
         }

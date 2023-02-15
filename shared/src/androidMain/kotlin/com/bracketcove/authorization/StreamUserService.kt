@@ -18,6 +18,18 @@ class StreamUserService(
     private val client: ChatClient
 ) : UserService {
 
+    /**
+     * Due to permission issues with roles, all users must be elevated to admin to be able to
+     * add themselves to channels they
+     */
+    private fun updateRole(userId: String) {
+        client.partialUpdateUser(
+            id = userId,
+            set = mutableMapOf(
+                KEY_ROLE to "admin"
+            )
+        )
+    }
     override suspend fun getUserById(userId: String): ServiceResult<UnterUser?> =
         withContext(Dispatchers.IO) {
             val currentUser = client.getCurrentUser()
@@ -25,6 +37,8 @@ class StreamUserService(
                 val extraData = currentUser.extraData
                 val type: String? = extraData[KEY_TYPE] as String?
                 val status: String? = extraData[KEY_STATUS] as String?
+
+                if (currentUser.role == "user") updateRole(userId)
 
                 ServiceResult.Value(
                     UnterUser(
@@ -50,6 +64,8 @@ class StreamUserService(
                     val extraData = user.extraData
                     val type: String? = extraData[KEY_TYPE] as String?
                     val status: String? = extraData[KEY_STATUS] as String?
+
+                    if (currentUser.role == "user") updateRole(userId)
 
                     ServiceResult.Value(
                         UnterUser(
