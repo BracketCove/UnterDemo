@@ -56,7 +56,7 @@ class LoginViewModel(
         }
     }
 
-    private suspend fun sendToDashboard(user: UnterUser) {
+    private fun sendToDashboard(user: UnterUser) {
         when (user.type) {
             "PASSENGER" -> backstack.setHistory(
                 History.of(PassengerDashboardKey()),

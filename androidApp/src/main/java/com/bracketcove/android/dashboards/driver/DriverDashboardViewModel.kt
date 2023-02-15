@@ -5,6 +5,7 @@ import com.bracketcove.ServiceResult
 import com.bracketcove.android.dashboards.passenger.PassengerDashboardUiState
 import com.bracketcove.android.google.GoogleService
 import com.bracketcove.android.navigation.LoginKey
+import com.bracketcove.android.navigation.ProfileSettingsKey
 import com.bracketcove.android.navigation.SplashKey
 import com.bracketcove.android.uicommon.ToastMessages
 import com.bracketcove.android.uicommon.combineTuple
@@ -110,21 +111,19 @@ class DriverDashboardViewModel(
     //999 represents an impossible value, indicating we don't know the driver's location
     private val DEFAULT_LAT_OR_LON = 999.0
     private val _driverLocation = MutableStateFlow(LatLng(DEFAULT_LAT_OR_LON, DEFAULT_LAT_OR_LON))
-    private val _passengerList = MutableStateFlow<List<UnterUser>?>(null)
+    private val _passengerList = rideService.openRides()
 
+    //I don't want a driver to be able to accept a ride unless we know their location first.
     val locationAwarePassengerList = combineTuple(_driverLocation, _passengerList).map {
         if (it.first.lat == DEFAULT_LAT_OR_LON
-            || it.first.lng == DEFAULT_LAT_OR_LON
-            || it.second.isNullOrEmpty()
-
-        ) emptyList<Pair<UnterUser, String>>()
+            || it.first.lng == DEFAULT_LAT_OR_LON) emptyList<Ride>()
         else {
-            it.second!!.map { user ->
-                //TODO FIXIT
-               // val passengerLatLng = LatLng(user.latitude, user.longitude)
-              //  val getDistance = googleService.getDistanceBetween(it.first, passengerLatLng)
-
-               // Pair(user, getDistance)
+            if (it.second is ServiceResult.Failure) {
+                handleError()
+                emptyList<Ride>()
+            } else {
+                val result = it.second as ServiceResult.Value
+                result.value
             }
         }
     }
@@ -180,29 +179,31 @@ class DriverDashboardViewModel(
     }
 
     private suspend fun getPassengerList() {
-        val getPassengersList = userService.getPassengersLookingForRide()
+        rideService.observeOpenRides()
+    }
+    fun handlePassengerItemClick(clickedRide: Ride) = launch(Dispatchers.Main) {
+        //We must only proceed if driver LatLng are real values!
+        if (_driverLocation.value!!.lat != DEFAULT_LAT_OR_LON
+            && _driverLocation.value!!.lng != DEFAULT_LAT_OR_LON
+        ) {
+            val result = rideService.connectDriverToRide(clickedRide, _driverModel.value!!)
 
-        when (getPassengersList) {
-            is ServiceResult.Failure -> {
-                toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-                sendToLogin()
+            when (result) {
+                is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+                is ServiceResult.Value -> {
+                    rideService.observeRideById(result.value)
+                }
             }
-            is ServiceResult.Value -> {
-                _passengerList.value = getPassengersList.value ?: emptyList()
-            }
+        } else {
+            toastHandler?.invoke(ToastMessages.UNABLE_TO_RETRIEVE_USER_COORDINATES)
         }
     }
-    fun handlePassengerItemClick(passenger: UnterUser) = launch(Dispatchers.Main) {
-        val getRideByPassengerId = rideService.getRideByPassengerId(passenger.userId)
 
-        when (getRideByPassengerId) {
-            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-            is ServiceResult.Value -> {
-              //  _passengerModel.value = passenger
-              //  _rideModel.value = getRideByPassengerId.value
-                //TODO update the ride status and driver details
-            }
-        }
+    fun goToProfile() {
+        backstack.setHistory(
+            History.of(ProfileSettingsKey()),
+            StateChange.REPLACE
+        )
     }
 
     fun updateDriverLocation(latLng: LatLng) = launch(Dispatchers.Main) {

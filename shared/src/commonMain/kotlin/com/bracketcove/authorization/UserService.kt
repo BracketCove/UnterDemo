@@ -20,8 +20,5 @@ interface UserService {
 
     suspend fun initializeNewUser(user: UnterUser): ServiceResult<UnterUser?>
 
-
-    suspend fun getPassengersLookingForRide(): ServiceResult<List<UnterUser>?>
-
     suspend fun logOutUser(user: UnterUser): Unit
 }

@@ -82,6 +82,8 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
         binding.chatButton.setOnClickListener {
             viewModel.openChat()
         }
+
+        binding.toolbar.profileIcon.setOnClickListener { viewModel.goToProfile() }
     }
 
     private fun updateUi(uiState: DriverDashboardUiState) {
@@ -257,9 +259,8 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                             passengerList.visibility = View.VISIBLE
                             passengersLoadingLayout.visibility = View.GONE
 
-                            //TODO FIXIT
-//                            (passengerList.adapter as PassengerListAdapter)
-//                                .submitList(models)
+                            (passengerList.adapter as PassengerListAdapter)
+                                .submitList(models)
                         }
                     }
             }

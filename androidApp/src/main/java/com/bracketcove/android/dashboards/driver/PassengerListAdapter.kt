@@ -11,23 +11,24 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bracketcove.android.R
 import com.bracketcove.android.databinding.ListItemPassengerBinding
+import com.bracketcove.domain.Ride
 import com.bracketcove.domain.UnterUser
 import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
 
-class PassengerListAdapter : ListAdapter<Pair<UnterUser, String>, PassengerListAdapter.PassengerViewHolder>(
-    object: DiffUtil.ItemCallback<Pair<UnterUser, String>>() {
-        override fun areItemsTheSame(oldItem: Pair<UnterUser, String>, newItem: Pair<UnterUser, String>): Boolean {
-            return oldItem.first.userId == newItem.first.userId
+class PassengerListAdapter : ListAdapter<Ride, PassengerListAdapter.PassengerViewHolder>(
+    object: DiffUtil.ItemCallback<Ride>() {
+        override fun areItemsTheSame(oldItem: Ride, newItem: Ride): Boolean {
+            return oldItem.rideId == newItem.rideId
         }
 
-        override fun areContentsTheSame(oldItem: Pair<UnterUser, String>, newItem: Pair<UnterUser, String>): Boolean {
-            return oldItem.first == newItem.first
+        override fun areContentsTheSame(oldItem: Ride, newItem: Ride): Boolean {
+            return oldItem == newItem
         }
     }
 ) {
 
-    var handleItemClick: ((UnterUser) -> Unit)? = null
+    var handleItemClick: ((Ride) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PassengerViewHolder {
         return PassengerViewHolder(
@@ -41,9 +42,9 @@ class PassengerListAdapter : ListAdapter<Pair<UnterUser, String>, PassengerListA
 
     override fun onBindViewHolder(holder: PassengerViewHolder, position: Int) {
         getItem(position).apply {
-            holder.username.text = first.username
+            holder.username.text = passengerName
             Glide.with(holder.itemView.context)
-                .load(first.avatarPhotoUrl)
+                .load(passengerAvatarUrl)
                 .fitCenter()
                 .placeholder(
                     CircularProgressDrawable(holder.itemView.context).apply {
@@ -57,21 +58,14 @@ class PassengerListAdapter : ListAdapter<Pair<UnterUser, String>, PassengerListA
                     }
                 )
                 .into(holder.avatar)
-            holder.distance.text = if (second == "Error") holder.itemView.context.getString(R.string.generic_error)
-            else buildString {
-                append(holder.itemView.context.getString(R.string.passenger_is))
-                append(second)
-                append(holder.itemView.context.getString(R.string.away))
-            }
 
-            holder.layout.setOnClickListener { handleItemClick?.invoke(first) }
+            holder.layout.setOnClickListener { handleItemClick?.invoke(this) }
         }
     }
 
     inner class PassengerViewHolder constructor(binding: ListItemPassengerBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val username: TextView = binding.username
-        val distance: TextView = binding.rideDistance
         val avatar: ShapeableImageView = binding.avatar
         val layout: View = binding.listItemLayout
     }

@@ -111,7 +111,7 @@ fun UsernameInputField(
         onValueChange = {
             viewModel.updateName(it)
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         label = { Text(text = stringResource(id = R.string.user_name)) }
     )
 }
