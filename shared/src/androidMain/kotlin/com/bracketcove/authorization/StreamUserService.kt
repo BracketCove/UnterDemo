@@ -18,38 +18,6 @@ class StreamUserService(
     private val client: ChatClient
 ) : UserService {
 
-
-    //attempt to get the current user from the client. If that fails, make a new connection
-    //and add a delay
-    override suspend fun getUser(userId: String): ServiceResult<UnterUser?> {
-        val user = client.getCurrentUser()
-        Log.d("GET_USER", "Connecting: ${client.clientState.isConnecting}")
-        Log.d("GET_USER", "Initialized: ${client.clientState.isInitialized}")
-        Log.d("GET_USER", "Network Available: ${client.clientState.isNetworkAvailable}")
-        Log.d("GET_USER", "Offline: ${client.clientState.isOffline}")
-
-        return if (user == null) {
-            Log.d("GET_USER", client.clientState.user.value.toString())
-            ServiceResult.Value(null)
-        } else {
-            val extraData = user.extraData
-            val type: String? = extraData[KEY_TYPE] as String?
-            val status: String? = extraData[KEY_STATUS] as String?
-
-            ServiceResult.Value(
-                UnterUser(
-                    userId = user.id,
-                    username = user.name,
-                    avatarPhotoUrl = user.image,
-                    createdAt = user.createdAt.toString(),
-                    updatedAt = user.updatedAt.toString(),
-                    type = type ?: "",
-                    status = status ?: ""
-                )
-            )
-        }
-    }
-
     override suspend fun getUserById(userId: String): ServiceResult<UnterUser?> =
         withContext(Dispatchers.IO) {
             val currentUser = client.getCurrentUser()
@@ -139,18 +107,14 @@ class StreamUserService(
 
     override suspend fun updateUser(user: UnterUser): ServiceResult<UnterUser?> =
         withContext(Dispatchers.IO) {
-            val result = client.updateUser(
-                user.let {
-                    User(
-                        id = user.userId,
-                        image = user.avatarPhotoUrl,
-                        name = user.username,
-                        extraData = mutableMapOf(
-                            KEY_STATUS to user.status,
-                            KEY_TYPE to user.type
-                        )
-                    )
-                }
+            val result = client.partialUpdateUser(
+                id = user.userId,
+                set = mutableMapOf(
+                    KEY_STATUS to user.status,
+                    KEY_TYPE to user.type,
+                    KEY_ROLE to "admin",
+                    KEY_IMAGE to user.avatarPhotoUrl
+                )
             ).await()
 
             if (result.isSuccess) {

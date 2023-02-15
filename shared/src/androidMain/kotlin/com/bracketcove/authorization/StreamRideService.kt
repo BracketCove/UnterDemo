@@ -31,8 +31,7 @@ class StreamRideService(
     override suspend fun observeRideById(rideId: String) {
         withContext(Dispatchers.IO) {
             val channelClient = client.channel(
-                channelType = "messaging",
-                channelId = rideId
+                cid = rideId
             )
 
             val result = channelClient.addMembers(listOf(client.getCurrentUser()?.id ?: "")).await()
@@ -131,7 +130,7 @@ class StreamRideService(
                         val status: String? = extraData[KEY_STATUS] as String?
 
                         Ride(
-                            rideId = channel.id,
+                            rideId = channel.cid,
                             status = status ?: RideStatus.SEARCHING_FOR_DRIVER.value,
                             destinationLatitude = destLat ?: 999.0,
                             destinationLongitude = destLon ?: 999.0,
@@ -158,8 +157,7 @@ class StreamRideService(
 
     override suspend fun connectDriverToRide(ride: Ride, driver: UnterUser): ServiceResult<String> = withContext(Dispatchers.IO) {
         val channelClient = client.channel(
-            channelType = "messaging",
-            channelId = ride.rideId
+            cid = ride.rideId
         )
 
         val addToChannel = channelClient.addMembers(listOf(client.getCurrentUser()?.id ?: "")).await()
@@ -178,7 +176,7 @@ class StreamRideService(
             ).await()
 
             if (updateDetails.isSuccess) {
-                ServiceResult.Value(channelClient.channelId)
+                ServiceResult.Value(channelClient.cid)
             } else {
                 ServiceResult.Failure(Exception(updateDetails.error().cause))
             }
@@ -205,7 +203,7 @@ class StreamRideService(
                 if (result.data().isEmpty()) ServiceResult.Value(null)
                 else {
                     result.data().first().let { channel ->
-                        ServiceResult.Value(channel.id)
+                        ServiceResult.Value(channel.cid)
                     }
                 }
             } else {
@@ -227,7 +225,7 @@ class StreamRideService(
 
         val channelId = generateUniqueId(6, ('A'..'Z') + ('0'..'9'))
         val result = client.createChannel(
-            channelType = "messaging",
+            channelType = "livestream",
             channelId = channelId,
             memberIds = listOf(passengerId),
             extraData = mutableMapOf(

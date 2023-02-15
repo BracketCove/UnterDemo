@@ -43,21 +43,40 @@ class PassengerListAdapter : ListAdapter<Ride, PassengerListAdapter.PassengerVie
     override fun onBindViewHolder(holder: PassengerViewHolder, position: Int) {
         getItem(position).apply {
             holder.username.text = passengerName
-            Glide.with(holder.itemView.context)
-                .load(passengerAvatarUrl)
-                .fitCenter()
-                .placeholder(
-                    CircularProgressDrawable(holder.itemView.context).apply {
-                        setColorSchemeColors(
-                            ContextCompat.getColor(holder.itemView.context, R.color.color_light_grey)
-                        )
 
-                        strokeWidth = 2f
-                        centerRadius = 48f
-                        start()
-                    }
-                )
-                .into(holder.avatar)
+            if (passengerAvatarUrl == "") {
+                Glide.with(holder.itemView.context)
+                    .load(R.drawable.baseline_account_circle_24)
+                    .fitCenter()
+                    .placeholder(
+                        CircularProgressDrawable(holder.itemView.context).apply {
+                            setColorSchemeColors(
+                                ContextCompat.getColor(holder.itemView.context, R.color.color_light_grey)
+                            )
+
+                            strokeWidth = 2f
+                            centerRadius = 48f
+                            start()
+                        }
+                    )
+                    .into(holder.avatar)
+            } else {
+                Glide.with(holder.itemView.context)
+                    .load(passengerAvatarUrl)
+                    .fitCenter()
+                    .placeholder(
+                        CircularProgressDrawable(holder.itemView.context).apply {
+                            setColorSchemeColors(
+                                ContextCompat.getColor(holder.itemView.context, R.color.color_light_grey)
+                            )
+
+                            strokeWidth = 2f
+                            centerRadius = 48f
+                            start()
+                        }
+                    )
+                    .into(holder.avatar)
+            }
 
             holder.layout.setOnClickListener { handleItemClick?.invoke(this) }
         }

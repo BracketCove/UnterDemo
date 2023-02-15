@@ -188,7 +188,10 @@ class DriverDashboardViewModel(
         if (_driverLocation.value!!.lat != DEFAULT_LAT_OR_LON
             && _driverLocation.value!!.lng != DEFAULT_LAT_OR_LON
         ) {
-            val result = rideService.connectDriverToRide(clickedRide, _driverModel.value!!)
+            val result = rideService.connectDriverToRide(clickedRide.copy(
+                driverLatitude = _driverLocation.value!!.lat,
+                driverLongitude = _driverLocation.value!!.lng
+            ), _driverModel.value!!)
 
             when (result) {
                 is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
@@ -209,23 +212,7 @@ class DriverDashboardViewModel(
     }
 
     fun updateDriverLocation(latLng: LatLng) = launch(Dispatchers.Main) {
-//        val updateAttempt = userService.updateUser(
-//            _driverModel.value!!.copy(
-//                latitude = latLng.lat,
-//                longitude = latLng.lng
-//            )
-//        )
-//
-//        when (updateAttempt) {
-//            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-//            is ServiceResult.Value -> {
-//                if (updateAttempt.value == null) toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-//                else{
-//                    _driverModel.value = updateAttempt.value
-//                    _driverLocation.value = latLng
-//                }
-//            }
-//        }
+        _driverLocation.value = latLng
     }
 
     fun cancelRide() = launch(Dispatchers.Main) {
