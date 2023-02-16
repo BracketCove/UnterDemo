@@ -3,6 +3,7 @@ package com.bracketcove.android.dashboards.passenger
 import android.util.Log
 import com.bracketcove.ServiceResult
 import com.bracketcove.android.google.GoogleService
+import com.bracketcove.android.navigation.ChatKey
 import com.bracketcove.android.navigation.LoginKey
 import com.bracketcove.android.navigation.ProfileSettingsKey
 import com.bracketcove.android.navigation.SplashKey
@@ -282,8 +283,15 @@ class PassengerDashboardViewModel(
         }
     }
 
-    fun openChat() {
-        TODO("Not yet implemented")
+    fun openChat() = launch(Dispatchers.Main) {
+        val currentRide = _rideModel.first()
+
+        if (currentRide is ServiceResult.Value && currentRide.value != null) {
+            backstack.setHistory(
+                History.of(ChatKey(currentRide.value!!.rideId)),
+                StateChange.FORWARD
+            )
+        }
     }
 
     fun goToProfile() {

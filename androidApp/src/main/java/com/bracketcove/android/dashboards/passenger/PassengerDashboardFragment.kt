@@ -92,7 +92,8 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
     private fun updateUi(uiState: PassengerDashboardUiState) {
         //only make profile accessible when not in a ride
-        if (uiState != PassengerDashboardUiState.RideInactive) binding.toolbar.profileIcon.visibility = View.GONE
+        if (uiState != PassengerDashboardUiState.RideInactive) binding.toolbar.profileIcon.visibility =
+            View.GONE
         else binding.toolbar.profileIcon.visibility = View.VISIBLE
 
         when (uiState) {

@@ -83,6 +83,7 @@ dependencies {
 
     val stream_version = "5.11.10"
     implementation("io.getstream:stream-chat-android-client:$stream_version")
+    implementation("io.getstream:stream-chat-android-ui-components:$stream_version")
 
     implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
