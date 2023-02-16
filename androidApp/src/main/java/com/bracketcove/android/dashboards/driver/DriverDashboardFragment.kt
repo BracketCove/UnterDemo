@@ -116,7 +116,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
             mapLayout.subtitle.text = getString(R.string.destination)
             mapLayout.address.text = uiState.destinationAddress
 
-            advanceLayout.advanceRideStateLayout.visibility = View.VISIBLE
+            advanceLayout.advanceRideStateLayout.visibility = View.GONE
 
             returnLayout.rideCompleteLayout.visibility = View.VISIBLE
             returnLayout.advanceButton.setOnClickListener {
@@ -125,7 +125,10 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 
             username.text = uiState.passengerName
             Glide.with(requireContext())
-                .load(uiState.passengerAvatar)
+                .load(
+                    if (uiState.passengerAvatar != "") uiState.passengerAvatar
+                    else R.drawable.baseline_account_circle_24
+                )
                 .fitCenter()
                 .placeholder(
                     CircularProgressDrawable(requireContext()).apply {
@@ -155,6 +158,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
             mapLayout.address.text = uiState.destinationAddress
 
             advanceLayout.advanceRideStateLayout.visibility = View.VISIBLE
+
             advanceLayout.advanceButton.setImageResource(R.drawable.ic_arrival)
             advanceLayout.advanceButton.setOnLongClickListener() {
                 viewModel.advanceRide()
@@ -166,7 +170,10 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 
             username.text = uiState.passengerName
             Glide.with(requireContext())
-                .load(uiState.passengerAvatar)
+                .load(
+                    if (uiState.passengerAvatar != "") uiState.passengerAvatar
+                    else R.drawable.baseline_account_circle_24
+                )
                 .fitCenter()
                 .placeholder(
                     CircularProgressDrawable(requireContext()).apply {
@@ -208,7 +215,10 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 
             username.text = uiState.passengerName
             Glide.with(requireContext())
-                .load(uiState.passengerAvatar)
+                .load(
+                    if (uiState.passengerAvatar != "") uiState.passengerAvatar
+                    else R.drawable.baseline_account_circle_24
+                )
                 .fitCenter()
                 .placeholder(
                     CircularProgressDrawable(requireContext()).apply {

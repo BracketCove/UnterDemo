@@ -115,6 +115,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
             rideLayout.visibility = View.VISIBLE
             loadingView.loadingLayout.visibility = View.GONE
             searchingLayout.visibility = View.GONE
+            rideComplete.rideCompleteLayout.visibility = View.VISIBLE
 
             searchingForDriver.searchingForDriverLayout.visibility = View.GONE
             //unbind recyclerview from adapter
@@ -130,7 +131,10 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
             driverName.text = uiState.driverName
             Glide.with(requireContext())
-                .load(uiState.driverAvatar)
+                .load(
+                    if (uiState.driverAvatar != "") uiState.driverAvatar
+                    else R.drawable.baseline_account_circle_24
+                )
                 .fitCenter()
                 .placeholder(
                     CircularProgressDrawable(requireContext()).apply {
@@ -164,7 +168,10 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
             driverName.text = uiState.driverName
             Glide.with(requireContext())
-                .load(uiState.driverAvatar)
+                .load(
+                    if (uiState.driverAvatar != "") uiState.driverAvatar
+                    else R.drawable.baseline_account_circle_24
+                )
                 .fitCenter()
                 .placeholder(
                     CircularProgressDrawable(requireContext()).apply {
@@ -180,6 +187,8 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                 .into(binding.avatar)
 
             driverInfoLayout.visibility = View.VISIBLE
+            rideComplete.rideCompleteLayout.visibility = View.GONE
+
         }
     }
 
@@ -198,7 +207,10 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
             driverName.text = uiState.driverName
             Glide.with(requireContext())
-                .load(uiState.driverAvatar)
+                .load(
+                    if (uiState.driverAvatar != "") uiState.driverAvatar
+                    else R.drawable.baseline_account_circle_24
+                )
                 .fitCenter()
                 .placeholder(
                     CircularProgressDrawable(requireContext()).apply {
@@ -214,6 +226,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                 .into(binding.avatar)
 
             driverInfoLayout.visibility = View.VISIBLE
+            rideComplete.rideCompleteLayout.visibility = View.GONE
         }
     }
 

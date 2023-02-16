@@ -25,7 +25,7 @@ const val KEY_PASSENGER_NAME = "key_passenger_name"
 const val STREAM_USER_ID = "id"
 const val STREAM_USER_ROLE = "role"
 const val STREAM_USER_ROLE_ADMIN = "admin"
-const val STREAM_CHANNEL_TYPE_MESSAGING = "messaging"
+const val STREAM_CHANNEL_TYPE_LIVESTREAM = "livestream"
 
 const val FILTER_UPDATED_AT = "updatedAt"
 const val FILTER_CREATED_AT = "createdAt"
