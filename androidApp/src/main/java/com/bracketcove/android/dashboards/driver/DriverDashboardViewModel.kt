@@ -217,17 +217,16 @@ class DriverDashboardViewModel(
     }
 
     fun cancelRide() = launch(Dispatchers.Main) {
-        //TODO implement cancel for drivers
-//        val cancelRide = rideService.cancelRide(_rideModel.value!!)
-//        when (cancelRide) {
-//            is ServiceResult.Failure -> {
-//                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-//                sendToSplash()
-//            }
-//            is ServiceResult.Value -> {
-//                sendToSplash()
-//            }
-//        }
+        val cancelRide = rideService.cancelRide()
+        when (cancelRide) {
+            is ServiceResult.Failure -> {
+                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
+                sendToSplash()
+            }
+
+            //State should automatically be handled by the flow
+            is ServiceResult.Value -> Unit
+        }
     }
 
     private fun sendToLogin() {

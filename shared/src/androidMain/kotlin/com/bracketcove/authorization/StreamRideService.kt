@@ -1,5 +1,6 @@
 package com.bracketcove.authorization
 
+import android.util.Log
 import com.bracketcove.ServiceResult
 import com.bracketcove.constants.*
 import com.bracketcove.domain.Ride
@@ -9,8 +10,13 @@ import com.bracketcove.rides.RideService
 import io.getstream.chat.android.client.ChatClient
 import io.getstream.chat.android.client.api.models.QueryChannelsRequest
 import io.getstream.chat.android.client.api.models.querysort.QuerySortByField
+import io.getstream.chat.android.client.channel.ChannelClient
+import io.getstream.chat.android.client.events.ChannelDeletedEvent
+import io.getstream.chat.android.client.events.ChannelUpdatedByUserEvent
+import io.getstream.chat.android.client.events.ChatEvent
 import io.getstream.chat.android.client.models.Channel
 import io.getstream.chat.android.client.models.Filters
+import io.getstream.chat.android.client.utils.observable.Disposable
 import io.getstream.chat.android.client.utils.onErrorSuspend
 import io.getstream.chat.android.client.utils.onSuccessSuspend
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +37,8 @@ class StreamRideService(
     override fun openRides(): Flow<ServiceResult<List<Ride>>> = _openRides
     override fun rideFlow(): Flow<ServiceResult<Ride?>> = _rideModelUpdates
 
+    private val disposables: MutableList<Disposable> = mutableListOf()
+
     override suspend fun observeRideById(rideId: String) {
         withContext(Dispatchers.IO) {
             val channelClient = client.channel(
@@ -42,6 +50,8 @@ class StreamRideService(
             if (result.isSuccess) {
                 val watchResult = channelClient.watch().await()
 
+                observeChannelEvents(channelClient)
+
                 watchResult.onSuccessSuspend { channel ->
                     _rideModelUpdates.emit(
                         channel.let {
@@ -49,43 +59,8 @@ class StreamRideService(
                             if (channel.hidden != null && channel.hidden!!) {
                                 ServiceResult.Value(null)
                             } else {
-                                val extraData = channel.extraData
-                                val destAddress: String? = extraData[KEY_DEST_ADDRESS] as String?
-                                val destLat: Double? = extraData[KEY_DEST_LAT] as Double?
-                                val destLon: Double? = extraData[KEY_DEST_LON] as Double?
-
-                                val driverId: String? = extraData[KEY_DRIVER_ID] as String?
-                                val driverLat: Double? = extraData[KEY_DRIVER_LAT] as Double?
-                                val driverLon: Double? = extraData[KEY_DRIVER_LON] as Double?
-                                val driverAvatar: String? = extraData[KEY_DRIVER_AVATAR_URL] as String?
-                                val driverName: String? = extraData[KEY_DRIVER_NAME] as String?
-
-                                val passengerId: String? = extraData[KEY_PASSENGER_ID] as String?
-                                val passengerLat: Double? = extraData[KEY_PASSENGER_LAT] as Double?
-                                val passengerLon: Double? = extraData[KEY_PASSENGER_LON] as Double?
-                                val passengerAvatar: String? =
-                                    extraData[KEY_PASSENGER_AVATAR_URL] as String?
-                                val passengerName: String? = extraData[KEY_PASSENGER_NAME] as String?
-                                val status: String? = extraData[KEY_STATUS] as String?
-
                                 ServiceResult.Value(
-                                    Ride(
-                                        rideId = channel.cid,
-                                        status = status ?: RideStatus.SEARCHING_FOR_DRIVER.value,
-                                        destinationLatitude = destLat ?: 999.0,
-                                        destinationLongitude = destLon ?: 999.0,
-                                        destinationAddress = destAddress ?: "",
-                                        driverId = driverId,
-                                        driverLatitude = driverLat,
-                                        driverLongitude = driverLon,
-                                        driverName = driverName,
-                                        driverAvatarUrl = driverAvatar,
-                                        passengerId = passengerId ?: "",
-                                        passengerLatitude = passengerLat ?: 999.0,
-                                        passengerLongitude = passengerLon ?: 999.0,
-                                        passengerName = passengerName ?: "",
-                                        passengerAvatarUrl = passengerAvatar ?: ""
-                                    )
+                                    streamChannelToRide(channel)
                                 )
                             }
                         }
@@ -110,6 +85,74 @@ class StreamRideService(
         }
     }
 
+    private suspend fun observeChannelEvents(channelClient: ChannelClient) {
+        channelClient.subscribe { event: ChatEvent ->
+            when (event) {
+                is ChannelDeletedEvent -> {
+                    _rideModelUpdates.value = ServiceResult.Value(null)
+                }
+
+                is ChannelUpdatedByUserEvent -> { _rideModelUpdates.value =
+                    ServiceResult.Value(streamChannelToRide(event.channel))
+                }
+
+                else -> {
+                    Log.d("EVENT", event.type)
+                }
+            }
+        }
+
+//        channelClient.subscribeFor<ChannelUpdatedEvent> { event ->
+//            val channel = event.channel
+//            _rideModelUpdates.value = ServiceResult.Value(streamChannelToRide(channel))
+//        }.also { disposables.add(it) }
+//
+//        channelClient.subscribeFor<ChannelDeletedEvent> {
+//            _rideModelUpdates.value = ServiceResult.Value(null)
+//          //  disposables.forEach { it.dispose() }
+//        }
+    }
+
+
+    private fun streamChannelToRide(channel: Channel): Ride {
+        val extraData = channel.extraData
+        val destAddress: String? = extraData[KEY_DEST_ADDRESS] as String?
+        val destLat: Double? = extraData[KEY_DEST_LAT] as Double?
+        val destLon: Double? = extraData[KEY_DEST_LON] as Double?
+
+        val driverId: String? = extraData[KEY_DRIVER_ID] as String?
+        val driverLat: Double? = extraData[KEY_DRIVER_LAT] as Double?
+        val driverLon: Double? = extraData[KEY_DRIVER_LON] as Double?
+        val driverAvatar: String? = extraData[KEY_DRIVER_AVATAR_URL] as String?
+        val driverName: String? = extraData[KEY_DRIVER_NAME] as String?
+
+        val passengerId: String? = extraData[KEY_PASSENGER_ID] as String?
+        val passengerLat: Double? = extraData[KEY_PASSENGER_LAT] as Double?
+        val passengerLon: Double? = extraData[KEY_PASSENGER_LON] as Double?
+        val passengerAvatar: String? =
+            extraData[KEY_PASSENGER_AVATAR_URL] as String?
+        val passengerName: String? = extraData[KEY_PASSENGER_NAME] as String?
+        val status: String? = extraData[KEY_STATUS] as String?
+
+        return Ride(
+            rideId = channel.cid,
+            status = status ?: RideStatus.SEARCHING_FOR_DRIVER.value,
+            destinationLatitude = destLat ?: 999.0,
+            destinationLongitude = destLon ?: 999.0,
+            destinationAddress = destAddress ?: "",
+            driverId = driverId,
+            driverLatitude = driverLat,
+            driverLongitude = driverLon,
+            driverName = driverName,
+            driverAvatarUrl = driverAvatar,
+            passengerId = passengerId ?: "",
+            passengerLatitude = passengerLat ?: 999.0,
+            passengerLongitude = passengerLon ?: 999.0,
+            passengerName = passengerName ?: "",
+            passengerAvatarUrl = passengerAvatar ?: ""
+        )
+    }
+
     override suspend fun observeOpenRides() {
         withContext(Dispatchers.IO) {
             val request = QueryChannelsRequest(
@@ -125,42 +168,7 @@ class StreamRideService(
             if (result.isSuccess) {
                 _openRides.emit(ServiceResult.Value(
                     result.data().map { channel ->
-                        val extraData = channel.extraData
-                        val destAddress: String? = extraData[KEY_DEST_ADDRESS] as String?
-                        val destLat: Double? = extraData[KEY_DEST_LAT] as Double?
-                        val destLon: Double? = extraData[KEY_DEST_LON] as Double?
-
-                        val driverId: String? = extraData[KEY_DRIVER_ID] as String?
-                        val driverLat: Double? = extraData[KEY_DRIVER_LAT] as Double?
-                        val driverLon: Double? = extraData[KEY_DRIVER_LON] as Double?
-                        val driverAvatar: String? = extraData[KEY_DRIVER_AVATAR_URL] as String?
-                        val driverName: String? = extraData[KEY_DRIVER_NAME] as String?
-
-                        val passengerId: String? = extraData[KEY_PASSENGER_ID] as String?
-                        val passengerLat: Double? = extraData[KEY_PASSENGER_LAT] as Double?
-                        val passengerLon: Double? = extraData[KEY_PASSENGER_LON] as Double?
-                        val passengerAvatar: String? =
-                            extraData[KEY_PASSENGER_AVATAR_URL] as String?
-                        val passengerName: String? = extraData[KEY_PASSENGER_NAME] as String?
-                        val status: String? = extraData[KEY_STATUS] as String?
-
-                        Ride(
-                            rideId = channel.cid,
-                            status = status ?: RideStatus.SEARCHING_FOR_DRIVER.value,
-                            destinationLatitude = destLat ?: 999.0,
-                            destinationLongitude = destLon ?: 999.0,
-                            destinationAddress = destAddress ?: "",
-                            driverId = driverId,
-                            driverLatitude = driverLat,
-                            driverLongitude = driverLon,
-                            driverName = driverName,
-                            driverAvatarUrl = driverAvatar,
-                            passengerId = passengerId ?: "",
-                            passengerLatitude = passengerLat ?: 999.0,
-                            passengerLongitude = passengerLon ?: 999.0,
-                            passengerName = passengerName ?: "",
-                            passengerAvatarUrl = passengerAvatar ?: ""
-                        )
+                        streamChannelToRide(channel)
                     }
                 )
                 )
@@ -170,35 +178,40 @@ class StreamRideService(
         }
     }
 
-    override suspend fun connectDriverToRide(ride: Ride, driver: UnterUser): ServiceResult<String> = withContext(Dispatchers.IO) {
-        val channelClient = client.channel(
-            cid = ride.rideId
-        )
+    override suspend fun connectDriverToRide(
+        ride: Ride,
+        driver: UnterUser
+    ): ServiceResult<String> =
+        withContext(Dispatchers.IO) {
+            val channelClient = client.channel(
+                cid = ride.rideId
+            )
 
-        val addToChannel = channelClient.addMembers(listOf(client.getCurrentUser()?.id ?: "")).await()
-        if (addToChannel.isSuccess) {
+            val addToChannel =
+                channelClient.addMembers(listOf(client.getCurrentUser()?.id ?: "")).await()
+            if (addToChannel.isSuccess) {
 
-            //note: we must check in the VM if driverLatLng are null!!
-            val updateDetails = channelClient.updatePartial(
-                set = mutableMapOf(
-                    KEY_STATUS to RideStatus.PASSENGER_PICK_UP.value,
-                    KEY_DRIVER_ID to driver.userId,
-                    KEY_DRIVER_NAME to driver.username,
-                    KEY_DRIVER_LAT to ride.driverLatitude!!,
-                    KEY_DRIVER_LON to ride.driverLongitude!!,
-                    KEY_DRIVER_AVATAR_URL to driver.avatarPhotoUrl
-                )
-            ).await()
+                //note: we must check in the VM if driverLatLng are null!!
+                val updateDetails = channelClient.updatePartial(
+                    set = mutableMapOf(
+                        KEY_STATUS to RideStatus.PASSENGER_PICK_UP.value,
+                        KEY_DRIVER_ID to driver.userId,
+                        KEY_DRIVER_NAME to driver.username,
+                        KEY_DRIVER_LAT to ride.driverLatitude!!,
+                        KEY_DRIVER_LON to ride.driverLongitude!!,
+                        KEY_DRIVER_AVATAR_URL to driver.avatarPhotoUrl
+                    )
+                ).await()
 
-            if (updateDetails.isSuccess) {
-                ServiceResult.Value(channelClient.cid)
+                if (updateDetails.isSuccess) {
+                    ServiceResult.Value(channelClient.cid)
+                } else {
+                    ServiceResult.Failure(Exception(updateDetails.error().cause))
+                }
             } else {
-                ServiceResult.Failure(Exception(updateDetails.error().cause))
+                ServiceResult.Failure(Exception(addToChannel.error().cause))
             }
-        } else {
-            ServiceResult.Failure(Exception(addToChannel.error().cause))
         }
-    }
 
     override suspend fun getRideIfInProgress(): ServiceResult<String?> =
         withContext(Dispatchers.IO) {
@@ -315,27 +328,27 @@ class StreamRideService(
         return ServiceResult.Value(Unit)
     }
 
-    override suspend fun advanceRide(rideId: String, newState: String): ServiceResult<Unit>
-    = withContext(Dispatchers.IO){
-        val advanceRide = client.updateChannelPartial(
-            channelType = STREAM_CHANNEL_TYPE_LIVESTREAM,
-            channelId = getChannelIdOnly(rideId),
-            set = mutableMapOf(
-                KEY_STATUS to newState
-            )
-        ).await()
+    override suspend fun advanceRide(rideId: String, newState: String): ServiceResult<Unit> =
+        withContext(Dispatchers.IO) {
+            val advanceRide = client.updateChannelPartial(
+                channelType = STREAM_CHANNEL_TYPE_LIVESTREAM,
+                channelId = getChannelIdOnly(rideId),
+                set = mutableMapOf(
+                    KEY_STATUS to newState
+                )
+            ).await()
 
-        if (advanceRide.isSuccess) {
-            ServiceResult.Value(Unit)
-        } else {
-            ServiceResult.Failure(
-                Exception(advanceRide.error().cause)
-            )
+            if (advanceRide.isSuccess) {
+                ServiceResult.Value(Unit)
+            } else {
+                ServiceResult.Failure(
+                    Exception(advanceRide.error().cause)
+                )
+            }
         }
-    }
 
     //A cid will be passed in here in the format livestream:<channel id>. This splits it into
     //just the channel id.
-    private fun getChannelIdOnly(cid: String) : String = cid.split(":").last()
+    private fun getChannelIdOnly(cid: String): String = cid.split(":").last()
 
 }

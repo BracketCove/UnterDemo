@@ -2,16 +2,15 @@ package com.bracketcove.authorization
 
 import android.util.Log
 import com.bracketcove.ServiceResult
-import com.bracketcove.constants.*
+import com.bracketcove.constants.KEY_IMAGE
+import com.bracketcove.constants.KEY_ROLE
+import com.bracketcove.constants.KEY_STATUS
+import com.bracketcove.constants.KEY_TYPE
 import com.bracketcove.domain.UnterUser
-import com.bracketcove.domain.UserType
 import io.getstream.chat.android.client.ChatClient
 import io.getstream.chat.android.client.models.User
-import io.getstream.chat.android.offline.extensions.state
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 
 class StreamUserService(
