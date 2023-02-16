@@ -34,4 +34,7 @@ interface RideService {
     suspend fun completeRide(ride: Ride): ServiceResult<Unit>
 
     suspend fun advanceRide(rideId: String, newState: String): ServiceResult<Unit>
+
+    suspend fun updateDriverLocation(ride: Ride, lat: Double, lon: Double): ServiceResult<Unit>
+    suspend fun updatePassengerLocation(ride: Ride, lat: Double, lon: Double): ServiceResult<Unit>
 }

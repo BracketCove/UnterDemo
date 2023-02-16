@@ -20,14 +20,11 @@ import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices
 import com.zhuinden.simplestack.StateChange
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 class DriverDashboardViewModel(
@@ -81,7 +78,7 @@ class DriverDashboardViewModel(
 
                 ride.status == RideStatus.EN_ROUTE.value
                         && ride.driverLatitude != null
-                        && ride.driverLongitude != null  -> DriverDashboardUiState.EnRoute(
+                        && ride.driverLongitude != null -> DriverDashboardUiState.EnRoute(
                     driverLat = ride.driverLatitude!!,
                     driverLon = ride.driverLongitude!!,
                     destinationLat = ride.destinationLatitude,
@@ -119,7 +116,8 @@ class DriverDashboardViewModel(
     //I don't want a driver to be able to accept a ride unless we know their location first.
     val locationAwarePassengerList = combineTuple(_driverLocation, _passengerList).map {
         if (it.first.lat == DEFAULT_LAT_OR_LON
-            || it.first.lng == DEFAULT_LAT_OR_LON) emptyList<Ride>()
+            || it.first.lng == DEFAULT_LAT_OR_LON
+        ) emptyList<Ride>()
         else {
             if (it.second is ServiceResult.Failure) {
                 handleError()
@@ -169,8 +167,7 @@ class DriverDashboardViewModel(
                 if (result.value == null) {
                     _driverModel.value = user
                     getPassengerList()
-                }
-                else observeRideModel(result.value!!, user)
+                } else observeRideModel(result.value!!, user)
             }
         }
     }
@@ -184,15 +181,18 @@ class DriverDashboardViewModel(
     private suspend fun getPassengerList() {
         rideService.observeOpenRides()
     }
+
     fun handlePassengerItemClick(clickedRide: Ride) = launch(Dispatchers.Main) {
         //We must only proceed if driver LatLng are real values!
         if (_driverLocation.value!!.lat != DEFAULT_LAT_OR_LON
             && _driverLocation.value!!.lng != DEFAULT_LAT_OR_LON
         ) {
-            val result = rideService.connectDriverToRide(clickedRide.copy(
-                driverLatitude = _driverLocation.value!!.lat,
-                driverLongitude = _driverLocation.value!!.lng
-            ), _driverModel.value!!)
+            val result = rideService.connectDriverToRide(
+                clickedRide.copy(
+                    driverLatitude = _driverLocation.value!!.lat,
+                    driverLongitude = _driverLocation.value!!.lng
+                ), _driverModel.value!!
+            )
 
             when (result) {
                 is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
@@ -214,6 +214,20 @@ class DriverDashboardViewModel(
 
     fun updateDriverLocation(latLng: LatLng) = launch(Dispatchers.Main) {
         _driverLocation.value = latLng
+
+        val currentRide = _rideModel.first()
+
+        if (currentRide is ServiceResult.Value && currentRide.value != null) {
+            val result = rideService.updateDriverLocation(
+                currentRide.value!!,
+                latLng.lat,
+                latLng.lng
+            )
+
+            if (result is ServiceResult.Failure) {
+                toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+            }
+        }
     }
 
     fun cancelRide() = launch(Dispatchers.Main) {
@@ -293,8 +307,8 @@ class DriverDashboardViewModel(
 
     }
 
-    private fun advanceRideState(status: String) : String {
-       return when (status) {
+    private fun advanceRideState(status: String): String {
+        return when (status) {
             RideStatus.SEARCHING_FOR_DRIVER.value -> RideStatus.PASSENGER_PICK_UP.value
             RideStatus.PASSENGER_PICK_UP.value -> RideStatus.EN_ROUTE.value
             else -> RideStatus.ARRIVED.value
@@ -303,6 +317,10 @@ class DriverDashboardViewModel(
 
     fun openChat() {
 
+    }
+
+    fun queryRidesAgain() = launch(Dispatchers.Main) {
+        getPassengerList()
     }
 
     private val canceller = Job()

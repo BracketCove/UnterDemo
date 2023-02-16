@@ -92,8 +92,9 @@ class StreamRideService(
                     _rideModelUpdates.value = ServiceResult.Value(null)
                 }
 
-                is ChannelUpdatedByUserEvent -> { _rideModelUpdates.value =
-                    ServiceResult.Value(streamChannelToRide(event.channel))
+                is ChannelUpdatedByUserEvent -> {
+                    _rideModelUpdates.value =
+                        ServiceResult.Value(streamChannelToRide(event.channel))
                 }
 
                 else -> {
@@ -101,16 +102,6 @@ class StreamRideService(
                 }
             }
         }
-
-//        channelClient.subscribeFor<ChannelUpdatedEvent> { event ->
-//            val channel = event.channel
-//            _rideModelUpdates.value = ServiceResult.Value(streamChannelToRide(channel))
-//        }.also { disposables.add(it) }
-//
-//        channelClient.subscribeFor<ChannelDeletedEvent> {
-//            _rideModelUpdates.value = ServiceResult.Value(null)
-//          //  disposables.forEach { it.dispose() }
-//        }
     }
 
 
@@ -339,6 +330,79 @@ class StreamRideService(
             ).await()
 
             if (advanceRide.isSuccess) {
+                ServiceResult.Value(Unit)
+            } else {
+                ServiceResult.Failure(
+                    Exception(advanceRide.error().cause)
+                )
+            }
+        }
+
+    override suspend fun updateDriverLocation(
+        ride: Ride,
+        lat: Double,
+        lon: Double
+    ): ServiceResult<Unit> =
+        withContext(Dispatchers.IO) {
+            val advanceRide = client.updateChannelPartial(
+                channelType = STREAM_CHANNEL_TYPE_LIVESTREAM,
+                channelId = getChannelIdOnly(ride.rideId),
+                set = mutableMapOf(
+                    KEY_DRIVER_LAT to lat,
+                    KEY_DRIVER_LON to lon,
+                )
+            ).await()
+
+            if (advanceRide.isSuccess) {
+                //Unfortunately the update call only triggers remote clients for an update event,
+                //it doesn't seem to trigger locally. This is a workaround to make sure the map
+                //state is updated appropriately.
+                val currentRideState = _rideModelUpdates.value
+                if (currentRideState is ServiceResult.Value && currentRideState.value != null) {
+                    _rideModelUpdates.value = ServiceResult.Value(
+                        currentRideState.value.copy(
+                            driverLatitude = lat,
+                            driverLongitude = lon
+                        )
+                    )
+                }
+
+                ServiceResult.Value(Unit)
+            } else {
+                ServiceResult.Failure(
+                    Exception(advanceRide.error().cause)
+                )
+            }
+        }
+
+    override suspend fun updatePassengerLocation(
+        ride: Ride,
+        lat: Double,
+        lon: Double
+    ): ServiceResult<Unit> =
+        withContext(Dispatchers.IO) {
+            val advanceRide = client.updateChannelPartial(
+                channelType = STREAM_CHANNEL_TYPE_LIVESTREAM,
+                channelId = getChannelIdOnly(ride.rideId),
+                set = mutableMapOf(
+                    KEY_PASSENGER_LAT to lat,
+                    KEY_PASSENGER_LON to lon,
+                )
+            ).await()
+
+            if (advanceRide.isSuccess) {
+
+                //Workaround, see above function
+                val currentRideState = _rideModelUpdates.value
+                if (currentRideState is ServiceResult.Value && currentRideState.value != null) {
+                    _rideModelUpdates.value = ServiceResult.Value(
+                        currentRideState.value.copy(
+                            driverLatitude = lat,
+                            driverLongitude = lon
+                        )
+                    )
+                }
+
                 ServiceResult.Value(Unit)
             } else {
                 ServiceResult.Failure(

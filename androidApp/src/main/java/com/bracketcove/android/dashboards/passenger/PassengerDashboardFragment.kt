@@ -264,6 +264,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                     handleItemClick = {
                         hideKeyboard(binding.searchEditText, requireContext())
                         viewModel.handleSearchItemClick(it)
+                        this.submitList(emptyList())
                     }
                 }
             }
@@ -319,6 +320,8 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
         uiState: PassengerDashboardUiState
     ) {
         if (googleMap != null) {
+
+            googleMap!!.clear()
             when (uiState) {
                 is PassengerDashboardUiState.SearchingForDriver -> {
                     googleMap!!.moveCamera(
@@ -536,7 +539,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                     LOCATION_REQUEST_INTERVAL
                 ).apply {
                     //only update if user moved more than 10 meters
-                    setMinUpdateDistanceMeters(10f)
+                    setMinUpdateDistanceMeters(0f)
                 }.build()
 
                 //determine if device settings are configured properly

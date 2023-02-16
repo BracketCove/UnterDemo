@@ -266,16 +266,20 @@ class PassengerDashboardViewModel(
 
     fun updatePassengerLocation(latLng: LatLng) = launch(Dispatchers.Main) {
         passengerLatLng = latLng
-        //TODO have this update the ride
-//        val model = _rideModel.value
-//        if (model is ServiceResult.Value && model.value != null) {
-//            rideService.updateRide(
-//                model.value!!.copy(
-//                    passengerLatitude = latLng.lat,
-//                    passengerLongitude = latLng.lng
-//                )
-//            )
-//        }
+
+        val currentRide = _rideModel.first()
+
+        if (currentRide is ServiceResult.Value && currentRide.value != null) {
+            val result = rideService.updatePassengerLocation(
+                currentRide.value!!,
+                latLng.lat,
+                latLng.lng
+            )
+
+            if (result is ServiceResult.Failure) {
+                toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
+            }
+        }
     }
 
     fun openChat() {

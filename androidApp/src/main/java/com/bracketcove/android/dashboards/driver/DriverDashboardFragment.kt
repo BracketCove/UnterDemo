@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -265,9 +266,12 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                         if (models.isNullOrEmpty()) {
                             passengerList.visibility = View.GONE
                             passengersLoadingLayout.visibility = View.VISIBLE
+                            checkAgainBT.setOnClickListener { viewModel.queryRidesAgain() }
+
                         } else {
                             passengerList.visibility = View.VISIBLE
                             passengersLoadingLayout.visibility = View.GONE
+                            checkAgainBT.setOnClickListener(null)
 
                             (passengerList.adapter as PassengerListAdapter)
                                 .submitList(models)
@@ -462,7 +466,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 
                         googleMap!!.moveCamera(
                             CameraUpdateFactory.newLatLngZoom(
-                                LatLng(uiState.destinationLat, uiState.destinationLat),
+                                LatLng(uiState.destinationLat, uiState.destinationLon),
                                 14f
                             )
                         )
@@ -523,7 +527,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 
                 LocationServices.getSettingsClient(requireContext())
                     .checkLocationSettings(locationSettingsRequest).addOnCompleteListener { task ->
-                        if (task.isSuccessful) startRequestingLocationUpdates()
+                        if (task.isSuccessful) startRequestingLocationUpdates(locationRequest!!)
                         else {
                             Toast.makeText(
                                 requireContext(),
@@ -545,28 +549,30 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
     }
 
     @SuppressLint("MissingPermission")
-    private fun startRequestingLocationUpdates() {
-        locationClient
-            .lastLocation
-            .addOnCompleteListener { locationRequest ->
-                if (locationRequest.isSuccessful && locationRequest.result != null) {
-                    val location = locationRequest.result
-
-                    val lat = location.latitude
-                    val lon = location.longitude
-                    viewModel.updateDriverLocation(com.google.maps.model.LatLng(lat, lon))
-                } else {
-
-                    Log.d("PLACES", locationRequest.exception.toString())
-
-                    Toast.makeText(
-                        requireContext(),
-                        R.string.unable_to_retrieve_coordinates_user,
-                        Toast.LENGTH_LONG
-                    ).show()
-                    viewModel.handleError()
+    private fun startRequestingLocationUpdates(locationRequest: LocationRequest) {
+        locationClient.requestLocationUpdates(
+            locationRequest,
+            object : LocationCallback() {
+                override fun onLocationResult(result: LocationResult) {
+                    if (result.lastLocation != null) {
+                        viewModel.updateDriverLocation(
+                            com.google.maps.model.LatLng(
+                                result.lastLocation!!.latitude,
+                                result.lastLocation!!.longitude
+                            )
+                        )
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            R.string.unable_to_retrieve_coordinates_user,
+                            Toast.LENGTH_LONG
+                        ).show()
+                        viewModel.handleError()
+                    }
                 }
-            }
+            },
+            Looper.myLooper()
+        )
     }
 
     private fun requestPermission() {
