@@ -17,5 +17,6 @@ data class Ride(
     val driverName: String? = null,
     val driverAvatarUrl: String? = null,
     val createdAt: String = "",
-    val updatedAT: String = ""
+    val updatedAT: String = "",
+    val totalMessages: Int = 0
 )

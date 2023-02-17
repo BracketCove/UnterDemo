@@ -14,6 +14,7 @@ import io.getstream.chat.android.client.channel.ChannelClient
 import io.getstream.chat.android.client.events.ChannelDeletedEvent
 import io.getstream.chat.android.client.events.ChannelUpdatedByUserEvent
 import io.getstream.chat.android.client.events.ChatEvent
+import io.getstream.chat.android.client.events.NewMessageEvent
 import io.getstream.chat.android.client.models.Channel
 import io.getstream.chat.android.client.models.Filters
 import io.getstream.chat.android.client.utils.observable.Disposable
@@ -27,6 +28,7 @@ import kotlinx.coroutines.withContext
 class StreamRideService(
     private val client: ChatClient
 ) : RideService {
+
 
     private val _rideModelUpdates: MutableStateFlow<ServiceResult<Ride?>> =
         MutableStateFlow(ServiceResult.Value(null))
@@ -48,11 +50,9 @@ class StreamRideService(
             val result = channelClient.addMembers(listOf(client.getCurrentUser()?.id ?: "")).await()
 
             if (result.isSuccess) {
-                val watchResult = channelClient.watch().await()
-
                 observeChannelEvents(channelClient)
 
-                watchResult.onSuccessSuspend { channel ->
+                result.onSuccessSuspend { channel ->
                     _rideModelUpdates.emit(
                         channel.let {
                             //TODO figure out if this if else actually does something useful
@@ -67,7 +67,7 @@ class StreamRideService(
                     )
                 }
 
-                watchResult.onErrorSuspend {
+                result.onErrorSuspend {
                     _rideModelUpdates.emit(
                         result.error().let {
                             ServiceResult.Failure(Exception(it.cause))
@@ -95,6 +95,29 @@ class StreamRideService(
                 is ChannelUpdatedByUserEvent -> {
                     _rideModelUpdates.value =
                         ServiceResult.Value(streamChannelToRide(event.channel))
+                }
+
+                is NewMessageEvent -> {
+                    val currentRideModel = _rideModelUpdates.value
+
+                    if (currentRideModel is ServiceResult.Value && currentRideModel.value != null) {
+                        val channelClient = client.channel(
+                            cid = event.cid
+                        )
+
+                        channelClient.create(emptyList(), mutableMapOf()).enqueue { result ->
+                            if (result.isSuccess) {
+                                val lastMessageAt = result.data().lastMessageAt
+
+                                val hasMessage = if (lastMessageAt == null) 0 else 1
+                                _rideModelUpdates.value = ServiceResult.Value(
+                                    currentRideModel.value.copy(
+                                        totalMessages = hasMessage
+                                    )
+                                )
+                            }
+                        }
+                    }
                 }
 
                 else -> {
@@ -140,7 +163,8 @@ class StreamRideService(
             passengerLatitude = passengerLat ?: 999.0,
             passengerLongitude = passengerLon ?: 999.0,
             passengerName = passengerName ?: "",
-            passengerAvatarUrl = passengerAvatar ?: ""
+            passengerAvatarUrl = passengerAvatar ?: "",
+            totalMessages = if (channel.lastMessageAt == null) 0 else 1
         )
     }
 

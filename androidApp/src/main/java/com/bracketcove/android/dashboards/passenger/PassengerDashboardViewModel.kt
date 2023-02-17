@@ -82,7 +82,8 @@ class PassengerDashboardViewModel(
                     destinationLon = ride.destinationLongitude,
                     destinationAddress = ride.destinationAddress,
                     driverName = ride.driverName ?: "Error",
-                    driverAvatar = ride.driverAvatarUrl ?: ""
+                    driverAvatar = ride.driverAvatarUrl ?: "",
+                    totalMessages = ride.totalMessages
                 )
 
                 ride.status == RideStatus.EN_ROUTE.value
@@ -94,7 +95,8 @@ class PassengerDashboardViewModel(
                     destinationAddress = ride.destinationAddress,
                     destinationLat = ride.destinationLatitude,
                     destinationLon = ride.destinationLongitude,
-                    driverAvatar = ride.driverAvatarUrl ?: ""
+                    driverAvatar = ride.driverAvatarUrl ?: "",
+                    totalMessages = ride.totalMessages
                 )
 
                 ride.status == RideStatus.ARRIVED.value
@@ -106,7 +108,8 @@ class PassengerDashboardViewModel(
                     destinationLat = ride.destinationLatitude,
                     destinationLon = ride.destinationLongitude,
                     destinationAddress = ride.destinationAddress,
-                    driverAvatar = ride.driverAvatarUrl ?: ""
+                    driverAvatar = ride.driverAvatarUrl ?: "",
+                    totalMessages = ride.totalMessages
                 )
 
                 else -> {

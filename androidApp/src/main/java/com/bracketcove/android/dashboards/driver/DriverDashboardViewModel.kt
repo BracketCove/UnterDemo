@@ -2,7 +2,6 @@ package com.bracketcove.android.dashboards.driver
 
 import android.util.Log
 import com.bracketcove.ServiceResult
-import com.bracketcove.android.dashboards.passenger.PassengerDashboardUiState
 import com.bracketcove.android.google.GoogleService
 import com.bracketcove.android.navigation.ChatKey
 import com.bracketcove.android.navigation.LoginKey
@@ -74,7 +73,8 @@ class DriverDashboardViewModel(
                     destinationLon = ride.destinationLongitude,
                     destinationAddress = ride.destinationAddress,
                     passengerName = ride.passengerName,
-                    passengerAvatar = ride.passengerAvatarUrl
+                    passengerAvatar = ride.passengerAvatarUrl,
+                    totalMessages = ride.totalMessages
                 )
 
                 ride.status == RideStatus.EN_ROUTE.value
@@ -86,7 +86,8 @@ class DriverDashboardViewModel(
                     destinationLon = ride.destinationLongitude,
                     destinationAddress = ride.destinationAddress,
                     passengerName = ride.passengerName,
-                    passengerAvatar = ride.passengerAvatarUrl
+                    passengerAvatar = ride.passengerAvatarUrl,
+                    totalMessages = ride.totalMessages
                 )
 
                 ride.status == RideStatus.ARRIVED.value
@@ -98,7 +99,8 @@ class DriverDashboardViewModel(
                     destinationLon = ride.destinationLongitude,
                     destinationAddress = ride.destinationAddress,
                     passengerName = ride.passengerName,
-                    passengerAvatar = ride.passengerAvatarUrl
+                    passengerAvatar = ride.passengerAvatarUrl,
+                    totalMessages = ride.totalMessages
                 )
 
                 else -> {

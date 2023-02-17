@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,7 +21,6 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bracketcove.android.BuildConfig
 import com.bracketcove.android.R
 import com.bracketcove.android.UnterApp
-import com.bracketcove.android.dashboards.passenger.PassengerDashboardUiState
 import com.bracketcove.android.databinding.FragmentDriverDashboardBinding
 import com.bracketcove.android.uicommon.LOCATION_REQUEST_INTERVAL
 import com.bracketcove.android.uicommon.handleToast
@@ -92,6 +90,13 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
         else binding.toolbar.profileIcon.visibility = View.VISIBLE
 
         when (uiState) {
+            is DriverDashboardUiState.Arrived -> updateMessageButton(uiState.totalMessages)
+            is DriverDashboardUiState.EnRoute -> updateMessageButton(uiState.totalMessages)
+            is DriverDashboardUiState.PassengerPickUp -> updateMessageButton(uiState.totalMessages)
+            else -> Unit
+        }
+
+        when (uiState) {
             DriverDashboardUiState.Error -> viewModel.handleError()
             DriverDashboardUiState.Loading -> {
                 binding.loadingView.loadingLayout.visibility = View.VISIBLE
@@ -103,6 +108,15 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
         }
 
         updateMap(uiState)
+    }
+
+    private fun updateMessageButton(messageCount: Int) {
+        binding.chatButton.text = if (messageCount == 0) getString(R.string.contact_passenger)
+        else getString(R.string.you_have_messages)
+//        else buildString {
+//            append(messageCount)
+//            append(R.string.new_messages)
+//        }
     }
 
     private fun arrived(uiState: DriverDashboardUiState.Arrived) {

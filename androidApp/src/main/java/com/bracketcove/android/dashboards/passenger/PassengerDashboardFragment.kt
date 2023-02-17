@@ -22,6 +22,7 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bracketcove.android.BuildConfig
 import com.bracketcove.android.R
 import com.bracketcove.android.UnterApp
+import com.bracketcove.android.dashboards.driver.DriverDashboardUiState
 import com.bracketcove.android.databinding.FragmentPassengerDashboardBinding
 import com.bracketcove.android.uicommon.LOCATION_REQUEST_INTERVAL
 import com.bracketcove.android.uicommon.handleToast
@@ -97,6 +98,13 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
         else binding.toolbar.profileIcon.visibility = View.VISIBLE
 
         when (uiState) {
+            is PassengerDashboardUiState.Arrived -> updateMessageButton(uiState.totalMessages)
+            is PassengerDashboardUiState.EnRoute -> updateMessageButton(uiState.totalMessages)
+            is PassengerDashboardUiState.PassengerPickUp -> updateMessageButton(uiState.totalMessages)
+            else -> Unit
+        }
+
+        when (uiState) {
             PassengerDashboardUiState.Error -> viewModel.handleError()
             PassengerDashboardUiState.Loading -> {
                 binding.loadingView.loadingLayout.visibility = View.VISIBLE
@@ -109,6 +117,15 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
         }
 
         updateMap(uiState)
+    }
+
+    private fun updateMessageButton(messageCount: Int) {
+        binding.chatButton.text = if (messageCount == 0) getString(R.string.contact_driver)
+        else getString(R.string.you_have_messages)
+//        else buildString {
+//            append(messageCount)
+//            append(R.string.new_messages)
+//        }
     }
 
     private fun arrived(uiState: PassengerDashboardUiState.Arrived) {
@@ -126,10 +143,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
             mapLayout.address.text = uiState.destinationAddress
 
             rideComplete.rideCompleteLayout.visibility = View.VISIBLE
-            rideComplete.advanceButton.setOnClickListener {
-                viewModel.completeRide()
-            }
-
+            rideComplete.advanceButton.visibility = View.GONE
             driverName.text = uiState.driverName
             Glide.with(requireContext())
                 .load(
