@@ -39,8 +39,6 @@ class StreamRideService(
     override fun openRides(): Flow<ServiceResult<List<Ride>>> = _openRides
     override fun rideFlow(): Flow<ServiceResult<Ride?>> = _rideModelUpdates
 
-    private val disposables: MutableList<Disposable> = mutableListOf()
-
     override suspend fun observeRideById(rideId: String) {
         withContext(Dispatchers.IO) {
             val channelClient = client.channel(
