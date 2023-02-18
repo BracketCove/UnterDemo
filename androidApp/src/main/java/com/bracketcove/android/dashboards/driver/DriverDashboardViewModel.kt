@@ -120,14 +120,16 @@ class DriverDashboardViewModel(
     val locationAwarePassengerList = combineTuple(_driverLocation, _passengerList).map {
         if (it.first.lat == DEFAULT_LAT_OR_LON
             || it.first.lng == DEFAULT_LAT_OR_LON
-        ) emptyList<Ride>()
+        ) emptyList<Pair<Ride, LatLng>>()
         else {
             if (it.second is ServiceResult.Failure) {
                 handleError()
-                emptyList<Ride>()
+                emptyList<Pair<Ride, LatLng>>()
             } else {
                 val result = it.second as ServiceResult.Value
-                result.value
+                result.value.map { ride ->
+                    Pair(ride, _driverLocation.value)
+                }
             }
         }
     }

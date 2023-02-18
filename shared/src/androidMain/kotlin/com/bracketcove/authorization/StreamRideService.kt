@@ -108,7 +108,6 @@ class StreamRideService(
                         channelClient.create(emptyList(), mutableMapOf()).enqueue { result ->
                             if (result.isSuccess) {
                                 val lastMessageAt = result.data().lastMessageAt
-
                                 val hasMessage = if (lastMessageAt == null) 0 else 1
                                 _rideModelUpdates.value = ServiceResult.Value(
                                     currentRideModel.value.copy(

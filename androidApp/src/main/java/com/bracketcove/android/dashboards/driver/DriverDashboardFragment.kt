@@ -264,6 +264,8 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 
             if (passengerList.adapter == null) {
                 passengerList.adapter = PassengerListAdapter().apply {
+                    getDistance = ::requestDistanceBetweenPointsInKm
+
                     handleItemClick = {
                         viewModel.handlePassengerItemClick(it)
                     }
@@ -622,6 +624,58 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
         }
     }
 
+    fun requestDistanceBetweenPointsInKm(
+        originLat: Double?,
+        originLon: Double?,
+        destinationLat: Double?,
+        destinationLon: Double?
+    ): String {
+        if (
+            originLat == null || originLon == null
+            || destinationLat == null || destinationLon == null
+        ) {
+            return getString(R.string.unable_to_calculate_distance)
+        } else {
+            val dirResult =
+                DirectionsApi.newRequest((requireActivity().application as UnterApp).geoContext)
+                    .mode(TravelMode.DRIVING)
+                    .units(com.google.maps.model.Unit.METRIC)
+                    //Change this appropriately
+                    .region("ca")
+                    .origin(
+                        com.google.maps.model.LatLng(
+                            originLat,
+                            originLon
+                        )
+                    )
+                    .destination(
+                        com.google.maps.model.LatLng(
+                            destinationLat,
+                            destinationLon
+                        ).toString()
+                    )
+                    .await()
+
+            if (dirResult.routes?.first() != null &&
+                dirResult.routes.isNotEmpty() &&
+                dirResult.routes.first().legs.isNotEmpty()
+            ) {
+                dirResult.routes.first().let { route ->
+                    route.legs.first().let { leg ->
+                        val distance = buildString {
+                            append(leg.distance.humanReadable)
+                            append(" ")
+                        }
+
+                        return distance
+                    }
+                }
+            } else {
+                return getString(R.string.unable_to_calculate_distance)
+            }
+        }
+    }
+
     //So yeah, if you don't add this crap here, the MapView will be basically useless.
     //Apparently this happenings when working with a MapView that starts out View.INVISIBLE or smth?
     override fun onResume() {
@@ -637,6 +691,10 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
     override fun onDestroy() {
         super.onDestroy()
         mapView?.onDestroy()
+        if (binding.passengerList.adapter != null) {
+            //Safeguard to help avoid issues
+            (binding.passengerList.adapter as PassengerListAdapter).getDistance = null
+        }
     }
 
     override fun onLowMemory() {
