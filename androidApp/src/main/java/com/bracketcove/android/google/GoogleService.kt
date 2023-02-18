@@ -41,7 +41,7 @@ class GoogleService(
         val request = FetchPlaceRequest.builder(placeId, placeFields).build()
 
         try {
-            ServiceResult.Success(awaitResult(client.fetchPlace(request)))
+            ServiceResult.Value(awaitResult(client.fetchPlace(request)))
         } catch (e: Exception) {
             ServiceResult.Failure(e)
         }
@@ -89,7 +89,7 @@ class GoogleService(
 
             try {
                 val task = awaitResult(client.findAutocompletePredictions(request))
-                ServiceResult.Success(task.autocompletePredictions)
+                ServiceResult.Value(task.autocompletePredictions)
             } catch (e: Exception) {
                 ServiceResult.Failure(e)
             }

@@ -1,16 +1,13 @@
-package com.bracketcove.android.authentication.login
+package com.bracketcove.android.chat
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.bracketcove.ServiceResult
 import com.bracketcove.android.navigation.DriverDashboardKey
 import com.bracketcove.android.navigation.PassengerDashboardKey
 import com.bracketcove.android.navigation.SignUpKey
+import com.bracketcove.android.navigation.SplashKey
 import com.bracketcove.android.uicommon.ToastMessages
-import com.bracketcove.authorization.LogInResult
 import com.bracketcove.domain.UnterUser
-import com.bracketcove.usecase.LogInUser
+import com.bracketcove.usecase.GetUser
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices
@@ -21,38 +18,23 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-
-class LoginViewModel(
+class ChatViewModel(
     private val backstack: Backstack,
-    private val login: LogInUser
+    private val getUser: GetUser
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
-    var email by mutableStateOf("")
-        private set
+    fun handleBackButton() = launch(Dispatchers.Main) {
+        val user = getUser.getUser()
 
-    fun updateEmail(input: String) {
-        email = input
-    }
-
-    var password by mutableStateOf("")
-        private set
-
-    fun updatePassword(input: String) {
-        password = input
-    }
-
-    fun handleLogin() = launch(Dispatchers.Main) {
-        val loginAttempt = login.login(email, password)
-        when (loginAttempt) {
-            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-            is ServiceResult.Value -> {
-                val result = loginAttempt.value
-                when (result) {
-                    is LogInResult.Success -> sendToDashboard(result.user)
-                    LogInResult.InvalidCredentials -> toastHandler?.invoke(ToastMessages.INVALID_CREDENTIALS)
-                }
-            }
+        if (user is ServiceResult.Value && user.value != null) {
+            sendToDashboard(user.value!!)
+        } else {
+            toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
+            backstack.setHistory(
+                History.of(SplashKey()),
+                StateChange.FORWARD
+            )
         }
     }
 
@@ -71,22 +53,17 @@ class LoginViewModel(
         }
     }
 
-    fun goToSignup() {
-        backstack.setHistory(
-            History.of(SignUpKey()),
-            StateChange.FORWARD
-        )
-    }
+    private val canceller = Job()
 
-    override fun onServiceActive() = Unit
+    override val coroutineContext: CoroutineContext
+        get() = canceller + Dispatchers.Main
+
+    override fun onServiceActive() {
+        Unit
+    }
 
     override fun onServiceInactive() {
         canceller.cancel()
         toastHandler = null
     }
-
-    private val canceller = Job()
-
-    override val coroutineContext: CoroutineContext
-        get() = canceller + Dispatchers.Main
 }

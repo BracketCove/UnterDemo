@@ -1,40 +1,14 @@
 package com.bracketcove.authorization
 
 import com.bracketcove.ServiceResult
-import com.bracketcove.domain.User
+import com.bracketcove.domain.UnterUser
 
 interface UserService {
-    suspend fun attemptSignUp(phoneNumber: String, userName: String): ServiceResult<SignUpResult>
-    suspend fun attemptLogin(phoneNumber: String): ServiceResult<LogInResult>
 
-    /**
-     * A session is the period during which a user still has an authenticated connection to
-     * the authorization services of the application. Sessions allow users to not have to
-     * authenticate themselves every time they try to access a service.
-     *
-     * @return true if a session exists; else false
-     */
-    suspend fun getUser(): ServiceResult<User?>
+    suspend fun getUserById(userId: String): ServiceResult<UnterUser?>
+    suspend fun updateUser(user: UnterUser): ServiceResult<UnterUser?>
 
-    suspend fun getUserById(userId: String): ServiceResult<User?>
-    suspend fun attemptLogout(): ServiceResult<Unit>
-    suspend fun updateUser(user: User): ServiceResult<User?>
+    suspend fun initializeNewUser(user: UnterUser): ServiceResult<UnterUser?>
 
-    suspend fun attemptUserAvatarUpdate(user: User, url: String): ServiceResult<String?>
-
-    suspend fun attemptVehicleAvatarUpdate(user: User, url: String): ServiceResult<String?>
-    suspend fun getPassengersLookingForRide(): ServiceResult<List<User>?>
+    suspend fun logOutUser(user: UnterUser): Unit
 }
-
-enum class SignUpResult {
-    SUCCESS,
-    ALREADY_SIGNED_UP,
-    INVALID_CREDENTIALS
-}
-
-enum class LogInResult {
-    SUCCESS,
-    INVALID_CREDENTIALS
-}
-
-

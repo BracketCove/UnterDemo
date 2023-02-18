@@ -32,6 +32,8 @@ https://github.com/Zhuinden/flow-combinetuple-kt/blob/master/src/main/java/com/z
 
 fun <T1, T2> combineTuple(f1: Flow<T1>, f2: Flow<T2>): Flow<Pair<T1, T2>> = combine(f1, f2) { t1, t2 -> Pair(t1, t2) }
 
+fun <T1, T2, T3> combineTuple(f1: Flow<T1>, f2: Flow<T2>, f3: Flow<T3>): Flow<Triple<T1, T2, T3>> = combine(f1, f2, f3) { t1, t2, t3 -> Triple<T1, T2, T3>(t1, t2, t3) }
+
 fun <T1, T2, T3, T4> combineTuple(f1: Flow<T1>, f2: Flow<T2>, f3: Flow<T3>, f4: Flow<T4>): Flow<Tuple4<T1, T2, T3, T4>> = combine(f1, f2, f3, f4) { t1, t2, t3, t4 -> Tuple4<T1, T2, T3, T4>(t1, t2, t3, t4) }
 
 fun <T1, T2, T3, T4, T5> combineTuple(f1: Flow<T1>, f2: Flow<T2>, f3: Flow<T3>, f4: Flow<T4>, f5: Flow<T5>): Flow<Tuple5<T1, T2, T3, T4, T5>> = combine(f1, f2, f3, f4, f5) { t1, t2, t3, t4, t5 -> Tuple5<T1, T2, T3, T4, T5>(t1, t2, t3, t4, t5) }
@@ -79,28 +81,9 @@ fun Fragment.handleToast(code: ToastMessages) {
         ToastMessages.ACCOUNT_EXISTS -> getString(R.string.an_account_already_exists)
         ToastMessages.UPDATE_SUCCESSFUL -> getString(R.string.update_successful)
         ToastMessages.UNABLE_TO_RETRIEVE_COORDINATES -> getString(R.string.unable_to_retrieve_coordinates_address)
+        ToastMessages.UNABLE_TO_RETRIEVE_USER_COORDINATES -> getString(R.string.unable_to_retrieve_coordinates_user)
     }
     Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-}
-
-@Composable
-fun MobileInputField(
-    modifier: Modifier = Modifier,
-    textFieldValue: String,
-    validationError: Boolean,
-    updateIsError: (Boolean) -> Unit
-) {
-    OutlinedTextField(
-        modifier = modifier,
-        value = textFieldValue,
-        onValueChange = { newNumber ->
-            if (isValidPhoneNumber(newNumber) || newNumber == "") updateIsError(false)
-            else updateIsError(true)
-        },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-        isError = validationError,
-        label = { Text(text = stringResource(id = R.string.mobile_number)) }
-    )
 }
 
 @Composable
