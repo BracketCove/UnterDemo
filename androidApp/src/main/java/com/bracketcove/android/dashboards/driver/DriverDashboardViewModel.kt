@@ -50,12 +50,9 @@ class DriverDashboardViewModel(
         - EN_ROUTE
         - ARRIVED
      */
-    val uiState = combineTuple(_driverModel, _rideModel, _mapIsReady).map {
-        if (it.second is ServiceResult.Failure) return@map DriverDashboardUiState.Error
-
-        val driver = it.first
-        val ride = (it.second as ServiceResult.Value).value
-        val isMapReady = it.third
+    val uiState = combineTuple(_driverModel, _rideModel, _mapIsReady).map { (driver, rideResult, isMapReady) ->
+        if (rideResult is ServiceResult.Failure) return@map DriverDashboardUiState.Error
+        val ride = (rideResult as ServiceResult.Value).value
 
         if (driver == null || !isMapReady) DriverDashboardUiState.Loading
         else {

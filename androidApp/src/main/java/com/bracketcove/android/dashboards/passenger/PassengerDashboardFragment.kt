@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.location.LocationManagerCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -33,9 +34,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.*
 import com.google.android.libraries.places.api.Places
 import com.google.maps.DirectionsApi
 import com.google.maps.android.PolyUtil
@@ -414,19 +413,21 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                         googleMap!!.addMarker(
                             MarkerOptions().apply {
                                 position(LatLng(uiState.driverLat, uiState.driverLon))
+                                val markerBitmap = requireContext().getDrawable(R.drawable.ic_car_marker)?.toBitmap()
+                                markerBitmap?.let {
+                                    icon(BitmapDescriptorFactory.fromBitmap(it))
+                                }
                             }
                         )
 
 
                         googleMap!!.moveCamera(
                             CameraUpdateFactory.newLatLngZoom(
-                                LatLng(uiState.passengerLat, uiState.passengerLon),
+                                LatLng(uiState.driverLat, uiState.driverLon),
                                 14f
                             )
                         )
                     }
-
-
                 }
                 is PassengerDashboardUiState.EnRoute -> {
                     lifecycleScope.launch {
@@ -438,8 +439,8 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                                 .region("ca")
                                 .origin(
                                     com.google.maps.model.LatLng(
-                                        uiState.passengerLat,
-                                        uiState.passengerLon
+                                        uiState.driverLat,
+                                        uiState.driverLon
                                     )
                                 )
                                 .destination(
@@ -490,7 +491,11 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
                         googleMap!!.addMarker(
                             MarkerOptions().apply {
-                                position(LatLng(uiState.passengerLat, uiState.passengerLon))
+                                position(LatLng(uiState.driverLat, uiState.driverLon))
+                                val markerBitmap = requireContext().getDrawable(R.drawable.ic_car_marker)?.toBitmap()
+                                markerBitmap?.let {
+                                    icon(BitmapDescriptorFactory.fromBitmap(it))
+                                }
                             }
                         )
                         googleMap!!.addMarker(
@@ -501,13 +506,13 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
                         googleMap!!.moveCamera(
                             CameraUpdateFactory.newLatLngZoom(
-                                LatLng(uiState.passengerLat, uiState.passengerLon),
+                                LatLng(uiState.driverLat, uiState.driverLon),
                                 14f
                             )
                         )
                     }
-
                 }
+
                 is PassengerDashboardUiState.Arrived -> {
                     googleMap!!.addMarker(
                         MarkerOptions().apply {
@@ -523,12 +528,10 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                     )
                 }
 
-
                 //do nothing
                 else -> Unit
             }
         }
-
     }
 
     @SuppressLint("MissingPermission")

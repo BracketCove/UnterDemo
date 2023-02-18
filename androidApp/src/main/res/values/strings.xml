@@ -67,5 +67,6 @@
     <string name="you_have_messages">You have messages</string>
     <string name="unable_to_calculate_distance">" Unable to calculate"</string>
     <string name="trip_is">"Trip is: "</string>
-    <string name="from_passenger">from passenger</string>
+    <string name="from_passenger">" from passenger"</string>
+    <string name="unable_to_retrieve_address">Unable to retrieve address</string>
 </resources>

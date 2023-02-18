@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.location.LocationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -30,6 +31,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
@@ -113,10 +115,6 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
     private fun updateMessageButton(messageCount: Int) {
         binding.chatButton.text = if (messageCount == 0) getString(R.string.contact_passenger)
         else getString(R.string.you_have_messages)
-//        else buildString {
-//            append(messageCount)
-//            append(R.string.new_messages)
-//        }
     }
 
     private fun arrived(uiState: DriverDashboardUiState.Arrived) {
@@ -214,9 +212,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
             //unbind recyclerview from adapter
             passengerList.adapter = null
 
-            mapLayout.subtitle.text = getString(R.string.passenger_location)
-          //TODO this needs to be the passenger address
-            mapLayout.address.text = uiState.destinationAddress
+            //Note: we update map subtitles in the updateMap function
 
             advanceLayout.advanceRideStateLayout.visibility = View.VISIBLE
             advanceLayout.advanceButton.setImageResource(R.drawable.ic_pick_up_passenger)
@@ -317,7 +313,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
             googleMap.isMyLocationEnabled = true
             googleMap.uiSettings.setAllGesturesEnabled(true)
 
-            googleMap.setMinZoomPreference(12f)
+            googleMap.setMinZoomPreference(11f)
             viewModel.mapIsReady()
         }
     }
@@ -340,14 +336,14 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                                 .region("ca")
                                 .origin(
                                     com.google.maps.model.LatLng(
-                                        uiState.passengerLat,
-                                        uiState.passengerLon
+                                        uiState.driverLat,
+                                        uiState.driverLon
                                     )
                                 )
                                 .destination(
                                     com.google.maps.model.LatLng(
-                                        uiState.driverLat,
-                                        uiState.driverLon
+                                        uiState.passengerLat,
+                                        uiState.passengerLon
                                     ).toString()
                                 )
                                 .await()
@@ -375,6 +371,9 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                                 )
 
                                 route.legs.first().let { leg ->
+                                    binding.mapLayout.subtitle.text = getString(R.string.passenger_location)
+                                    binding.mapLayout.address.text = leg.endAddress ?: getString(R.string.unable_to_retrieve_address)
+
                                     binding.tripDistance.text = buildString {
                                         append(getString(R.string.passenger_is))
                                         append(leg.distance.humanReadable)
@@ -398,14 +397,18 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                         googleMap!!.addMarker(
                             MarkerOptions().apply {
                                 position(LatLng(uiState.driverLat, uiState.driverLon))
+                                val markerBitmap = requireContext().getDrawable(R.drawable.ic_car_marker)?.toBitmap()
+                                markerBitmap?.let {
+                                    icon(BitmapDescriptorFactory.fromBitmap(it))
+                                }
                             }
                         )
 
 
                         googleMap!!.moveCamera(
                             CameraUpdateFactory.newLatLngZoom(
-                                LatLng(uiState.passengerLat, uiState.passengerLon),
-                                14f
+                                LatLng(uiState.driverLat, uiState.driverLon),
+                                13f
                             )
                         )
                     }
@@ -476,13 +479,23 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 
                         googleMap!!.addMarker(
                             MarkerOptions().apply {
+                                position(LatLng(uiState.driverLat, uiState.driverLon))
+                                val markerBitmap = requireContext().getDrawable(R.drawable.ic_car_marker)?.toBitmap()
+                                markerBitmap?.let {
+                                    icon(BitmapDescriptorFactory.fromBitmap(it))
+                                }
+                            }
+                        )
+
+                        googleMap!!.addMarker(
+                            MarkerOptions().apply {
                                 position(LatLng(uiState.destinationLat, uiState.destinationLon))
                             }
                         )
 
                         googleMap!!.moveCamera(
                             CameraUpdateFactory.newLatLngZoom(
-                                LatLng(uiState.destinationLat, uiState.destinationLon),
+                                LatLng(uiState.driverLat, uiState.driverLon),
                                 14f
                             )
                         )
@@ -664,7 +677,6 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                     route.legs.first().let { leg ->
                         val distance = buildString {
                             append(leg.distance.humanReadable)
-                            append(" ")
                         }
 
                         return distance

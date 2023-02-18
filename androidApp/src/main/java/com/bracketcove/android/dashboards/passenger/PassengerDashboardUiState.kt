@@ -24,6 +24,8 @@ sealed interface PassengerDashboardUiState {
         val passengerLon: Double,
         val destinationLat: Double,
         val destinationLon: Double,
+        val driverLat: Double,
+        val driverLon: Double,
         val destinationAddress: String,
         val driverName: String,
         val driverAvatar: String,

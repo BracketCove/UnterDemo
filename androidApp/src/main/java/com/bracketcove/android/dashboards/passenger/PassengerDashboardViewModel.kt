@@ -52,12 +52,14 @@ class PassengerDashboardViewModel(
         - EN_ROUTE
         - ARRIVED
      */
-    val uiState = combineTuple(_passengerModel, _rideModel, _mapIsReady).map {
-        if (it.second is ServiceResult.Failure) return@map PassengerDashboardUiState.Error
+    val uiState = combineTuple(
+        _passengerModel,
+        _rideModel,
+        _mapIsReady
+    ).map { (passenger, rideResult, isMapReady) ->
+        if (rideResult is ServiceResult.Failure) return@map PassengerDashboardUiState.Error
 
-        val passenger = it.first
-        val ride = (it.second as ServiceResult.Value).value
-        val isMapReady = it.third
+        val ride = (rideResult as ServiceResult.Value).value
 
         //only publish state updates whe map is ready!
         if (passenger == null || !isMapReady) PassengerDashboardUiState.Loading
@@ -96,7 +98,9 @@ class PassengerDashboardViewModel(
                     destinationLat = ride.destinationLatitude,
                     destinationLon = ride.destinationLongitude,
                     driverAvatar = ride.driverAvatarUrl ?: "",
-                    totalMessages = ride.totalMessages
+                    totalMessages = ride.totalMessages,
+                    driverLat = ride.driverLatitude!!,
+                    driverLon = ride.driverLongitude!!
                 )
 
                 ride.status == RideStatus.ARRIVED.value
