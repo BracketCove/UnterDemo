@@ -1,6 +1,6 @@
 package com.bracketcove.domain
 
-enum class UserType {
-    PASSENGER,
-    DRIVER
+enum class UserType(val value: String) {
+    PASSENGER("PASSENGER"),
+    DRIVER("DRIVER")
 }

@@ -23,7 +23,14 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
-        val androidMain by getting
+        val androidMain by getting {
+            dependencies {
+                val stream_version = "5.12.0"
+                implementation("io.getstream:stream-chat-android-ui-components:$stream_version")
+                implementation("io.getstream:stream-chat-android-offline:$stream_version")
+                implementation("io.getstream:stream-chat-android-client:$stream_version")
+            }
+        }
         val androidTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
