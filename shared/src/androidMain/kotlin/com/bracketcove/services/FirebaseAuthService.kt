@@ -1,6 +1,9 @@
-package com.bracketcove.authorization
+package com.bracketcove.services
 
 import com.bracketcove.ServiceResult
+import com.bracketcove.authorization.AuthorizationService
+import com.bracketcove.authorization.LogInResult
+import com.bracketcove.authorization.SignUpResult
 import com.bracketcove.domain.UnterUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException

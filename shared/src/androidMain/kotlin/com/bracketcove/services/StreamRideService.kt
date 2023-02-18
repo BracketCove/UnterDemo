@@ -1,4 +1,4 @@
-package com.bracketcove.authorization
+package com.bracketcove.services
 
 import android.util.Log
 import com.bracketcove.ServiceResult
@@ -55,14 +55,9 @@ class StreamRideService(
                 result.onSuccessSuspend { channel ->
                     _rideModelUpdates.emit(
                         channel.let {
-                            //TODO figure out if this if else actually does something useful
-                            if (channel.hidden != null && channel.hidden!!) {
-                                ServiceResult.Value(null)
-                            } else {
                                 ServiceResult.Value(
                                     streamChannelToRide(channel)
                                 )
-                            }
                         }
                     )
                 }

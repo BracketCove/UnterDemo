@@ -1,10 +1,11 @@
-package com.bracketcove.authorization
+package com.bracketcove.services
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
 import com.bracketcove.ServiceResult
+import com.bracketcove.authorization.PhotoService
 import com.bumptech.glide.Glide
 import com.google.android.gms.tasks.Task
 import com.google.firebase.storage.FirebaseStorage

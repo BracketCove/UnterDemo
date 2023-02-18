@@ -1,7 +1,8 @@
-package com.bracketcove.authorization
+package com.bracketcove.services
 
 import android.util.Log
 import com.bracketcove.ServiceResult
+import com.bracketcove.authorization.UserService
 import com.bracketcove.constants.KEY_IMAGE
 import com.bracketcove.constants.KEY_ROLE
 import com.bracketcove.constants.KEY_STATUS

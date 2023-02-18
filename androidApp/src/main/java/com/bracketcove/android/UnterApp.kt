@@ -4,6 +4,10 @@ import android.app.Application
 import com.bracketcove.android.google.GoogleService
 import com.bracketcove.authorization.*
 import com.bracketcove.rides.RideService
+import com.bracketcove.services.FirebaseAuthService
+import com.bracketcove.services.FirebasePhotoService
+import com.bracketcove.services.StreamRideService
+import com.bracketcove.services.StreamUserService
 import com.bracketcove.usecase.*
 import com.google.android.gms.maps.MapsInitializer
 import com.google.firebase.auth.FirebaseAuth
