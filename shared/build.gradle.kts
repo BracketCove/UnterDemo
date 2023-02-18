@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.scripting.definitions.StandardScriptDefinition.platform
+
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
@@ -17,7 +19,11 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
@@ -26,9 +32,12 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 val stream_version = "5.12.0"
-                implementation("io.getstream:stream-chat-android-ui-components:$stream_version")
-                implementation("io.getstream:stream-chat-android-offline:$stream_version")
                 implementation("io.getstream:stream-chat-android-client:$stream_version")
+
+                implementation("com.google.firebase:firebase-auth-ktx:21.1.0")
+                implementation("com.google.firebase:firebase-storage-ktx:20.1.0")
+                implementation("com.github.bumptech.glide:glide:4.14.2")
+
             }
         }
         val androidTest by getting
@@ -57,7 +66,7 @@ android {
     namespace = "com.bracketcove"
     compileSdk = 33
     defaultConfig {
-        minSdk = 24
+        minSdk = 26
         targetSdk = 33
     }
 }

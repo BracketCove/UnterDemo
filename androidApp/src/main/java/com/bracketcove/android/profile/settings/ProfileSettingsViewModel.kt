@@ -3,13 +3,16 @@ package com.bracketcove.android.profile.settings
 import android.net.Uri
 import com.bracketcove.ServiceResult
 import com.bracketcove.android.navigation.DriverDashboardKey
-import com.bracketcove.android.navigation.DriverSettingsKey
 import com.bracketcove.android.navigation.LoginKey
 import com.bracketcove.android.navigation.PassengerDashboardKey
 import com.bracketcove.android.uicommon.ToastMessages
+import com.bracketcove.authorization.AuthorizationService
 import com.bracketcove.authorization.UserService
-import com.bracketcove.domain.User
+import com.bracketcove.domain.UnterUser
 import com.bracketcove.domain.UserType
+import com.bracketcove.usecase.GetUser
+import com.bracketcove.usecase.LogOutUser
+import com.bracketcove.usecase.UpdateUserAvatar
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices
@@ -21,26 +24,19 @@ import kotlin.coroutines.CoroutineContext
 
 class ProfileSettingsViewModel(
     private val backstack: Backstack,
-    private val userService: UserService
+    private val updateUserAvatar: UpdateUserAvatar,
+    private val logUserOut: LogOutUser,
+    private val userService: UserService,
+    private val getUser: GetUser,
+    private val authService: AuthorizationService
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
-    private val _userModel = MutableStateFlow<User?>(null)
-    val userModel: StateFlow<User?> get() = _userModel
+    private val _userModel = MutableStateFlow<UnterUser?>(null)
+    val userModel: StateFlow<UnterUser?> get() = _userModel
     fun handleLogOut() = launch(Dispatchers.Main) {
-        val logout = userService.attemptLogout()
-
-        when (logout) {
-            is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-            is ServiceResult.Success -> sendToLogin()
-        }
-    }
-
-    fun handleDriverDetailEdit() {
-        backstack.setHistory(
-            History.of(DriverSettingsKey()),
-            StateChange.FORWARD
-        )
+        logUserOut.logout(_userModel.value!!)
+        sendToLogin()
     }
 
     fun isUserRegistered(): Boolean {
@@ -48,13 +44,13 @@ class ProfileSettingsViewModel(
     }
 
     fun getUser() = launch(Dispatchers.Main) {
-        val getUser = userService.getUser()
+        val getUser = getUser.getUser()
         when (getUser) {
             is ServiceResult.Failure -> {
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
                 sendToLogin()
             }
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 if (getUser.value == null) sendToLogin()
                 else _userModel.value = getUser.value
             }
@@ -80,12 +76,15 @@ class ProfileSettingsViewModel(
     fun handleThumbnailUpdate(imageUri: Uri?) = launch(Dispatchers.Main) {
         if (imageUri != null) {
             val updateAttempt =
-                userService.attemptUserAvatarUpdate(_userModel.value!!, imageUri.toString())
+                updateUserAvatar.updateAvatar(_userModel.value!!, imageUri.toString())
 
             when (updateAttempt) {
                 is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
 
-                is ServiceResult.Success -> {
+                is ServiceResult.Value -> {
+                    _userModel.value = _userModel.value!!.copy(
+                        avatarPhotoUrl = updateAttempt.value
+                    )
                     toastHandler?.invoke(ToastMessages.UPDATE_SUCCESSFUL)
                 }
             }
@@ -94,12 +93,12 @@ class ProfileSettingsViewModel(
         }
     }
 
-    private suspend fun updateUser(user: User) {
+    private suspend fun updateUser(user: UnterUser) {
         val updateAttempt = userService.updateUser(user)
 
         when (updateAttempt) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 if (updateAttempt.value == null) sendToLogin()
                 else _userModel.value = updateAttempt.value
             }

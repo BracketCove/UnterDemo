@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.location.LocationManagerCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -22,6 +23,7 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bracketcove.android.BuildConfig
 import com.bracketcove.android.R
 import com.bracketcove.android.UnterApp
+import com.bracketcove.android.dashboards.driver.DriverDashboardUiState
 import com.bracketcove.android.databinding.FragmentPassengerDashboardBinding
 import com.bracketcove.android.uicommon.LOCATION_REQUEST_INTERVAL
 import com.bracketcove.android.uicommon.handleToast
@@ -32,9 +34,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.*
 import com.google.android.libraries.places.api.Places
 import com.google.maps.DirectionsApi
 import com.google.maps.android.PolyUtil
@@ -87,9 +87,22 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
         binding.chatButton.setOnClickListener {
             viewModel.openChat()
         }
+        binding.toolbar.profileIcon.setOnClickListener { viewModel.goToProfile() }
     }
 
     private fun updateUi(uiState: PassengerDashboardUiState) {
+        //only make profile accessible when not in a ride
+        if (uiState != PassengerDashboardUiState.RideInactive) binding.toolbar.profileIcon.visibility =
+            View.GONE
+        else binding.toolbar.profileIcon.visibility = View.VISIBLE
+
+        when (uiState) {
+            is PassengerDashboardUiState.Arrived -> updateMessageButton(uiState.totalMessages)
+            is PassengerDashboardUiState.EnRoute -> updateMessageButton(uiState.totalMessages)
+            is PassengerDashboardUiState.PassengerPickUp -> updateMessageButton(uiState.totalMessages)
+            else -> Unit
+        }
+
         when (uiState) {
             PassengerDashboardUiState.Error -> viewModel.handleError()
             PassengerDashboardUiState.Loading -> {
@@ -105,11 +118,21 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
         updateMap(uiState)
     }
 
+    private fun updateMessageButton(messageCount: Int) {
+        binding.chatButton.text = if (messageCount == 0) getString(R.string.contact_driver)
+        else getString(R.string.you_have_messages)
+//        else buildString {
+//            append(messageCount)
+//            append(R.string.new_messages)
+//        }
+    }
+
     private fun arrived(uiState: PassengerDashboardUiState.Arrived) {
         binding.apply {
             rideLayout.visibility = View.VISIBLE
             loadingView.loadingLayout.visibility = View.GONE
             searchingLayout.visibility = View.GONE
+            rideComplete.rideCompleteLayout.visibility = View.VISIBLE
 
             searchingForDriver.searchingForDriverLayout.visibility = View.GONE
             //unbind recyclerview from adapter
@@ -119,13 +142,13 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
             mapLayout.address.text = uiState.destinationAddress
 
             rideComplete.rideCompleteLayout.visibility = View.VISIBLE
-            rideComplete.advanceButton.setOnClickListener {
-                viewModel.completeRide()
-            }
-
+            rideComplete.advanceButton.visibility = View.GONE
             driverName.text = uiState.driverName
             Glide.with(requireContext())
-                .load(uiState.vehicleAvatar)
+                .load(
+                    if (uiState.driverAvatar != "") uiState.driverAvatar
+                    else R.drawable.baseline_account_circle_24
+                )
                 .fitCenter()
                 .placeholder(
                     CircularProgressDrawable(requireContext()).apply {
@@ -159,7 +182,10 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
             driverName.text = uiState.driverName
             Glide.with(requireContext())
-                .load(uiState.vehicleAvatar)
+                .load(
+                    if (uiState.driverAvatar != "") uiState.driverAvatar
+                    else R.drawable.baseline_account_circle_24
+                )
                 .fitCenter()
                 .placeholder(
                     CircularProgressDrawable(requireContext()).apply {
@@ -175,6 +201,8 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                 .into(binding.avatar)
 
             driverInfoLayout.visibility = View.VISIBLE
+            rideComplete.rideCompleteLayout.visibility = View.GONE
+
         }
     }
 
@@ -193,7 +221,10 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
             driverName.text = uiState.driverName
             Glide.with(requireContext())
-                .load(uiState.vehicleAvatar)
+                .load(
+                    if (uiState.driverAvatar != "") uiState.driverAvatar
+                    else R.drawable.baseline_account_circle_24
+                )
                 .fitCenter()
                 .placeholder(
                     CircularProgressDrawable(requireContext()).apply {
@@ -209,6 +240,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                 .into(binding.avatar)
 
             driverInfoLayout.visibility = View.VISIBLE
+            rideComplete.rideCompleteLayout.visibility = View.GONE
         }
     }
 
@@ -219,14 +251,14 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
             searchingLayout.visibility = View.GONE
 
             driverInfoLayout.visibility = View.GONE
+            rideComplete.rideCompleteLayout.visibility = View.GONE
+
             searchingForDriver.searchingForDriverLayout.visibility = View.VISIBLE
             //unbind recyclerview from adapter
             autocompleteResults.adapter = null
 
             mapLayout.subtitle.text = getString(R.string.destination)
             mapLayout.address.text = uiState.destinationAddress
-
-
         }
     }
 
@@ -246,6 +278,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                     handleItemClick = {
                         hideKeyboard(binding.searchEditText, requireContext())
                         viewModel.handleSearchItemClick(it)
+                        this.submitList(emptyList())
                     }
                 }
             }
@@ -301,6 +334,8 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
         uiState: PassengerDashboardUiState
     ) {
         if (googleMap != null) {
+
+            googleMap!!.clear()
             when (uiState) {
                 is PassengerDashboardUiState.SearchingForDriver -> {
                     googleMap!!.moveCamera(
@@ -378,19 +413,21 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                         googleMap!!.addMarker(
                             MarkerOptions().apply {
                                 position(LatLng(uiState.driverLat, uiState.driverLon))
+                                val markerBitmap = requireContext().getDrawable(R.drawable.ic_car_marker)?.toBitmap()
+                                markerBitmap?.let {
+                                    icon(BitmapDescriptorFactory.fromBitmap(it))
+                                }
                             }
                         )
 
 
                         googleMap!!.moveCamera(
                             CameraUpdateFactory.newLatLngZoom(
-                                LatLng(uiState.passengerLat, uiState.passengerLon),
+                                LatLng(uiState.driverLat, uiState.driverLon),
                                 14f
                             )
                         )
                     }
-
-
                 }
                 is PassengerDashboardUiState.EnRoute -> {
                     lifecycleScope.launch {
@@ -402,8 +439,8 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                                 .region("ca")
                                 .origin(
                                     com.google.maps.model.LatLng(
-                                        uiState.passengerLat,
-                                        uiState.passengerLon
+                                        uiState.driverLat,
+                                        uiState.driverLon
                                     )
                                 )
                                 .destination(
@@ -454,7 +491,11 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
                         googleMap!!.addMarker(
                             MarkerOptions().apply {
-                                position(LatLng(uiState.passengerLat, uiState.passengerLon))
+                                position(LatLng(uiState.driverLat, uiState.driverLon))
+                                val markerBitmap = requireContext().getDrawable(R.drawable.ic_car_marker)?.toBitmap()
+                                markerBitmap?.let {
+                                    icon(BitmapDescriptorFactory.fromBitmap(it))
+                                }
                             }
                         )
                         googleMap!!.addMarker(
@@ -465,13 +506,13 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
 
                         googleMap!!.moveCamera(
                             CameraUpdateFactory.newLatLngZoom(
-                                LatLng(uiState.passengerLat, uiState.passengerLon),
+                                LatLng(uiState.driverLat, uiState.driverLon),
                                 14f
                             )
                         )
                     }
-
                 }
+
                 is PassengerDashboardUiState.Arrived -> {
                     googleMap!!.addMarker(
                         MarkerOptions().apply {
@@ -487,12 +528,10 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                     )
                 }
 
-
                 //do nothing
                 else -> Unit
             }
         }
-
     }
 
     @SuppressLint("MissingPermission")
@@ -518,7 +557,7 @@ class PassengerDashboardFragment : Fragment(R.layout.fragment_passenger_dashboar
                     LOCATION_REQUEST_INTERVAL
                 ).apply {
                     //only update if user moved more than 10 meters
-                    setMinUpdateDistanceMeters(10f)
+                    setMinUpdateDistanceMeters(0f)
                 }.build()
 
                 //determine if device settings are configured properly

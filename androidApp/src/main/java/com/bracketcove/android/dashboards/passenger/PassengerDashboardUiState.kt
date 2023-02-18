@@ -16,18 +16,20 @@ sealed interface PassengerDashboardUiState {
         val destinationLon: Double,
         val destinationAddress: String,
         val driverName: String,
-        val vehicleAvatar: String,
-        val vehicleDescription: String
+        val driverAvatar: String,
+        val totalMessages: Int
     ): PassengerDashboardUiState
     data class EnRoute(
         val passengerLat: Double,
         val passengerLon: Double,
         val destinationLat: Double,
         val destinationLon: Double,
+        val driverLat: Double,
+        val driverLon: Double,
         val destinationAddress: String,
         val driverName: String,
-        val vehicleAvatar: String,
-        val vehicleDescription: String
+        val driverAvatar: String,
+        val totalMessages: Int
     ): PassengerDashboardUiState
 
     data class Arrived(
@@ -37,8 +39,8 @@ sealed interface PassengerDashboardUiState {
         val destinationLon: Double,
         val destinationAddress: String,
         val driverName: String,
-        val vehicleAvatar: String,
-        val vehicleDescription: String
+        val driverAvatar: String,
+        val totalMessages: Int
     ): PassengerDashboardUiState
 
     //Signals something unexpected has happened

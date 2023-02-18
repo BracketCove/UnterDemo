@@ -6,9 +6,10 @@ import androidx.compose.runtime.setValue
 import com.bracketcove.ServiceResult
 import com.bracketcove.android.navigation.LoginKey
 import com.bracketcove.android.navigation.PassengerDashboardKey
+import com.bracketcove.android.navigation.SplashKey
 import com.bracketcove.android.uicommon.ToastMessages
-import com.bracketcove.authorization.UserService
 import com.bracketcove.authorization.SignUpResult
+import com.bracketcove.usecase.SignUpUser
 import com.zhuinden.simplestack.Backstack
 import com.zhuinden.simplestack.History
 import com.zhuinden.simplestack.ScopedServices
@@ -17,19 +18,22 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.coroutines.CoroutineContext
 
 class SignUpViewModel(
     private val backstack: Backstack,
-    private val userService: UserService
+    private val signUp: SignUpUser,
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
 
-    var mobileNumber by mutableStateOf("")
+    var email by mutableStateOf("")
         private set
 
-    fun updateMobileNumber(input: String) {
-        mobileNumber = input
+    fun updateEmail(input: String) {
+        email = input
     }
 
     var name by mutableStateOf("")
@@ -39,21 +43,29 @@ class SignUpViewModel(
         name = input
     }
 
+    var password by mutableStateOf("")
+        private set
+
+    fun updatePassword(input: String) {
+        password = input
+    }
+
+
     fun handleSignUp() = launch(Dispatchers.Main) {
-        val signupAttempt = userService.attemptSignUp(mobileNumber, name)
+        val signupAttempt = signUp.signUpUser(email, password, name)
         when (signupAttempt) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
-            is ServiceResult.Success -> {
+            is ServiceResult.Value -> {
                 when (signupAttempt.value) {
-                    SignUpResult.SUCCESS -> {
+                    is SignUpResult.Success -> {
                         backstack.setHistory(
-                            History.of(PassengerDashboardKey()),
+                            History.of(SplashKey()),
                             //Direction of navigation which is used for animation
-                            StateChange.FORWARD
+                            StateChange.REPLACE
                         )
                     }
-                    SignUpResult.INVALID_CREDENTIALS -> toastHandler?.invoke(ToastMessages.INVALID_CREDENTIALS)
-                    SignUpResult.ALREADY_SIGNED_UP -> toastHandler?.invoke(ToastMessages.ACCOUNT_EXISTS)
+                    SignUpResult.InvalidCredentials -> toastHandler?.invoke(ToastMessages.INVALID_CREDENTIALS)
+                    SignUpResult.AlreadySignedUp -> toastHandler?.invoke(ToastMessages.ACCOUNT_EXISTS)
                 }
             }
         }
