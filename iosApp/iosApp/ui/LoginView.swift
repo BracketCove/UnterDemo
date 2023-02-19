@@ -1,5 +1,5 @@
 //
-//  SplashScreen.swift
+//  LoginScreen.swift
 //  iosApp
 //
 //  Created by Ryan Kay on 2023-02-19.
@@ -8,14 +8,14 @@
 
 import SwiftUI
 
-struct SplashScreen: View {
+struct LoginView: View {
     var body: some View {
-        Text("Splash screen")
+        Text("Login Screen")
     }
 }
 
-struct SplashScreen_Previews: PreviewProvider {
+struct LoginScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SplashScreen()
+        LoginView()
     }
 }

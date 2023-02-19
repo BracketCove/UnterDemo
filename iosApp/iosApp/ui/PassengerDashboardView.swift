@@ -1,5 +1,5 @@
 //
-//  LoginScreen.swift
+//  PassengerDashboardScreen.swift
 //  iosApp
 //
 //  Created by Ryan Kay on 2023-02-19.
@@ -8,14 +8,14 @@
 
 import SwiftUI
 
-struct LoginScreen: View {
+struct PassengerDashboardView: View {
     var body: some View {
-        Text("Login Screen")
+        Text("Passenger Dashboard")
     }
 }
 
-struct LoginScreen_Previews: PreviewProvider {
+struct PassengerDashboardScreen_Previews: PreviewProvider {
     static var previews: some View {
-        LoginScreen()
+        PassengerDashboardView()
     }
 }

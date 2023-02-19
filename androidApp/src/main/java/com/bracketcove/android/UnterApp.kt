@@ -10,12 +10,14 @@ import com.bracketcove.services.StreamRideService
 import com.bracketcove.services.StreamUserService
 import com.bracketcove.usecase.*
 import com.google.android.gms.maps.MapsInitializer
-import com.google.firebase.auth.FirebaseAuth
+import dev.gitlive.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.google.maps.GeoApiContext
 import com.zhuinden.simplestack.GlobalServices
 import com.zhuinden.simplestackextensions.servicesktx.add
 import com.zhuinden.simplestackextensions.servicesktx.rebind
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.auth.auth
 import io.getstream.chat.android.client.ChatClient
 import io.getstream.chat.android.client.logger.ChatLogLevel
 import io.getstream.chat.android.offline.model.message.attachments.UploadAttachmentsNetworkType
@@ -34,7 +36,7 @@ class UnterApp: Application() {
             .build()
         val streamClient = configureStream()
 
-        val firebaseAuthService = FirebaseAuthService(FirebaseAuth.getInstance())
+        val firebaseAuthService = FirebaseAuthService(Firebase.auth)
         val firebaseStorageService = FirebasePhotoService(FirebaseStorage.getInstance(), this)
 
         val streamUserService = StreamUserService(streamClient)
