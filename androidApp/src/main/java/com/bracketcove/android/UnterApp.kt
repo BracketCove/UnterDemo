@@ -4,6 +4,10 @@ import android.app.Application
 import com.bracketcove.android.google.GoogleService
 import com.bracketcove.authorization.*
 import com.bracketcove.rides.RideService
+import com.bracketcove.services.FirebaseAuthService
+import com.bracketcove.services.FirebasePhotoService
+import com.bracketcove.services.StreamRideService
+import com.bracketcove.services.StreamUserService
 import com.bracketcove.usecase.*
 import com.google.android.gms.maps.MapsInitializer
 import com.google.firebase.auth.FirebaseAuth
@@ -13,6 +17,10 @@ import com.zhuinden.simplestack.GlobalServices
 import com.zhuinden.simplestackextensions.servicesktx.add
 import com.zhuinden.simplestackextensions.servicesktx.rebind
 import io.getstream.chat.android.client.ChatClient
+import io.getstream.chat.android.client.logger.ChatLogLevel
+import io.getstream.chat.android.offline.model.message.attachments.UploadAttachmentsNetworkType
+import io.getstream.chat.android.offline.plugin.configuration.Config
+import io.getstream.chat.android.offline.plugin.factory.StreamOfflinePluginFactory
 
 class UnterApp: Application() {
     lateinit var globalServices: GlobalServices
@@ -24,7 +32,7 @@ class UnterApp: Application() {
         geoContext = GeoApiContext.Builder()
             .apiKey(BuildConfig.MAPS_API_KEY)
             .build()
-        val streamClient = ChatClient.Builder(BuildConfig.STREAM_API_KEY, this).build()
+        val streamClient = configureStream()
 
         val firebaseAuthService = FirebaseAuthService(FirebaseAuth.getInstance())
         val firebaseStorageService = FirebasePhotoService(FirebaseStorage.getInstance(), this)
@@ -59,6 +67,24 @@ class UnterApp: Application() {
             .add(logInUser)
             .add(logOutUser)
             .add(updateUserAvatar)
+            .build()
+    }
+
+    private fun configureStream(): ChatClient {
+        val logLevel = if (BuildConfig.DEBUG) ChatLogLevel.ALL else ChatLogLevel.NOTHING
+        val pluginFactory = StreamOfflinePluginFactory(
+            config = Config(
+                backgroundSyncEnabled = true,
+                userPresence = true,
+                persistenceEnabled = true,
+                uploadAttachmentsNetworkType = UploadAttachmentsNetworkType.NOT_ROAMING,
+            ),
+            appContext = this,
+        )
+
+        return ChatClient.Builder(BuildConfig.STREAM_API_KEY, this)
+            .withPlugin(pluginFactory)
+            .logLevel(logLevel)
             .build()
     }
 }

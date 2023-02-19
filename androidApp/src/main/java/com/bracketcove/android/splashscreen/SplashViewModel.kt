@@ -1,5 +1,6 @@
 package com.bracketcove.android.splashscreen
 
+import android.util.Log
 import com.bracketcove.ServiceResult
 import com.bracketcove.android.navigation.DriverDashboardKey
 import com.bracketcove.android.navigation.LoginKey
@@ -45,6 +46,7 @@ class SplashViewModel(
     }
 
     private fun sendToDashboard(user: UnterUser) {
+        Log.d("VM_USER", user.toString())
         when (user.type) {
             "PASSENGER" -> backstack.setHistory(
                 History.of((PassengerDashboardKey())),

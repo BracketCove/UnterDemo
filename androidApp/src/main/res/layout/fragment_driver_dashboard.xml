@@ -65,26 +65,28 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/requestsTitle">
 
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/passengersLoadingProgressBar"
-                android:layout_width="128dp"
-                android:layout_height="128dp"
-                android:indeterminate="true"
-                app:indicatorColor="@color/color_primary" />
-
             <TextView
                 android:id="@+id/noPassengersAvailable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="64dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="64dp"
+                android:layout_marginHorizontal="64dp"
                 android:fontFamily="@font/poppins_light"
                 android:includeFontPadding="false"
-                android:text="@string/searching_for_passengers"
+                android:text="@string/no_passengers"
                 android:textAlignment="center"
                 android:textColor="@color/color_light_grey"
                 android:textSize="36sp" />
 
-
+            <Button
+                style="@style/ThemeOverlay.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/check_again"
+                app:backgroundTint="@color/color_primary"
+                android:id="@+id/checkAgainBT"
+                />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -94,7 +96,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -135,7 +137,6 @@
                 android:layout_width="88dp"
                 android:layout_height="88dp"
                 android:layout_margin="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:shapeAppearanceOverlay="@style/circleImageView"
@@ -174,7 +175,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:backgroundTint="@color/color_primary"
                 android:id="@+id/chatButton"

@@ -21,7 +21,7 @@ data class DriverDashboardKey(private val noArgsPlaceholder: String = ""): Defau
     //How to create a scoped service
     override fun bindServices(serviceBinder: ServiceBinder) {
         with(serviceBinder) {
-            add(DriverDashboardViewModel(backstack, lookup(), lookup(), lookup()))
+            add(DriverDashboardViewModel(backstack, lookup(), lookup(), lookup(), lookup()))
         }
     }
 }

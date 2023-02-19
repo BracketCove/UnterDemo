@@ -10,6 +10,7 @@ import com.bracketcove.authorization.AuthorizationService
 import com.bracketcove.authorization.UserService
 import com.bracketcove.domain.UnterUser
 import com.bracketcove.domain.UserType
+import com.bracketcove.usecase.GetUser
 import com.bracketcove.usecase.LogOutUser
 import com.bracketcove.usecase.UpdateUserAvatar
 import com.zhuinden.simplestack.Backstack
@@ -26,6 +27,7 @@ class ProfileSettingsViewModel(
     private val updateUserAvatar: UpdateUserAvatar,
     private val logUserOut: LogOutUser,
     private val userService: UserService,
+    private val getUser: GetUser,
     private val authService: AuthorizationService
 ) : ScopedServices.Activated, CoroutineScope {
     internal var toastHandler: ((ToastMessages) -> Unit)? = null
@@ -42,7 +44,7 @@ class ProfileSettingsViewModel(
     }
 
     fun getUser() = launch(Dispatchers.Main) {
-        val getUser = userService.getUser()
+        val getUser = getUser.getUser()
         when (getUser) {
             is ServiceResult.Failure -> {
                 toastHandler?.invoke(ToastMessages.GENERIC_ERROR)

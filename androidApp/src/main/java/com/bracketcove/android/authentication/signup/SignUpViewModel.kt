@@ -61,7 +61,7 @@ class SignUpViewModel(
                         backstack.setHistory(
                             History.of(SplashKey()),
                             //Direction of navigation which is used for animation
-                            StateChange.FORWARD
+                            StateChange.REPLACE
                         )
                     }
                     SignUpResult.InvalidCredentials -> toastHandler?.invoke(ToastMessages.INVALID_CREDENTIALS)

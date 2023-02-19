@@ -22,9 +22,7 @@ class GetUser(
         }
     }
 
-    private suspend fun getUserDetails(
-        uid: String
-    ): ServiceResult<UnterUser?> {
+    private suspend fun getUserDetails(uid: String): ServiceResult<UnterUser?> {
         return userService.getUserById(uid).let { getDetailsResult ->
             when (getDetailsResult) {
                     is ServiceResult.Failure -> ServiceResult.Failure(getDetailsResult.exception)

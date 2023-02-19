@@ -6,12 +6,13 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
+import android.os.Looper
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.location.LocationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -30,6 +31,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
@@ -81,10 +83,21 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
         binding.chatButton.setOnClickListener {
             viewModel.openChat()
         }
+
+        binding.toolbar.profileIcon.setOnClickListener { viewModel.goToProfile() }
     }
 
     private fun updateUi(uiState: DriverDashboardUiState) {
-        Log.d("UI_STATE", uiState.toString())
+        if (uiState != DriverDashboardUiState.SearchingForPassengers) binding.toolbar.profileIcon.visibility = View.GONE
+        else binding.toolbar.profileIcon.visibility = View.VISIBLE
+
+        when (uiState) {
+            is DriverDashboardUiState.Arrived -> updateMessageButton(uiState.totalMessages)
+            is DriverDashboardUiState.EnRoute -> updateMessageButton(uiState.totalMessages)
+            is DriverDashboardUiState.PassengerPickUp -> updateMessageButton(uiState.totalMessages)
+            else -> Unit
+        }
+
         when (uiState) {
             DriverDashboardUiState.Error -> viewModel.handleError()
             DriverDashboardUiState.Loading -> {
@@ -99,6 +112,11 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
         updateMap(uiState)
     }
 
+    private fun updateMessageButton(messageCount: Int) {
+        binding.chatButton.text = if (messageCount == 0) getString(R.string.contact_passenger)
+        else getString(R.string.you_have_messages)
+    }
+
     private fun arrived(uiState: DriverDashboardUiState.Arrived) {
         binding.apply {
             rideLayout.visibility = View.VISIBLE
@@ -111,7 +129,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
             mapLayout.subtitle.text = getString(R.string.destination)
             mapLayout.address.text = uiState.destinationAddress
 
-            advanceLayout.advanceRideStateLayout.visibility = View.VISIBLE
+            advanceLayout.advanceRideStateLayout.visibility = View.GONE
 
             returnLayout.rideCompleteLayout.visibility = View.VISIBLE
             returnLayout.advanceButton.setOnClickListener {
@@ -120,7 +138,10 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 
             username.text = uiState.passengerName
             Glide.with(requireContext())
-                .load(uiState.passengerAvatar)
+                .load(
+                    if (uiState.passengerAvatar != "") uiState.passengerAvatar
+                    else R.drawable.baseline_account_circle_24
+                )
                 .fitCenter()
                 .placeholder(
                     CircularProgressDrawable(requireContext()).apply {
@@ -150,6 +171,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
             mapLayout.address.text = uiState.destinationAddress
 
             advanceLayout.advanceRideStateLayout.visibility = View.VISIBLE
+
             advanceLayout.advanceButton.setImageResource(R.drawable.ic_arrival)
             advanceLayout.advanceButton.setOnLongClickListener() {
                 viewModel.advanceRide()
@@ -161,7 +183,10 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 
             username.text = uiState.passengerName
             Glide.with(requireContext())
-                .load(uiState.passengerAvatar)
+                .load(
+                    if (uiState.passengerAvatar != "") uiState.passengerAvatar
+                    else R.drawable.baseline_account_circle_24
+                )
                 .fitCenter()
                 .placeholder(
                     CircularProgressDrawable(requireContext()).apply {
@@ -187,9 +212,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
             //unbind recyclerview from adapter
             passengerList.adapter = null
 
-            mapLayout.subtitle.text = getString(R.string.passenger_location)
-          //TODO this needs to be the passenger address
-            mapLayout.address.text = uiState.destinationAddress
+            //Note: we update map subtitles in the updateMap function
 
             advanceLayout.advanceRideStateLayout.visibility = View.VISIBLE
             advanceLayout.advanceButton.setImageResource(R.drawable.ic_pick_up_passenger)
@@ -203,7 +226,10 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 
             username.text = uiState.passengerName
             Glide.with(requireContext())
-                .load(uiState.passengerAvatar)
+                .load(
+                    if (uiState.passengerAvatar != "") uiState.passengerAvatar
+                    else R.drawable.baseline_account_circle_24
+                )
                 .fitCenter()
                 .placeholder(
                     CircularProgressDrawable(requireContext()).apply {
@@ -234,6 +260,8 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 
             if (passengerList.adapter == null) {
                 passengerList.adapter = PassengerListAdapter().apply {
+                    getDistance = ::requestDistanceBetweenPointsInKm
+
                     handleItemClick = {
                         viewModel.handlePassengerItemClick(it)
                     }
@@ -250,9 +278,12 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                         if (models.isNullOrEmpty()) {
                             passengerList.visibility = View.GONE
                             passengersLoadingLayout.visibility = View.VISIBLE
+                            checkAgainBT.setOnClickListener { viewModel.queryRidesAgain() }
+
                         } else {
                             passengerList.visibility = View.VISIBLE
                             passengersLoadingLayout.visibility = View.GONE
+                            checkAgainBT.setOnClickListener(null)
 
                             (passengerList.adapter as PassengerListAdapter)
                                 .submitList(models)
@@ -282,7 +313,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
             googleMap.isMyLocationEnabled = true
             googleMap.uiSettings.setAllGesturesEnabled(true)
 
-            googleMap.setMinZoomPreference(12f)
+            googleMap.setMinZoomPreference(11f)
             viewModel.mapIsReady()
         }
     }
@@ -305,14 +336,14 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                                 .region("ca")
                                 .origin(
                                     com.google.maps.model.LatLng(
-                                        uiState.passengerLat,
-                                        uiState.passengerLon
+                                        uiState.driverLat,
+                                        uiState.driverLon
                                     )
                                 )
                                 .destination(
                                     com.google.maps.model.LatLng(
-                                        uiState.driverLat,
-                                        uiState.driverLon
+                                        uiState.passengerLat,
+                                        uiState.passengerLon
                                     ).toString()
                                 )
                                 .await()
@@ -340,6 +371,9 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                                 )
 
                                 route.legs.first().let { leg ->
+                                    binding.mapLayout.subtitle.text = getString(R.string.passenger_location)
+                                    binding.mapLayout.address.text = leg.endAddress ?: getString(R.string.unable_to_retrieve_address)
+
                                     binding.tripDistance.text = buildString {
                                         append(getString(R.string.passenger_is))
                                         append(leg.distance.humanReadable)
@@ -363,14 +397,18 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
                         googleMap!!.addMarker(
                             MarkerOptions().apply {
                                 position(LatLng(uiState.driverLat, uiState.driverLon))
+                                val markerBitmap = requireContext().getDrawable(R.drawable.ic_car_marker)?.toBitmap()
+                                markerBitmap?.let {
+                                    icon(BitmapDescriptorFactory.fromBitmap(it))
+                                }
                             }
                         )
 
 
                         googleMap!!.moveCamera(
                             CameraUpdateFactory.newLatLngZoom(
-                                LatLng(uiState.passengerLat, uiState.passengerLon),
-                                14f
+                                LatLng(uiState.driverLat, uiState.driverLon),
+                                13f
                             )
                         )
                     }
@@ -441,13 +479,23 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 
                         googleMap!!.addMarker(
                             MarkerOptions().apply {
+                                position(LatLng(uiState.driverLat, uiState.driverLon))
+                                val markerBitmap = requireContext().getDrawable(R.drawable.ic_car_marker)?.toBitmap()
+                                markerBitmap?.let {
+                                    icon(BitmapDescriptorFactory.fromBitmap(it))
+                                }
+                            }
+                        )
+
+                        googleMap!!.addMarker(
+                            MarkerOptions().apply {
                                 position(LatLng(uiState.destinationLat, uiState.destinationLon))
                             }
                         )
 
                         googleMap!!.moveCamera(
                             CameraUpdateFactory.newLatLngZoom(
-                                LatLng(uiState.destinationLat, uiState.destinationLat),
+                                LatLng(uiState.driverLat, uiState.driverLon),
                                 14f
                             )
                         )
@@ -508,7 +556,7 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
 
                 LocationServices.getSettingsClient(requireContext())
                     .checkLocationSettings(locationSettingsRequest).addOnCompleteListener { task ->
-                        if (task.isSuccessful) startRequestingLocationUpdates()
+                        if (task.isSuccessful) startRequestingLocationUpdates(locationRequest!!)
                         else {
                             Toast.makeText(
                                 requireContext(),
@@ -530,28 +578,30 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
     }
 
     @SuppressLint("MissingPermission")
-    private fun startRequestingLocationUpdates() {
-        locationClient
-            .lastLocation
-            .addOnCompleteListener { locationRequest ->
-                if (locationRequest.isSuccessful && locationRequest.result != null) {
-                    val location = locationRequest.result
-
-                    val lat = location.latitude
-                    val lon = location.longitude
-                    viewModel.updateDriverLocation(com.google.maps.model.LatLng(lat, lon))
-                } else {
-
-                    Log.d("PLACES", locationRequest.exception.toString())
-
-                    Toast.makeText(
-                        requireContext(),
-                        R.string.unable_to_retrieve_coordinates_user,
-                        Toast.LENGTH_LONG
-                    ).show()
-                    viewModel.handleError()
+    private fun startRequestingLocationUpdates(locationRequest: LocationRequest) {
+        locationClient.requestLocationUpdates(
+            locationRequest,
+            object : LocationCallback() {
+                override fun onLocationResult(result: LocationResult) {
+                    if (result.lastLocation != null) {
+                        viewModel.updateDriverLocation(
+                            com.google.maps.model.LatLng(
+                                result.lastLocation!!.latitude,
+                                result.lastLocation!!.longitude
+                            )
+                        )
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            R.string.unable_to_retrieve_coordinates_user,
+                            Toast.LENGTH_LONG
+                        ).show()
+                        viewModel.handleError()
+                    }
                 }
-            }
+            },
+            Looper.myLooper()
+        )
     }
 
     private fun requestPermission() {
@@ -587,6 +637,57 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
         }
     }
 
+    fun requestDistanceBetweenPointsInKm(
+        originLat: Double?,
+        originLon: Double?,
+        destinationLat: Double?,
+        destinationLon: Double?
+    ): String {
+        if (
+            originLat == null || originLon == null
+            || destinationLat == null || destinationLon == null
+        ) {
+            return getString(R.string.unable_to_calculate_distance)
+        } else {
+            val dirResult =
+                DirectionsApi.newRequest((requireActivity().application as UnterApp).geoContext)
+                    .mode(TravelMode.DRIVING)
+                    .units(com.google.maps.model.Unit.METRIC)
+                    //Change this appropriately
+                    .region("ca")
+                    .origin(
+                        com.google.maps.model.LatLng(
+                            originLat,
+                            originLon
+                        )
+                    )
+                    .destination(
+                        com.google.maps.model.LatLng(
+                            destinationLat,
+                            destinationLon
+                        ).toString()
+                    )
+                    .await()
+
+            if (dirResult.routes?.first() != null &&
+                dirResult.routes.isNotEmpty() &&
+                dirResult.routes.first().legs.isNotEmpty()
+            ) {
+                dirResult.routes.first().let { route ->
+                    route.legs.first().let { leg ->
+                        val distance = buildString {
+                            append(leg.distance.humanReadable)
+                        }
+
+                        return distance
+                    }
+                }
+            } else {
+                return getString(R.string.unable_to_calculate_distance)
+            }
+        }
+    }
+
     //So yeah, if you don't add this crap here, the MapView will be basically useless.
     //Apparently this happenings when working with a MapView that starts out View.INVISIBLE or smth?
     override fun onResume() {
@@ -602,6 +703,10 @@ class DriverDashboardFragment : Fragment(R.layout.fragment_driver_dashboard), On
     override fun onDestroy() {
         super.onDestroy()
         mapView?.onDestroy()
+        if (binding.passengerList.adapter != null) {
+            //Safeguard to help avoid issues
+            (binding.passengerList.adapter as PassengerListAdapter).getDistance = null
+        }
     }
 
     override fun onLowMemory() {

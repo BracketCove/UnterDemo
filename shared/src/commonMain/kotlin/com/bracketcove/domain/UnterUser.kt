@@ -7,9 +7,6 @@ data class UnterUser(
     val type: String = UserType.PASSENGER.value,
     val status: String = UserStatus.INACTIVE.value,
     val avatarPhotoUrl: String = "",
-    val latitude: Double = 0.0,
-    val longitude: Double = 0.0,
     val createdAt: String = "",
-    val updatedAt: String = "",
-    val address: String = ""
+    val updatedAt: String = ""
 )

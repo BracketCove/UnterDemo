@@ -17,7 +17,6 @@ class SignUpUser(
         return if (authAttempt is ServiceResult.Value) {
             when (authAttempt.value) {
                 is SignUpResult.Success -> updateUserDetails(
-                    email,
                     username,
                     authAttempt.value.uid
                 )
@@ -26,15 +25,12 @@ class SignUpUser(
         } else authAttempt
     }
 
-
     private suspend fun updateUserDetails(
-        email: String,
         username: String,
         uid: String
     ): ServiceResult<SignUpResult> {
-        return userService.updateUser(
+        return userService.initializeNewUser(
             UnterUser(
-                email = email,
                 userId = uid,
                 username = username
             )

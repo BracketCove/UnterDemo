@@ -27,7 +27,7 @@
     <string name="description">Description</string>
     <string name="apply">Apply</string>
     <string name="passenger_requests">Passenger Requests</string>
-    <string name="searching_for_passengers">Searching for passengers…</string>
+    <string name="no_passengers">No passengers available currently.</string>
     <string name="passenger_location">Passenger Location</string>
     <string name="cancel">Cancel</string>
     <string name="arrived_at_destination">Arrived At Destination\n(Hold Icon Down)</string>
@@ -62,4 +62,11 @@
     <string name="password">Password</string>
     <string name="hide_password">Hide password</string>
     <string name="show_password">Show password</string>
+    <string name="check_again">Check Again</string>
+    <string name="new_messages">" new messages"</string>
+    <string name="you_have_messages">You have messages</string>
+    <string name="unable_to_calculate_distance">" Unable to calculate"</string>
+    <string name="trip_is">"Trip is: "</string>
+    <string name="from_passenger">" from passenger"</string>
+    <string name="unable_to_retrieve_address">Unable to retrieve address</string>
 </resources>
