@@ -177,7 +177,7 @@ class PassengerDashboardViewModel(
         when (createRide) {
             is ServiceResult.Failure -> toastHandler?.invoke(ToastMessages.SERVICE_ERROR)
             is ServiceResult.Value -> {
-                _rideModel.value = createRide.value
+                _rideModel = createRide.value.stateIn(this)
             }
         }
     }

@@ -13,7 +13,7 @@ interface RideService {
         longitude: Double,
         destinationAddress: String,
         avatarUrl: String
-    ): ServiceResult<Ride>
+    ): ServiceResult<Flow<Ride?>>
 
     suspend fun cancelRide(ride: Ride): ServiceResult<Unit>
     suspend fun completeRide(value: Ride): ServiceResult<Unit>

@@ -182,7 +182,7 @@ class DriverDashboardViewModel(
 
                     else -> {
                         //driver is already present
-                        getPassenger(driver, getRide.value!!)
+
                     }
                 }
             }
@@ -199,27 +199,6 @@ class DriverDashboardViewModel(
             }
             is ServiceResult.Value -> {
                 _passengerList.value = getPassengersList.value ?: emptyList()
-            }
-        }
-    }
-
-    fun getPassenger(driver: UnterUser, ride: Ride) = launch(Dispatchers.Main) {
-        val getPassenger = userService.getUserById(ride.passengerId!!)
-        when (getPassenger) {
-            is ServiceResult.Failure -> {
-                toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-                sendToLogin()
-            }
-            is ServiceResult.Value -> {
-                if (getPassenger.value == null) {
-                    toastHandler?.invoke(ToastMessages.GENERIC_ERROR)
-                    sendToLogin()
-                } else {
-                    //The order here is important
-                    _rideModel.value = ride
-                    _passengerModel.value = getPassenger.value
-                    _driverModel.value = driver
-                }
             }
         }
     }
@@ -304,7 +283,7 @@ class DriverDashboardViewModel(
                 sendToSplash()
             }
             is ServiceResult.Value -> {
-                _rideModel.value = updateRide.value!!
+                //_rideModel.value = updateRide.value!!
             }
         }
 

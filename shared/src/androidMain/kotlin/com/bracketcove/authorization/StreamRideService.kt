@@ -23,7 +23,7 @@ class StreamRideService(
         longitude: Double,
         destinationAddress: String,
         avatarUrl: String
-    ): ServiceResult<Ride> {
+    ): ServiceResult<Flow<Ride?>> {
         TODO("Not yet implemented")
     }
 

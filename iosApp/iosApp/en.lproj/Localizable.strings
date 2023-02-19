@@ -1,0 +1,27 @@
+/* 
+  Localizable.strings
+  iosApp
+
+  Created by Ryan Kay on 2023-02-19.
+  Copyright © 2023 orgName. All rights reserved.
+*/
+"Unter" = "Unter";
+"need_a_ride" = "Need a ride?";
+"cancel" = "Cancel";
+"enter_a_destination" = "Enter a destination";
+"logout" = "Logout";
+"email" = "Email";
+"password" = "Password";
+"continue" = "Continue";
+"sign_up_available_on_android_client" = "Sign up available on Android application.";
+"" = "";
+"" = "";
+"" = "";
+"" = "";
+"" = "";
+"" = "";
+"" = "";
+"" = "";
+"" = "";
+"" = "";
+
