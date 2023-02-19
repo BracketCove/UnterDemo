@@ -17,7 +17,6 @@ import io.getstream.chat.android.client.events.ChatEvent
 import io.getstream.chat.android.client.events.NewMessageEvent
 import io.getstream.chat.android.client.models.Channel
 import io.getstream.chat.android.client.models.Filters
-import io.getstream.chat.android.client.utils.observable.Disposable
 import io.getstream.chat.android.client.utils.onErrorSuspend
 import io.getstream.chat.android.client.utils.onSuccessSuspend
 import kotlinx.coroutines.Dispatchers
