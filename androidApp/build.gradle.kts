@@ -48,8 +48,6 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("com.google.firebase:firebase-storage-ktx:20.1.0")
-    implementation ("dev.gitlive:firebase-auth:1.6.2")
-
 
     val simplestack_version = "2.2.5"
 

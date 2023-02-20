@@ -14,9 +14,8 @@
 		5CDDBA6929A28325007A8DCC /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA6829A28325007A8DCC /* LoginView.swift */; };
 		5CDDBA6B29A28336007A8DCC /* PassengerDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA6A29A28336007A8DCC /* PassengerDashboardView.swift */; };
 		5CDDBA6E29A2847F007A8DCC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5CDDBA7029A2847F007A8DCC /* Localizable.strings */; };
-		5CDDBA7329A2A4FA007A8DCC /* FirebaseAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA7229A2A4FA007A8DCC /* FirebaseAuthService.swift */; };
-		5CDDBA7529A2A576007A8DCC /* StreamUserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA7429A2A576007A8DCC /* StreamUserService.swift */; };
-		5CDDBA7829A2A616007A8DCC /* StreamRideService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA7729A2A616007A8DCC /* StreamRideService.swift */; };
+		5CDDBA7D29A415AC007A8DCC /* SplashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA7C29A415AC007A8DCC /* SplashViewModel.swift */; };
+		5CDDBA7F29A41E0C007A8DCC /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA7E29A41E0C007A8DCC /* Constants.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
@@ -41,9 +40,8 @@
 		5CDDBA6829A28325007A8DCC /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		5CDDBA6A29A28336007A8DCC /* PassengerDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassengerDashboardView.swift; sourceTree = "<group>"; };
 		5CDDBA6F29A2847F007A8DCC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		5CDDBA7229A2A4FA007A8DCC /* FirebaseAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAuthService.swift; sourceTree = "<group>"; };
-		5CDDBA7429A2A576007A8DCC /* StreamUserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamUserService.swift; sourceTree = "<group>"; };
-		5CDDBA7729A2A616007A8DCC /* StreamRideService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRideService.swift; sourceTree = "<group>"; };
+		5CDDBA7C29A415AC007A8DCC /* SplashViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewModel.swift; sourceTree = "<group>"; };
+		5CDDBA7E29A41E0C007A8DCC /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -71,10 +69,11 @@
 		5CDDBA6529A282C0007A8DCC /* ui */ = {
 			isa = PBXGroup;
 			children = (
+				5CDDBA7E29A41E0C007A8DCC /* Constants.swift */,
+				5CDDBA7B29A41590007A8DCC /* passengerdashboard */,
+				5CDDBA7A29A41588007A8DCC /* login */,
+				5CDDBA7929A4157B007A8DCC /* splash */,
 				7555FF82242A565900829871 /* ContentView.swift */,
-				5CDDBA6629A28318007A8DCC /* SplashView.swift */,
-				5CDDBA6829A28325007A8DCC /* LoginView.swift */,
-				5CDDBA6A29A28336007A8DCC /* PassengerDashboardView.swift */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -82,11 +81,33 @@
 		5CDDBA7129A2A4D4007A8DCC /* services */ = {
 			isa = PBXGroup;
 			children = (
-				5CDDBA7229A2A4FA007A8DCC /* FirebaseAuthService.swift */,
-				5CDDBA7429A2A576007A8DCC /* StreamUserService.swift */,
-				5CDDBA7729A2A616007A8DCC /* StreamRideService.swift */,
 			);
 			path = services;
+			sourceTree = "<group>";
+		};
+		5CDDBA7929A4157B007A8DCC /* splash */ = {
+			isa = PBXGroup;
+			children = (
+				5CDDBA6629A28318007A8DCC /* SplashView.swift */,
+				5CDDBA7C29A415AC007A8DCC /* SplashViewModel.swift */,
+			);
+			path = splash;
+			sourceTree = "<group>";
+		};
+		5CDDBA7A29A41588007A8DCC /* login */ = {
+			isa = PBXGroup;
+			children = (
+				5CDDBA6829A28325007A8DCC /* LoginView.swift */,
+			);
+			path = login;
+			sourceTree = "<group>";
+		};
+		5CDDBA7B29A41590007A8DCC /* passengerdashboard */ = {
+			isa = PBXGroup;
+			children = (
+				5CDDBA6A29A28336007A8DCC /* PassengerDashboardView.swift */,
+			);
+			path = passengerdashboard;
 			sourceTree = "<group>";
 		};
 		7555FF72242A565900829871 = {
@@ -220,14 +241,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5CDDBA7529A2A576007A8DCC /* StreamUserService.swift in Sources */,
 				5CDDBA6729A28318007A8DCC /* SplashView.swift in Sources */,
 				5CDDBA6929A28325007A8DCC /* LoginView.swift in Sources */,
-				5CDDBA7829A2A616007A8DCC /* StreamRideService.swift in Sources */,
 				5CDDBA6B29A28336007A8DCC /* PassengerDashboardView.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
-				5CDDBA7329A2A4FA007A8DCC /* FirebaseAuthService.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
+				5CDDBA7D29A415AC007A8DCC /* SplashViewModel.swift in Sources */,
+				5CDDBA7F29A41E0C007A8DCC /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
