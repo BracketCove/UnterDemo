@@ -12,7 +12,7 @@ class FakeAuthorizationService : AuthorizationService {
     }
 
     override suspend fun login(email: String, password: String): ServiceResult<LogInResult> {
-        return ServiceResult.Value(LogInResult.InvalidCredentials)
+        return ServiceResult.Value(LogInResult.Success(UnterUser()))
     }
 
     override suspend fun logout(): ServiceResult<Unit> {

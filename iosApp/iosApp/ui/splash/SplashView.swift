@@ -11,10 +11,12 @@ import shared
 
 struct SplashView: View {
     private var getUser: GetUser
+    private var loginUser: LogInUser
     @StateObject var viewModel = SplashViewModel(getUser: nil)
     
-    init(getUser: GetUser) {
+    init(getUser: GetUser, loginUser: LogInUser) {
         self.getUser = getUser
+        self.loginUser = loginUser
     }
     
     var body: some View {
@@ -30,9 +32,10 @@ struct SplashView: View {
                         .foregroundColor(.white)
                     
                     
-                    NavigationLink(destination: LoginView(), isActive: $viewModel.showLogin) {
+                    NavigationLink(destination: LoginView(loginUser: self.loginUser).navigationBarBackButtonHidden(true), isActive: $viewModel.showLogin) {
                         EmptyView()
                     }.hidden()
+                        
                     
                     
                     NavigationLink(destination: PassengerDashboardView(), isActive: $viewModel.showDashboard) {
@@ -52,6 +55,10 @@ struct SplashView: View {
 
 struct SplashScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SplashView(getUser: GetUser(authService: FakeAuthorizationService(), userService: FakeUserService()))
+        SplashView(
+            getUser: GetUser(authService: FakeAuthorizationService(), userService: FakeUserService()),
+            loginUser: LogInUser(authService: FakeAuthorizationService(), userService: FakeUserService())
+    
+        )
     }
 }
