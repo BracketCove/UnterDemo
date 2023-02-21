@@ -2,8 +2,13 @@ import SwiftUI
 import shared
 
 struct ContentView: View {
+    
+    @State private var path = NavigationPath()
+    
 	var body: some View {
-        EmptyView()
+        NavigationStack(path: $path) {
+            
+        }
 	}
 }
 
@@ -14,8 +19,8 @@ struct ContentView_Previews: PreviewProvider {
 	}
 }
 
-enum Screens: String {
-    case Splash = "Splash"
-    case Login = "Login"
-    case PassengerDashboard = "PassengerDashboard"
+struct Screens {
+    let splash: String
+    let login: String
+    let passengerDashboard: String
 }
