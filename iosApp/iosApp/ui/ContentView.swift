@@ -2,14 +2,8 @@ import SwiftUI
 import shared
 
 struct ContentView: View {
-    @StateObject private var splashViewModel: SplashViewModel = SplashViewModel(
-        GetUser(authService: <#T##AuthorizationService#>, userService: <#T##UserService#>)
-    )
-
-	let greet = Greeting().greet()
-
 	var body: some View {
-        
+        EmptyView()
 	}
 }
 

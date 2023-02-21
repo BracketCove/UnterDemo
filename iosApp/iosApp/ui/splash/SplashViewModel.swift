@@ -29,8 +29,8 @@ extension SplashView {
         func getUserSession() {
             getUser?.getUser {
                 value, error in
-                if let user = value {
-                    if user == nil { self.showLogin = true }
+                if let result = value {
+                    if result == nil { self.showLogin = true }
                     else { self.showDashboard = true }
                 }
                 

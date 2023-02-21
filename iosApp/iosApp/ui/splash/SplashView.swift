@@ -18,28 +18,37 @@ struct SplashView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(NSLocalizedString("unter", comment: "App name."))
-            Text(NSLocalizedString("need_a_ride", comment: "App slogan."))
+        GeometryReader { geometry in
+            VStack(spacing: 16) {
+                Text(NSLocalizedString("unter", comment: "App name.")).frame(alignment: .leading)
+                    .font(.custom("poppins_normal", size: 64))
+                    .foregroundColor(.white)
+                
+                Text(NSLocalizedString("need_a_ride", comment: "App slogan."))
+                    .font(.custom("poppins_light", size: 18))
+                    .foregroundColor(.white)
+                
+                
+                NavigationLink(destination: LoginView(), isActive: $viewModel.showLogin) {
+                    EmptyView()
+                }.hidden()
+                
+                
+                NavigationLink(destination: PassengerDashboardView(), isActive: $viewModel.showDashboard) {
+                    EmptyView()
+                }.hidden()
+            }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .background(Color("ColorPrimary"))
             
-            NavigationLink(destination: LoginView(), isActive: $viewModel.showLogin) {
-                EmptyView()
-            }.hidden()
-            
-            
-            NavigationLink(destination: PassengerDashboardView(), isActive: $viewModel.showDashboard) {
-                EmptyView()
-            }.hidden()
-            
-        }
-        .onAppear {
-            viewModel.setGetUser(getUser: self.getUser)
-        }
+            .onAppear {
+                viewModel.setGetUser(getUser: self.getUser)
+            }        }
     }
 }
 
-//struct SplashScreen_Previews: PreviewProvider {
-//    static var previews: some View {
-//        SplashView()
-//    }
-//}
+struct SplashScreen_Previews: PreviewProvider {
+    static var previews: some View {
+        SplashView(getUser: GetUser(authService: FakeAuthorizationService(), userService: FakeUserService()))
+    }
+}
