@@ -35,6 +35,8 @@
 		5C60314229A6AF5E0015BC85 /* GoogleMapsBase.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C60313F29A6AF5E0015BC85 /* GoogleMapsBase.xcframework */; };
 		5C60314429A6B1780015BC85 /* GooglePlaces.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C60314329A6B1780015BC85 /* GooglePlaces.xcframework */; };
 		5C60314629A6B1FD0015BC85 /* GooglePlaces.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5C60314529A6B1FD0015BC85 /* GooglePlaces.bundle */; };
+		5C60314829A6C85E0015BC85 /* AppConfig.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 5C60314729A6C85E0015BC85 /* AppConfig.xcconfig */; };
+		5C60314A29A6C9270015BC85 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C60314929A6C9270015BC85 /* AppDelegate.swift */; };
 		5CDDBA6729A28318007A8DCC /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA6629A28318007A8DCC /* SplashView.swift */; };
 		5CDDBA6929A28325007A8DCC /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA6829A28325007A8DCC /* LoginView.swift */; };
 		5CDDBA6B29A28336007A8DCC /* PassengerDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA6A29A28336007A8DCC /* PassengerDashboardView.swift */; };
@@ -93,6 +95,8 @@
 		5C60313F29A6AF5E0015BC85 /* GoogleMapsBase.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GoogleMapsBase.xcframework; path = "../../../Downloads/GoogleMaps-7.3.0/Base/Frameworks/GoogleMapsBase.xcframework"; sourceTree = "<group>"; };
 		5C60314329A6B1780015BC85 /* GooglePlaces.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = GooglePlaces.xcframework; sourceTree = "<group>"; };
 		5C60314529A6B1FD0015BC85 /* GooglePlaces.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GooglePlaces.bundle; path = "GooglePlaces.xcframework/ios-arm64_x86_64-simulator/GooglePlaces.framework/Resources/GooglePlaces.bundle"; sourceTree = "<group>"; };
+		5C60314729A6C85E0015BC85 /* AppConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppConfig.xcconfig; sourceTree = "<group>"; };
+		5C60314929A6C9270015BC85 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5CDDBA6629A28318007A8DCC /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		5CDDBA6829A28325007A8DCC /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		5CDDBA6A29A28336007A8DCC /* PassengerDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassengerDashboardView.swift; sourceTree = "<group>"; };
@@ -241,6 +245,8 @@
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
 				5C60310E29A675B10015BC85 /* DependencyLocator.swift */,
+				5C60314729A6C85E0015BC85 /* AppConfig.xcconfig */,
+				5C60314929A6C9270015BC85 /* AppDelegate.swift */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -333,6 +339,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5C60311C29A6AD560015BC85 /* GoogleMaps.bundle in Resources */,
+				5C60314829A6C85E0015BC85 /* AppConfig.xcconfig in Resources */,
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				5CDDBA8E29A52D04007A8DCC /* poppins_regular.ttf in Resources */,
 				5CDDBA8D29A52D04007A8DCC /* poppins_light.ttf in Resources */,
@@ -380,6 +387,7 @@
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				5CDDBA9029A5662D007A8DCC /* LoginViewModel.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
+				5C60314A29A6C9270015BC85 /* AppDelegate.swift in Sources */,
 				5C60311129A682170015BC85 /* DriverInfoView.swift in Sources */,
 				5C60311329A682470015BC85 /* DestinationBarView.swift in Sources */,
 				5CDDBA7D29A415AC007A8DCC /* SplashViewModel.swift in Sources */,
