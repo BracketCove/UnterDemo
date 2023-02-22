@@ -11,12 +11,12 @@ import shared
 
 struct SplashView: View {
     private var getUser: GetUser
-    private var loginUser: LogInUser
+    private var dependencyLocator: DependencyLocator
     @StateObject var viewModel = SplashViewModel(getUser: nil)
     
-    init(getUser: GetUser, loginUser: LogInUser) {
-        self.getUser = getUser
-        self.loginUser = loginUser
+    init(dependencyLocator: DependencyLocator) {
+        self.dependencyLocator = dependencyLocator
+        self.getUser = dependencyLocator.getUser
     }
     
     var body: some View {
@@ -32,13 +32,15 @@ struct SplashView: View {
                         .foregroundColor(.white)
                     
                     
-                    NavigationLink(destination: LoginView(loginUser: self.loginUser).navigationBarBackButtonHidden(true), isActive: $viewModel.showLogin) {
+                    NavigationLink(destination: LoginView(dependencyLocator: dependencyLocator).navigationBarBackButtonHidden(true), isActive: $viewModel.showLogin) {
                         EmptyView()
                     }.hidden()
                         
                     
                     
-                    NavigationLink(destination: PassengerDashboardView(), isActive: $viewModel.showDashboard) {
+                    NavigationLink(destination: PassengerDashboardView(
+                        dependencyLocator: dependencyLocator
+                    ).navigationBarBackButtonHidden(true),  isActive: $viewModel.showDashboard) {
                         EmptyView()
                     }.hidden()
                 }
@@ -56,9 +58,7 @@ struct SplashView: View {
 struct SplashScreen_Previews: PreviewProvider {
     static var previews: some View {
         SplashView(
-            getUser: GetUser(authService: FakeAuthorizationService(), userService: FakeUserService()),
-            loginUser: LogInUser(authService: FakeAuthorizationService(), userService: FakeUserService())
-    
+            dependencyLocator: getFakeLocator()
         )
     }
 }

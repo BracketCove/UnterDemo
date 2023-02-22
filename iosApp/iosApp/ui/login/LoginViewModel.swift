@@ -31,8 +31,13 @@ extension LoginView {
             loginUser?.login(email: email, password: password) {
                 value, error in
                 if let result = value as? ServiceResultValue {
-                    if result.value == nil { self.showError = true }
-                    else { self.showDashboard = true }
+                
+                    if result.value == nil {
+                        self.showError = true
+                    }
+                    else {
+                        self.showDashboard = true
+                    }
                 }
                 
                 if error != nil {

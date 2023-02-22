@@ -14,10 +14,12 @@ struct LoginView: View {
     @State private var password = ""
     
     private var loginUser: LogInUser
+    private var dependencyLocator: DependencyLocator
     @StateObject var viewModel = LoginViewModel(loginUser: nil)
     
-    init(loginUser: LogInUser) {
-        self.loginUser = loginUser
+    init(dependencyLocator: DependencyLocator) {
+        self.dependencyLocator = dependencyLocator
+        self.loginUser = dependencyLocator.loginUser
     }
     
     var body: some View {
@@ -53,9 +55,10 @@ struct LoginView: View {
                 
                 Spacer()
                 
-//                NavigationLink(destination: PassengerDashboardView(), isActive: $viewModel.showDashboard) {
-//                    EmptyView()
-//                }.hidden()
+                NavigationLink(destination: PassengerDashboardView(dependencyLocator: dependencyLocator).navigationBarBackButtonHidden(true), isActive: $viewModel.showDashboard) {
+                    EmptyView()
+                }.hidden()
+                    
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
             .background(.white)
@@ -69,9 +72,7 @@ struct LoginView: View {
 struct LoginScreen_Previews: PreviewProvider {
     static var previews: some View {
         LoginView(
-        loginUser: LogInUser(
-            authService: FakeAuthorizationService(),
-            userService: FakeUserService()
-        ))
+            dependencyLocator: getFakeLocator()
+        )
     }
 }

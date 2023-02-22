@@ -6,7 +6,7 @@ import com.bracketcove.domain.UnterUser
 
 class FakeUserService : UserService {
     override suspend fun getUserById(userId: String): ServiceResult<UnterUser?> {
-        return ServiceResult.Value(null)
+        return ServiceResult.Value(UnterUser())
     }
 
     override suspend fun updateUser(user: UnterUser): ServiceResult<UnterUser?> {

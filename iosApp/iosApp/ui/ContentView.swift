@@ -2,25 +2,16 @@ import SwiftUI
 import shared
 
 struct ContentView: View {
+    //usecases and services
+    private var dependencyLocator: DependencyLocator
+        
+    init(dependencyLocator: DependencyLocator) {
+        self.dependencyLocator = dependencyLocator
+    }
     
-    @State private var path = NavigationPath()
-    
-	var body: some View {
-        NavigationStack(path: $path) {
-            
-        }
-	}
-}
-
-struct ContentView_Previews: PreviewProvider {
-    
-	static var previews: some View {
-		ContentView()
-	}
-}
-
-struct Screens {
-    let splash: String
-    let login: String
-    let passengerDashboard: String
+    var body: some View {
+        SplashView(
+            dependencyLocator: dependencyLocator
+        )
+    }
 }

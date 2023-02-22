@@ -5,10 +5,16 @@ import shared
 struct iOSApp: App {
 	var body: some Scene {
 		WindowGroup {
-			SplashView(
-                getUser: GetUser(authService: FakeAuthorizationService(), userService: FakeUserService()),
-                loginUser: LogInUser(authService: FakeAuthorizationService(), userService: FakeUserService())
+			ContentView(
+                dependencyLocator: getFakeLocator()
             )
 		}
 	}
+    
+//    func getDependencyLocator() -> DependencyLocator {
+//        return DependencyLocator(
+//            getUser: GetUser(authService: FakeAuthorizationService(), userService: FakeUserService()),
+//            loginUser: LogInUser(authService: FakeAuthorizationService(), userService: FakeUserService())
+//        )
+//    }
 }

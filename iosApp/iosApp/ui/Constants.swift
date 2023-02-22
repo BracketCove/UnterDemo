@@ -8,3 +8,13 @@
 
 import Foundation
 
+struct Screen: Identifiable, Hashable {
+    let id: String = "id"
+    let screen: ScreenType
+}
+
+enum ScreenType: String {
+    case splash = "splash"
+    case login = "login"
+    case passengerDashboard = "passengerDashboard"
+}
