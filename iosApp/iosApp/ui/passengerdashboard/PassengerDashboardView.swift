@@ -33,6 +33,10 @@ struct PassengerDashboardView: View {
                     }.padding(.trailing, 16)
                 }.padding(.top, 16)
                 
+                GoogleMapView()
+                    .edgesIgnoringSafeArea(.top)
+                    .frame(height: geometry.size.width)
+                
                 DestinationBarView(
                     {}
                 )

@@ -37,6 +37,7 @@
 		5C60314629A6B1FD0015BC85 /* GooglePlaces.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5C60314529A6B1FD0015BC85 /* GooglePlaces.bundle */; };
 		5C60314829A6C85E0015BC85 /* AppConfig.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 5C60314729A6C85E0015BC85 /* AppConfig.xcconfig */; };
 		5C60314A29A6C9270015BC85 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C60314929A6C9270015BC85 /* AppDelegate.swift */; };
+		5C60314D29A6D39C0015BC85 /* GoogleMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C60314C29A6D39C0015BC85 /* GoogleMapView.swift */; };
 		5CDDBA6729A28318007A8DCC /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA6629A28318007A8DCC /* SplashView.swift */; };
 		5CDDBA6929A28325007A8DCC /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA6829A28325007A8DCC /* LoginView.swift */; };
 		5CDDBA6B29A28336007A8DCC /* PassengerDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA6A29A28336007A8DCC /* PassengerDashboardView.swift */; };
@@ -97,6 +98,7 @@
 		5C60314529A6B1FD0015BC85 /* GooglePlaces.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GooglePlaces.bundle; path = "GooglePlaces.xcframework/ios-arm64_x86_64-simulator/GooglePlaces.framework/Resources/GooglePlaces.bundle"; sourceTree = "<group>"; };
 		5C60314729A6C85E0015BC85 /* AppConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppConfig.xcconfig; sourceTree = "<group>"; };
 		5C60314929A6C9270015BC85 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		5C60314C29A6D39C0015BC85 /* GoogleMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleMapView.swift; sourceTree = "<group>"; };
 		5CDDBA6629A28318007A8DCC /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		5CDDBA6829A28325007A8DCC /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		5CDDBA6A29A28336007A8DCC /* PassengerDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassengerDashboardView.swift; sourceTree = "<group>"; };
@@ -154,9 +156,18 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		5C60314B29A6D38D0015BC85 /* maps */ = {
+			isa = PBXGroup;
+			children = (
+				5C60314C29A6D39C0015BC85 /* GoogleMapView.swift */,
+			);
+			path = maps;
+			sourceTree = "<group>";
+		};
 		5CDDBA6529A282C0007A8DCC /* ui */ = {
 			isa = PBXGroup;
 			children = (
+				5C60314B29A6D38D0015BC85 /* maps */,
 				5CDDBA7E29A41E0C007A8DCC /* Constants.swift */,
 				5CDDBA7B29A41590007A8DCC /* passengerdashboard */,
 				5CDDBA7A29A41588007A8DCC /* login */,
@@ -389,6 +400,7 @@
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 				5C60314A29A6C9270015BC85 /* AppDelegate.swift in Sources */,
 				5C60311129A682170015BC85 /* DriverInfoView.swift in Sources */,
+				5C60314D29A6D39C0015BC85 /* GoogleMapView.swift in Sources */,
 				5C60311329A682470015BC85 /* DestinationBarView.swift in Sources */,
 				5CDDBA7D29A415AC007A8DCC /* SplashViewModel.swift in Sources */,
 				5CDDBA7F29A41E0C007A8DCC /* Constants.swift in Sources */,

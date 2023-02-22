@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import GoogleMaps
+import GooglePlaces
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
@@ -16,6 +17,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         if  let configKey = key as? String {
             GMSServices.provideAPIKey(configKey)
+            GMSPlacesClient.provideAPIKey(configKey)
             print("Key retrieved")
         }   else {
             print("Error: could not retrieve maps api key")
