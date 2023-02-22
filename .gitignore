@@ -9,3 +9,4 @@ captures
 local.properties
 xcuserdata
 androidApp/src/google-services.json
+iosApp/iosApp/info.plist

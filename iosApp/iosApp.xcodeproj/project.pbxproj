@@ -33,6 +33,8 @@
 		5C60314029A6AF5E0015BC85 /* GoogleMapsCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C60313D29A6AF5C0015BC85 /* GoogleMapsCore.xcframework */; };
 		5C60314129A6AF5E0015BC85 /* GoogleMaps.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C60313E29A6AF5E0015BC85 /* GoogleMaps.xcframework */; };
 		5C60314229A6AF5E0015BC85 /* GoogleMapsBase.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C60313F29A6AF5E0015BC85 /* GoogleMapsBase.xcframework */; };
+		5C60314429A6B1780015BC85 /* GooglePlaces.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C60314329A6B1780015BC85 /* GooglePlaces.xcframework */; };
+		5C60314629A6B1FD0015BC85 /* GooglePlaces.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5C60314529A6B1FD0015BC85 /* GooglePlaces.bundle */; };
 		5CDDBA6729A28318007A8DCC /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA6629A28318007A8DCC /* SplashView.swift */; };
 		5CDDBA6929A28325007A8DCC /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA6829A28325007A8DCC /* LoginView.swift */; };
 		5CDDBA6B29A28336007A8DCC /* PassengerDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA6A29A28336007A8DCC /* PassengerDashboardView.swift */; };
@@ -89,6 +91,8 @@
 		5C60313D29A6AF5C0015BC85 /* GoogleMapsCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = GoogleMapsCore.xcframework; sourceTree = "<group>"; };
 		5C60313E29A6AF5E0015BC85 /* GoogleMaps.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = GoogleMaps.xcframework; sourceTree = "<group>"; };
 		5C60313F29A6AF5E0015BC85 /* GoogleMapsBase.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GoogleMapsBase.xcframework; path = "../../../Downloads/GoogleMaps-7.3.0/Base/Frameworks/GoogleMapsBase.xcframework"; sourceTree = "<group>"; };
+		5C60314329A6B1780015BC85 /* GooglePlaces.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = GooglePlaces.xcframework; sourceTree = "<group>"; };
+		5C60314529A6B1FD0015BC85 /* GooglePlaces.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GooglePlaces.bundle; path = "GooglePlaces.xcframework/ios-arm64_x86_64-simulator/GooglePlaces.framework/Resources/GooglePlaces.bundle"; sourceTree = "<group>"; };
 		5CDDBA6629A28318007A8DCC /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		5CDDBA6829A28325007A8DCC /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		5CDDBA6A29A28336007A8DCC /* PassengerDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassengerDashboardView.swift; sourceTree = "<group>"; };
@@ -124,6 +128,7 @@
 				5C60314129A6AF5E0015BC85 /* GoogleMaps.xcframework in Frameworks */,
 				5C60314229A6AF5E0015BC85 /* GoogleMapsBase.xcframework in Frameworks */,
 				5C60313529A6AE200015BC85 /* SystemConfiguration.framework in Frameworks */,
+				5C60314429A6B1780015BC85 /* GooglePlaces.xcframework in Frameworks */,
 				5C60313629A6AE200015BC85 /* CoreText.framework in Frameworks */,
 				5C60313729A6AE200015BC85 /* CoreTelephony.framework in Frameworks */,
 				5C60313829A6AE200015BC85 /* CoreData.framework in Frameworks */,
@@ -208,6 +213,7 @@
 		7555FF72242A565900829871 = {
 			isa = PBXGroup;
 			children = (
+				5C60314529A6B1FD0015BC85 /* GooglePlaces.bundle */,
 				5C60311B29A6AD560015BC85 /* GoogleMaps.bundle */,
 				7555FF7D242A565900829871 /* iosApp */,
 				7555FF7C242A565900829871 /* Products */,
@@ -242,6 +248,7 @@
 		7555FFB0242A642200829871 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5C60314329A6B1780015BC85 /* GooglePlaces.xcframework */,
 				5C60313E29A6AF5E0015BC85 /* GoogleMaps.xcframework */,
 				5C60313F29A6AF5E0015BC85 /* GoogleMapsBase.xcframework */,
 				5C60313D29A6AF5C0015BC85 /* GoogleMapsCore.xcframework */,
@@ -329,6 +336,7 @@
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				5CDDBA8E29A52D04007A8DCC /* poppins_regular.ttf in Resources */,
 				5CDDBA8D29A52D04007A8DCC /* poppins_light.ttf in Resources */,
+				5C60314629A6B1FD0015BC85 /* GooglePlaces.bundle in Resources */,
 				5CDDBA8B29A52D04007A8DCC /* poppins_medium.ttf in Resources */,
 				5CDDBA6E29A2847F007A8DCC /* Localizable.strings in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
