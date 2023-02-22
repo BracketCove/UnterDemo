@@ -23,15 +23,17 @@ struct DestinationBarView: View {
             HStack {
                 Text(NSLocalizedString("destination", comment: ""))
                     .frame(alignment: .leading)
-                    .font(.custom("poppins_bold", size: 18))
-                    .foregroundColor(.black)
+                    .font(.custom("poppins_medium", size: 16))
+                    .foregroundColor(Color("LightGrey"))
                     .padding([.top, .leading], 16)
                 
                 Spacer()
                 
-                Button(NSLocalizedString("logout", comment: "")) {
+                Button(NSLocalizedString("cancel", comment: "")) {
                     handleCancelButtonClick?()
                 }.padding(.trailing, 16)
+                    .buttonStyle(.borderedProminent)
+                    .tint(.red)
                 
             }
             

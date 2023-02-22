@@ -35,7 +35,7 @@ struct PassengerDashboardView: View {
                 
                 GoogleMapView()
                     .edgesIgnoringSafeArea(.top)
-                    .frame(height: geometry.size.width)
+                    .frame(height: geometry.size.height * 0.4)
                 
                 DestinationBarView(
                     {}
