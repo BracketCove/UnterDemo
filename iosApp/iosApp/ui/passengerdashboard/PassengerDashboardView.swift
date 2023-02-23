@@ -12,6 +12,7 @@ struct PassengerDashboardView: View {
     
     private var dependencyLocator: DependencyLocator
     @StateObject var viewModel = PassengerDashboardViewModel(nil)
+    @State var showMapView = false
     
     init(dependencyLocator: DependencyLocator) {
         self.dependencyLocator = dependencyLocator
@@ -19,30 +20,12 @@ struct PassengerDashboardView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            VStack {
-                HStack {
-                    Text(NSLocalizedString("unter", comment: "App name.")).frame(alignment: .leading)
-                        .font(.custom("poppins_semi_bold", size: 18))
-                        .foregroundColor(.black)
-                        .padding(.leading, 16)
-                    
-                    Spacer()
-                    
-                    Button(NSLocalizedString("logout", comment: "")) {
-                        viewModel.attemptLogout()
-                    }.padding(.trailing, 16)
-                }.padding(.top, 16)
-                
-                GoogleMapView()
-                    .edgesIgnoringSafeArea(.top)
-                    .frame(height: geometry.size.height * 0.4)
-                
-                DestinationBarView(
-                    {}
-                )
-                
-
+            if showMapView {
+                RideActiveView(viewModel, mapHeight: geometry.size.height * 0.4)
+            } else {
+                DestinationSearchView(viewModel)
             }
+            
         }.onAppear {
             viewModel.setLogoutUser(logoutUser: dependencyLocator.logoutUser)
         }

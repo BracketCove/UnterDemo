@@ -38,6 +38,7 @@
 		5C60314829A6C85E0015BC85 /* AppConfig.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 5C60314729A6C85E0015BC85 /* AppConfig.xcconfig */; };
 		5C60314A29A6C9270015BC85 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C60314929A6C9270015BC85 /* AppDelegate.swift */; };
 		5C60314D29A6D39C0015BC85 /* GoogleMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C60314C29A6D39C0015BC85 /* GoogleMapView.swift */; };
+		5C60314F29A6FECD0015BC85 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C60314E29A6FECD0015BC85 /* LocationManager.swift */; };
 		5CDDBA6729A28318007A8DCC /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA6629A28318007A8DCC /* SplashView.swift */; };
 		5CDDBA6929A28325007A8DCC /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA6829A28325007A8DCC /* LoginView.swift */; };
 		5CDDBA6B29A28336007A8DCC /* PassengerDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA6A29A28336007A8DCC /* PassengerDashboardView.swift */; };
@@ -51,6 +52,9 @@
 		5CDDBA8E29A52D04007A8DCC /* poppins_regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5CDDBA8929A52D04007A8DCC /* poppins_regular.ttf */; };
 		5CDDBA9029A5662D007A8DCC /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA8F29A5662D007A8DCC /* LoginViewModel.swift */; };
 		5CDDBA9229A57276007A8DCC /* PassengerDashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDDBA9129A57276007A8DCC /* PassengerDashboardViewModel.swift */; };
+		5CE9F0BD29A7C07E005473D5 /* DestinationSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9F0BC29A7C07E005473D5 /* DestinationSearchView.swift */; };
+		5CE9F0C129A7CD22005473D5 /* PlaceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9F0C029A7CD22005473D5 /* PlaceViewModel.swift */; };
+		5CE9F0C329A7CEBA005473D5 /* RideActiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9F0C229A7CEB9005473D5 /* RideActiveView.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
@@ -99,6 +103,7 @@
 		5C60314729A6C85E0015BC85 /* AppConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppConfig.xcconfig; sourceTree = "<group>"; };
 		5C60314929A6C9270015BC85 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5C60314C29A6D39C0015BC85 /* GoogleMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleMapView.swift; sourceTree = "<group>"; };
+		5C60314E29A6FECD0015BC85 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		5CDDBA6629A28318007A8DCC /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		5CDDBA6829A28325007A8DCC /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		5CDDBA6A29A28336007A8DCC /* PassengerDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassengerDashboardView.swift; sourceTree = "<group>"; };
@@ -112,6 +117,9 @@
 		5CDDBA8929A52D04007A8DCC /* poppins_regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = poppins_regular.ttf; path = ../../../androidApp/src/main/res/font/poppins_regular.ttf; sourceTree = "<group>"; };
 		5CDDBA8F29A5662D007A8DCC /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		5CDDBA9129A57276007A8DCC /* PassengerDashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassengerDashboardViewModel.swift; sourceTree = "<group>"; };
+		5CE9F0BC29A7C07E005473D5 /* DestinationSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationSearchView.swift; sourceTree = "<group>"; };
+		5CE9F0C029A7CD22005473D5 /* PlaceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceViewModel.swift; sourceTree = "<group>"; };
+		5CE9F0C229A7CEB9005473D5 /* RideActiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideActiveView.swift; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -160,6 +168,7 @@
 			isa = PBXGroup;
 			children = (
 				5C60314C29A6D39C0015BC85 /* GoogleMapView.swift */,
+				5C60314E29A6FECD0015BC85 /* LocationManager.swift */,
 			);
 			path = maps;
 			sourceTree = "<group>";
@@ -209,6 +218,9 @@
 				5CDDBA9129A57276007A8DCC /* PassengerDashboardViewModel.swift */,
 				5C60311029A682170015BC85 /* DriverInfoView.swift */,
 				5C60311229A682470015BC85 /* DestinationBarView.swift */,
+				5CE9F0BC29A7C07E005473D5 /* DestinationSearchView.swift */,
+				5CE9F0C029A7CD22005473D5 /* PlaceViewModel.swift */,
+				5CE9F0C229A7CEB9005473D5 /* RideActiveView.swift */,
 			);
 			path = passengerdashboard;
 			sourceTree = "<group>";
@@ -392,17 +404,21 @@
 			files = (
 				5CDDBA6729A28318007A8DCC /* SplashView.swift in Sources */,
 				5C60310F29A675B10015BC85 /* DependencyLocator.swift in Sources */,
+				5C60314F29A6FECD0015BC85 /* LocationManager.swift in Sources */,
 				5CDDBA6929A28325007A8DCC /* LoginView.swift in Sources */,
 				5CDDBA6B29A28336007A8DCC /* PassengerDashboardView.swift in Sources */,
 				5CDDBA9229A57276007A8DCC /* PassengerDashboardViewModel.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				5CDDBA9029A5662D007A8DCC /* LoginViewModel.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
+				5CE9F0BD29A7C07E005473D5 /* DestinationSearchView.swift in Sources */,
 				5C60314A29A6C9270015BC85 /* AppDelegate.swift in Sources */,
 				5C60311129A682170015BC85 /* DriverInfoView.swift in Sources */,
 				5C60314D29A6D39C0015BC85 /* GoogleMapView.swift in Sources */,
 				5C60311329A682470015BC85 /* DestinationBarView.swift in Sources */,
 				5CDDBA7D29A415AC007A8DCC /* SplashViewModel.swift in Sources */,
+				5CE9F0C129A7CD22005473D5 /* PlaceViewModel.swift in Sources */,
+				5CE9F0C329A7CEBA005473D5 /* RideActiveView.swift in Sources */,
 				5CDDBA7F29A41E0C007A8DCC /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

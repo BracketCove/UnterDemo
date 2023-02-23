@@ -8,38 +8,62 @@
 
 import Foundation
 import shared
+import MapKit
 
-extension PassengerDashboardView {
-    class PassengerDashboardViewModel : ObservableObject {
-        @Published var showDashboard = false
+class PassengerDashboardViewModel : ObservableObject {
+    @Published var showDashboard = false
+    @Published var places = [PlaceViewModel]()
+    
+    private var logoutUser: LogOutUser? = nil
+    
+    init (_ logoutUser: LogOutUser?) {
+        self.logoutUser = logoutUser
+    }
+    
+    func handleSelectedPlace(_ place: PlaceViewModel) {
+        print("\(place.lat) \(place.lon)")
+    }
+    
+    func search(text: String, region: MKCoordinateRegion) {
         
-        private var logoutUser: LogOutUser? = nil
+        let searchRequest = MKLocalSearch.Request()
+        searchRequest.naturalLanguageQuery = text
+        searchRequest.region = region
         
-        init (_ logoutUser: LogOutUser?) {
-            self.logoutUser = logoutUser
-        }
+        let search = MKLocalSearch(request: searchRequest)
         
-        func setLogoutUser(logoutUser: LogOutUser) {
-            self.logoutUser = logoutUser
-        }
-        
-        func attemptLogout() {
-//            logoutUser?.logout(user: user) {
-//                value, error in
-//                if let result = value as? ServiceResultValue {
-//                
-//                    if result.value == nil {
-//                       // self.showError = true
-//                    }
-//                    else {
-//                        self.showDashboard = true
-//                    }
-//                }
-//
-//                if error != nil {
-//                   // self.showError = true
-//                }
-//            }
+        search.start { response, error in
+            
+            guard let response = response else {
+                print("Error: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            self.places = response.mapItems.map(PlaceViewModel.init)
         }
     }
+    
+    func setLogoutUser(logoutUser: LogOutUser) {
+        self.logoutUser = logoutUser
+    }
+    
+    func attemptLogout() {
+        //            logoutUser?.logout(user: user) {
+        //                value, error in
+        //                if let result = value as? ServiceResultValue {
+        //
+        //                    if result.value == nil {
+        //                       // self.showError = true
+        //                    }
+        //                    else {
+        //                        self.showDashboard = true
+        //                    }
+        //                }
+        //
+        //                if error != nil {
+        //                   // self.showError = true
+        //                }
+        //            }
+    }
 }
+
