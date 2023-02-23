@@ -11,7 +11,7 @@ import SwiftUI
 struct PassengerDashboardView: View {
     
     private var dependencyLocator: DependencyLocator
-    @StateObject var viewModel = PassengerDashboardViewModel(nil, nil)
+    @StateObject var viewModel = PassengerDashboardViewModel()
     
     init(dependencyLocator: DependencyLocator) {
         self.dependencyLocator = dependencyLocator
@@ -25,8 +25,7 @@ struct PassengerDashboardView: View {
                 DestinationSearchView(viewModel)
             }
         }.onAppear {
-            viewModel.setLogoutUser(logoutUser: dependencyLocator.logoutUser)
-            viewModel.setRideService(rideService: dependencyLocator.rideService)
+            viewModel.setDependencies(dependencyLocator: dependencyLocator)
         }
     }
 }

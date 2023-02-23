@@ -13,14 +13,20 @@ import MapKit
 class PassengerDashboardViewModel : ObservableObject {
     @Published var places = [PlaceViewModel]()
     @Published var showMapView = false
-
+    
+    @Published var uiState: PassengerDashboardUiState = .loading
     
     private var logoutUser: LogOutUser? = nil
+    private var getUser: GetUser? = nil
     private var rideService: RideService? = nil
     
+    func setDependencies(dependencyLocator: DependencyLocator) {
+        self.logoutUser = dependencyLocator.logoutUser
+        self.getUser = dependencyLocator.getUser
+        self.rideService = dependencyLocator.rideService
+    }
     
-    init (_ logoutUser: LogOutUser? = nil, _ rideService: RideService? = nil) {
-        self.logoutUser = logoutUser
+    func setRideService(rideService: RideService) {
         self.rideService = rideService
     }
     
@@ -46,15 +52,7 @@ class PassengerDashboardViewModel : ObservableObject {
             self.places = response.mapItems.map(PlaceViewModel.init)
         }
     }
-    
-    func setLogoutUser(logoutUser: LogOutUser) {
-        self.logoutUser = logoutUser
-    }
-    
-    func setRideService(rideService: RideService) {
-        self.rideService = rideService
-    }
-    
+        
     func attemptLogout() {
         //            logoutUser?.logout(user: user) {
         //                value, error in

@@ -55,6 +55,7 @@
 		5CE9F0BD29A7C07E005473D5 /* DestinationSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9F0BC29A7C07E005473D5 /* DestinationSearchView.swift */; };
 		5CE9F0C129A7CD22005473D5 /* PlaceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9F0C029A7CD22005473D5 /* PlaceViewModel.swift */; };
 		5CE9F0C329A7CEBA005473D5 /* RideActiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9F0C229A7CEB9005473D5 /* RideActiveView.swift */; };
+		5CE9F0C729A80304005473D5 /* PassengerDashboardUiState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9F0C629A80304005473D5 /* PassengerDashboardUiState.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
@@ -120,6 +121,7 @@
 		5CE9F0BC29A7C07E005473D5 /* DestinationSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationSearchView.swift; sourceTree = "<group>"; };
 		5CE9F0C029A7CD22005473D5 /* PlaceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceViewModel.swift; sourceTree = "<group>"; };
 		5CE9F0C229A7CEB9005473D5 /* RideActiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideActiveView.swift; sourceTree = "<group>"; };
+		5CE9F0C629A80304005473D5 /* PassengerDashboardUiState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassengerDashboardUiState.swift; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -221,6 +223,7 @@
 				5CE9F0BC29A7C07E005473D5 /* DestinationSearchView.swift */,
 				5CE9F0C029A7CD22005473D5 /* PlaceViewModel.swift */,
 				5CE9F0C229A7CEB9005473D5 /* RideActiveView.swift */,
+				5CE9F0C629A80304005473D5 /* PassengerDashboardUiState.swift */,
 			);
 			path = passengerdashboard;
 			sourceTree = "<group>";
@@ -414,6 +417,7 @@
 				5CE9F0BD29A7C07E005473D5 /* DestinationSearchView.swift in Sources */,
 				5C60314A29A6C9270015BC85 /* AppDelegate.swift in Sources */,
 				5C60311129A682170015BC85 /* DriverInfoView.swift in Sources */,
+				5CE9F0C729A80304005473D5 /* PassengerDashboardUiState.swift in Sources */,
 				5C60314D29A6D39C0015BC85 /* GoogleMapView.swift in Sources */,
 				5C60311329A682470015BC85 /* DestinationBarView.swift in Sources */,
 				5CDDBA7D29A415AC007A8DCC /* SplashViewModel.swift in Sources */,
