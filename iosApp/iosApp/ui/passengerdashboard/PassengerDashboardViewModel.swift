@@ -11,13 +11,17 @@ import shared
 import MapKit
 
 class PassengerDashboardViewModel : ObservableObject {
-    @Published var showDashboard = false
     @Published var places = [PlaceViewModel]()
+    @Published var showMapView = false
+
     
     private var logoutUser: LogOutUser? = nil
+    private var rideService: RideService? = nil
     
-    init (_ logoutUser: LogOutUser?) {
+    
+    init (_ logoutUser: LogOutUser? = nil, _ rideService: RideService? = nil) {
         self.logoutUser = logoutUser
+        self.rideService = rideService
     }
     
     func handleSelectedPlace(_ place: PlaceViewModel) {
@@ -45,6 +49,10 @@ class PassengerDashboardViewModel : ObservableObject {
     
     func setLogoutUser(logoutUser: LogOutUser) {
         self.logoutUser = logoutUser
+    }
+    
+    func setRideService(rideService: RideService) {
+        self.rideService = rideService
     }
     
     func attemptLogout() {
