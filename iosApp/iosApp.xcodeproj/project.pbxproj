@@ -56,6 +56,16 @@
 		5CE9F0C129A7CD22005473D5 /* PlaceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9F0C029A7CD22005473D5 /* PlaceViewModel.swift */; };
 		5CE9F0C329A7CEBA005473D5 /* RideActiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9F0C229A7CEB9005473D5 /* RideActiveView.swift */; };
 		5CE9F0C729A80304005473D5 /* PassengerDashboardUiState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9F0C629A80304005473D5 /* PassengerDashboardUiState.swift */; };
+		5CE9F0CA29A80FD3005473D5 /* KMPNativeCoroutinesAsync in Frameworks */ = {isa = PBXBuildFile; productRef = 5CE9F0C929A80FD3005473D5 /* KMPNativeCoroutinesAsync */; };
+		5CE9F0CC29A80FD3005473D5 /* KMPNativeCoroutinesCombine in Frameworks */ = {isa = PBXBuildFile; productRef = 5CE9F0CB29A80FD3005473D5 /* KMPNativeCoroutinesCombine */; };
+		5CE9F0CE29A80FD3005473D5 /* KMPNativeCoroutinesCore in Frameworks */ = {isa = PBXBuildFile; productRef = 5CE9F0CD29A80FD3005473D5 /* KMPNativeCoroutinesCore */; };
+		5CE9F0D029A80FD3005473D5 /* KMPNativeCoroutinesRxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 5CE9F0CF29A80FD3005473D5 /* KMPNativeCoroutinesRxSwift */; };
+		5CE9F0D329A91F6E005473D5 /* SwiftFirebaseAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9F0D229A91F6E005473D5 /* SwiftFirebaseAuthService.swift */; };
+		5CE9F0D529A91F7A005473D5 /* SwiftStreamUserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9F0D429A91F7A005473D5 /* SwiftStreamUserService.swift */; };
+		5CE9F0D729A91F85005473D5 /* SwiftStreamRideService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9F0D629A91F85005473D5 /* SwiftStreamRideService.swift */; };
+		5CE9F0D929A91FAD005473D5 /* SwiftGetUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9F0D829A91FAD005473D5 /* SwiftGetUser.swift */; };
+		5CE9F0DB29A91FBB005473D5 /* SwiftLogInUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9F0DA29A91FBB005473D5 /* SwiftLogInUser.swift */; };
+		5CE9F0DD29A91FC3005473D5 /* SwiftLogOutUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9F0DC29A91FC3005473D5 /* SwiftLogOutUser.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
@@ -122,6 +132,12 @@
 		5CE9F0C029A7CD22005473D5 /* PlaceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceViewModel.swift; sourceTree = "<group>"; };
 		5CE9F0C229A7CEB9005473D5 /* RideActiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideActiveView.swift; sourceTree = "<group>"; };
 		5CE9F0C629A80304005473D5 /* PassengerDashboardUiState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassengerDashboardUiState.swift; sourceTree = "<group>"; };
+		5CE9F0D229A91F6E005473D5 /* SwiftFirebaseAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftFirebaseAuthService.swift; sourceTree = "<group>"; };
+		5CE9F0D429A91F7A005473D5 /* SwiftStreamUserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftStreamUserService.swift; sourceTree = "<group>"; };
+		5CE9F0D629A91F85005473D5 /* SwiftStreamRideService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftStreamRideService.swift; sourceTree = "<group>"; };
+		5CE9F0D829A91FAD005473D5 /* SwiftGetUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftGetUser.swift; sourceTree = "<group>"; };
+		5CE9F0DA29A91FBB005473D5 /* SwiftLogInUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftLogInUser.swift; sourceTree = "<group>"; };
+		5CE9F0DC29A91FC3005473D5 /* SwiftLogOutUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftLogOutUser.swift; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -132,18 +148,22 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5CE9F0CE29A80FD3005473D5 /* KMPNativeCoroutinesCore in Frameworks */,
 				5C60312D29A6AE200015BC85 /* GLKit.framework in Frameworks */,
 				5C60312E29A6AE200015BC85 /* libz.tbd in Frameworks */,
+				5CE9F0D029A80FD3005473D5 /* KMPNativeCoroutinesRxSwift in Frameworks */,
 				5C60312F29A6AE200015BC85 /* Accelerate.framework in Frameworks */,
 				5C60313029A6AE200015BC85 /* ImageIO.framework in Frameworks */,
 				5C60313129A6AE200015BC85 /* CoreGraphics.framework in Frameworks */,
 				5C60313229A6AE200015BC85 /* CoreLocation.framework in Frameworks */,
 				5C60313329A6AE200015BC85 /* Metal.framework in Frameworks */,
 				5C60313429A6AE200015BC85 /* QuartzCore.framework in Frameworks */,
+				5CE9F0CA29A80FD3005473D5 /* KMPNativeCoroutinesAsync in Frameworks */,
 				5C60314029A6AF5E0015BC85 /* GoogleMapsCore.xcframework in Frameworks */,
 				5C60314129A6AF5E0015BC85 /* GoogleMaps.xcframework in Frameworks */,
 				5C60314229A6AF5E0015BC85 /* GoogleMapsBase.xcframework in Frameworks */,
 				5C60313529A6AE200015BC85 /* SystemConfiguration.framework in Frameworks */,
+				5CE9F0CC29A80FD3005473D5 /* KMPNativeCoroutinesCombine in Frameworks */,
 				5C60314429A6B1780015BC85 /* GooglePlaces.xcframework in Frameworks */,
 				5C60313629A6AE200015BC85 /* CoreText.framework in Frameworks */,
 				5C60313729A6AE200015BC85 /* CoreTelephony.framework in Frameworks */,
@@ -191,6 +211,12 @@
 		5CDDBA7129A2A4D4007A8DCC /* services */ = {
 			isa = PBXGroup;
 			children = (
+				5CE9F0D229A91F6E005473D5 /* SwiftFirebaseAuthService.swift */,
+				5CE9F0D429A91F7A005473D5 /* SwiftStreamUserService.swift */,
+				5CE9F0D629A91F85005473D5 /* SwiftStreamRideService.swift */,
+				5CE9F0D829A91FAD005473D5 /* SwiftGetUser.swift */,
+				5CE9F0DA29A91FBB005473D5 /* SwiftLogInUser.swift */,
+				5CE9F0DC29A91FC3005473D5 /* SwiftLogOutUser.swift */,
 			);
 			path = services;
 			sourceTree = "<group>";
@@ -322,6 +348,12 @@
 			dependencies = (
 			);
 			name = iosApp;
+			packageProductDependencies = (
+				5CE9F0C929A80FD3005473D5 /* KMPNativeCoroutinesAsync */,
+				5CE9F0CB29A80FD3005473D5 /* KMPNativeCoroutinesCombine */,
+				5CE9F0CD29A80FD3005473D5 /* KMPNativeCoroutinesCore */,
+				5CE9F0CF29A80FD3005473D5 /* KMPNativeCoroutinesRxSwift */,
+			);
 			productName = iosApp;
 			productReference = 7555FF7B242A565900829871 /* iosApp.app */;
 			productType = "com.apple.product-type.application";
@@ -350,6 +382,9 @@
 				Base,
 			);
 			mainGroup = 7555FF72242A565900829871;
+			packageReferences = (
+				5CE9F0C829A80FD3005473D5 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
+			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -409,9 +444,13 @@
 				5C60310F29A675B10015BC85 /* DependencyLocator.swift in Sources */,
 				5C60314F29A6FECD0015BC85 /* LocationManager.swift in Sources */,
 				5CDDBA6929A28325007A8DCC /* LoginView.swift in Sources */,
+				5CE9F0DB29A91FBB005473D5 /* SwiftLogInUser.swift in Sources */,
 				5CDDBA6B29A28336007A8DCC /* PassengerDashboardView.swift in Sources */,
 				5CDDBA9229A57276007A8DCC /* PassengerDashboardViewModel.swift in Sources */,
+				5CE9F0D929A91FAD005473D5 /* SwiftGetUser.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
+				5CE9F0D729A91F85005473D5 /* SwiftStreamRideService.swift in Sources */,
+				5CE9F0DD29A91FC3005473D5 /* SwiftLogOutUser.swift in Sources */,
 				5CDDBA9029A5662D007A8DCC /* LoginViewModel.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 				5CE9F0BD29A7C07E005473D5 /* DestinationSearchView.swift in Sources */,
@@ -419,8 +458,10 @@
 				5C60311129A682170015BC85 /* DriverInfoView.swift in Sources */,
 				5CE9F0C729A80304005473D5 /* PassengerDashboardUiState.swift in Sources */,
 				5C60314D29A6D39C0015BC85 /* GoogleMapView.swift in Sources */,
+				5CE9F0D329A91F6E005473D5 /* SwiftFirebaseAuthService.swift in Sources */,
 				5C60311329A682470015BC85 /* DestinationBarView.swift in Sources */,
 				5CDDBA7D29A415AC007A8DCC /* SplashViewModel.swift in Sources */,
+				5CE9F0D529A91F7A005473D5 /* SwiftStreamUserService.swift in Sources */,
 				5CE9F0C129A7CD22005473D5 /* PlaceViewModel.swift in Sources */,
 				5CE9F0C329A7CEBA005473D5 /* RideActiveView.swift in Sources */,
 				5CDDBA7F29A41E0C007A8DCC /* Constants.swift in Sources */,
@@ -632,6 +673,40 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5CE9F0C829A80FD3005473D5 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rickclephas/KMP-NativeCoroutines.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5CE9F0C929A80FD3005473D5 /* KMPNativeCoroutinesAsync */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5CE9F0C829A80FD3005473D5 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesAsync;
+		};
+		5CE9F0CB29A80FD3005473D5 /* KMPNativeCoroutinesCombine */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5CE9F0C829A80FD3005473D5 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesCombine;
+		};
+		5CE9F0CD29A80FD3005473D5 /* KMPNativeCoroutinesCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5CE9F0C829A80FD3005473D5 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesCore;
+		};
+		5CE9F0CF29A80FD3005473D5 /* KMPNativeCoroutinesRxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5CE9F0C829A80FD3005473D5 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesRxSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7555FF73242A565900829871 /* Project object */;
 }

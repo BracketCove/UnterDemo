@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface RideService {
 
     fun openRides(): Flow<ServiceResult<List<Ride>>>
+
     fun rideFlow(): Flow<ServiceResult<Ride?>>
     suspend fun getRideIfInProgress() : ServiceResult<String?>
     suspend fun observeRideById(rideId: String)

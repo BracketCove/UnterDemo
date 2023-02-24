@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.scripting.definitions.StandardScriptDefinition.platf
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
+    id("com.rickclephas.kmp.nativecoroutines") version "0.13.0"
 }
 
 kotlin {

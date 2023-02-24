@@ -9,12 +9,17 @@
 import Foundation
 import shared
 import MapKit
+import KMPNativeCoroutinesAsync
+import KMPNativeCoroutinesCombine
 
+@MainActor
 class PassengerDashboardViewModel : ObservableObject {
     @Published var places = [PlaceViewModel]()
     @Published var showMapView = false
-    
     @Published var uiState: PassengerDashboardUiState = .loading
+    
+    private var passengerModel: UnterUser? = nil
+    private var rideModel: Ride? = nil
     
     private var logoutUser: LogOutUser? = nil
     private var getUser: GetUser? = nil
@@ -25,9 +30,54 @@ class PassengerDashboardViewModel : ObservableObject {
         self.getUser = dependencyLocator.getUser
         self.rideService = dependencyLocator.rideService
     }
+
+    func getPassenger() {
+        getUser?.getUser {
+            value, error in
+            if let result = value as? ServiceResultValue {
+                if result.value == nil {
+                  //TODO figure out how to go back to login from here  self.showLogin = true
+                    
+                }
+                else {
+                    self.passengerModel = result.value
+                    self.getActiveRideIfItExists()
+                }
+            }
+            
+            if error != nil {
+              //  self.showLogin = true
+            }
+        }
+    }
     
-    func setRideService(rideService: RideService) {
-        self.rideService = rideService
+    private func getActiveRideIfItExists() {
+        rideService?.getRideIfInProgress {
+            value, error in
+            if let rideResult = value as? ServiceResultValue {
+                if rideResult.value == nil {
+                    self.uiState = .rideInactive
+                }
+                else {
+                    Task {
+                      await self.observeRideModel(rideResult.value!)
+                    }
+                }
+            }
+        }
+    }
+    
+    private func observeRideModel(_ rideId: NSString) async {
+//        do {
+//            let stream = asyncStream(for: rideService!.rideFlowNative())
+//            for try await data in stream {
+//                if let result = data as ServiceResultValue<Ride> {
+//                    
+//                }
+//            }
+//        } catch {
+//                
+//        }
     }
     
     func handleSelectedPlace(_ place: PlaceViewModel) {
@@ -54,22 +104,22 @@ class PassengerDashboardViewModel : ObservableObject {
     }
         
     func attemptLogout() {
-        //            logoutUser?.logout(user: user) {
-        //                value, error in
-        //                if let result = value as? ServiceResultValue {
-        //
-        //                    if result.value == nil {
-        //                       // self.showError = true
-        //                    }
-        //                    else {
-        //                        self.showDashboard = true
-        //                    }
-        //                }
-        //
-        //                if error != nil {
-        //                   // self.showError = true
-        //                }
-        //            }
+                    logoutUser?.logout(user: passengerModel!) {
+                        value, error in
+                        if let result = value as? ServiceResultValue {
+        
+                            if result.value == nil {
+                               // self.showError = true
+                            }
+                            else {
+                              //  self.showDashboard = true
+                            }
+                        }
+        
+                        if error != nil {
+                           // self.showError = true
+                        }
+                    }
     }
 }
 
