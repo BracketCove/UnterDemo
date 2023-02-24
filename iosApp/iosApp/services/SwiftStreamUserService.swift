@@ -7,3 +7,14 @@
 //
 
 import Foundation
+import shared
+
+class SwiftStreamUserService {
+    func getUserById(userId: String) async -> UnterUser? {
+        return UnterUser.companion.getDefaultUser()
+    }
+    
+    func logOutUser(user: UnterUser) async -> Bool {
+        return true
+    }
+}

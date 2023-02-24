@@ -9,4 +9,9 @@ data class UnterUser(
     val avatarPhotoUrl: String = "",
     val createdAt: String = "",
     val updatedAt: String = ""
-)
+) {
+    //For convenience in Swift
+    companion object {
+        fun getDefaultUser(): UnterUser = UnterUser()
+    }
+}

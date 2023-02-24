@@ -19,4 +19,8 @@ data class Ride(
     val createdAt: String = "",
     val updatedAT: String = "",
     val totalMessages: Int = 0
-)
+) {
+    companion object {
+        fun getDefaultRide(): Ride = Ride()
+    }
+}
